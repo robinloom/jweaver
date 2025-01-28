@@ -2,7 +2,7 @@ package com.robinloom.jweaver;
 
 import java.lang.reflect.Field;
 
-final class WeavingMachine {
+public final class WeavingMachine {
 
     private final StringBuilder delegate;
     public WeaverConfig config;
@@ -21,6 +21,14 @@ final class WeavingMachine {
         delegate.append(config.getClassNamePrefix());
         delegate.append(className);
         delegate.append(config.getClassNameSuffix());
+        delegate.append(config.getClassNameFieldsSeparator());
+    }
+
+    public void appendDataType(Field field) {
+        if (config.isShowDataTypes()) {
+            delegate.append(field.getType().getSimpleName());
+            delegate.append(" ");
+        }
     }
 
     public void appendFieldName(Field field) {

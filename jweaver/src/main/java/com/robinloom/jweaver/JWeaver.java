@@ -4,8 +4,8 @@ public final class JWeaver {
 
     private JWeaver() {}
 
-    public static DefaultWeaver getDefault() {
-        return new DefaultWeaver();
+    public static DynamicWeaver getDefault() {
+        return new DynamicWeaver();
     }
 
 }
