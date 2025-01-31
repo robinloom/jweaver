@@ -207,8 +207,8 @@ class DynamicWeaverTest {
     void testExcludeField() {
         record Person(String name, char[] password) {}
 
-        Person person = new Person("Jane Doe", "password".toCharArray());
-        String expected = "Person[name=Jane Doe]";
+        Person person = new Person("John Doe", "password".toCharArray());
+        String expected = "Person[name=John Doe]";
 
         Assertions.assertEquals(expected, JWeaver.getDefault().excludeFields(List.of("password")).weave(person));
     }
@@ -217,8 +217,8 @@ class DynamicWeaverTest {
     void testIncludeField() {
         record Person(String name, char[] password) {}
 
-        Person person = new Person("Jane Doe", "password".toCharArray());
-        String expected = "Person[name=Jane Doe]";
+        Person person = new Person("John Doe", "password".toCharArray());
+        String expected = "Person[name=John Doe]";
 
         Assertions.assertEquals(expected, JWeaver.getDefault().includeFields(List.of("name")).weave(person));
     }
@@ -244,7 +244,7 @@ class DynamicWeaverTest {
         Person person = new Person("John Doe", "blonde");
         String expected = "Person[name=John Doe, hairColor=blonde]";
 
-        Assertions.assertEquals(expected, JWeaver.getDefault().weave(person));
+        Assertions.assertEquals(expected, JWeaver.getDefault().showInheritedFields().weave(person));
     }
 
 }

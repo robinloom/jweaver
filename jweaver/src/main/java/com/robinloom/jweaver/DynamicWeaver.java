@@ -78,6 +78,11 @@ public class DynamicWeaver {
         return this;
     }
 
+    public DynamicWeaver showInheritedFields() {
+        config.setShowInheritedFields(true);
+        return this;
+    }
+
     public String weave(Object object) {
         if (object == null) {
             return "null";
@@ -91,7 +96,14 @@ public class DynamicWeaver {
 
         machine.appendClassName(object.getClass().getSimpleName());
 
-        for (Field field : FieldOperations.getAllFields(object.getClass())) {
+        List<Field> fields;
+        if (config.isShowInheritedFields()) {
+            fields = FieldOperations.getAllFields(object.getClass());
+        } else {
+            fields = FieldOperations.getFields(object.getClass());
+        }
+
+        for (Field field : fields) {
             try {
                 field.setAccessible(true);
 

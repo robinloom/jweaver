@@ -14,6 +14,10 @@ public final class FieldOperations {
         return clazz.isArray();
     }
 
+    public static List<Field> getFields(Class<?> clazz) {
+        return List.of(clazz.getDeclaredFields());
+    }
+
     public static List<Field> getAllFields(Class<?> clazz) {
         List<Field> fields = new ArrayList<>();
         while (clazz != null) {

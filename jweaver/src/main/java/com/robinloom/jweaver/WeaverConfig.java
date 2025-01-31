@@ -18,6 +18,7 @@ public class WeaverConfig {
 
     private boolean capitalizeFields;
     private boolean showDataTypes;
+    private boolean showInheritedFields;
 
     public String getClassNamePrefix() {
         return classNamePrefix;
@@ -94,5 +95,13 @@ public class WeaverConfig {
 
     public void setShowDataTypes(boolean showDataTypes) {
         this.showDataTypes = showDataTypes;
+    }
+
+    public boolean isShowInheritedFields() {
+        return showInheritedFields;
+    }
+
+    public void setShowInheritedFields(boolean showInheritedFields) {
+        this.showInheritedFields = showInheritedFields;
     }
 }
