@@ -1,4 +1,7 @@
-package com.robinloom.jweaver;
+package com.robinloom.jweaver.dynamic;
+
+import com.robinloom.jweaver.commons.FieldOperations;
+import com.robinloom.jweaver.commons.TypeStrings;
 
 import java.lang.reflect.Field;
 import java.util.Collections;
@@ -11,12 +14,12 @@ public class DynamicWeaver {
     private static final ThreadLocal<Set<Object>> history
             = ThreadLocal.withInitial(() -> Collections.newSetFromMap(new IdentityHashMap<>()));
 
-    private final WeaverConfig config;
-    private final WeavingMachine machine;
+    private final DynamicConfig config;
+    private final DynamicWeavingMachine machine;
 
     public DynamicWeaver() {
-        this.config = new WeaverConfig();
-        this.machine = new WeavingMachine(config);
+        this.config = new DynamicConfig();
+        this.machine = new DynamicWeavingMachine(config);
     }
 
     public DynamicWeaver multiline() {

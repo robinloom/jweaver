@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.robinloom</groupId>
-    <artifactId>jweaver-base</artifactId>
+    <artifactId>jweaver</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>JWeaver</name>
@@ -52,7 +52,7 @@
     </dependencyManagement>
 
     <modules>
-        <module>jweaver</module>
+        <module>jweaver-objects</module>
     </modules>
 
 </project>

@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.robinloom</groupId>
-        <artifactId>jweaver-base</artifactId>
+        <artifactId>jweaver</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>jweaver</artifactId>
+    <artifactId>jweaver-objects</artifactId>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>

@@ -1,4 +1,4 @@
-package com.robinloom.jweaver;
+package com.robinloom.jweaver.commons;
 
 import java.lang.reflect.Array;
 

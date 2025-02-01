@@ -1,10 +1,10 @@
-package com.robinloom.jweaver;
+package com.robinloom.jweaver.dynamic;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WeaverConfig {
+public class DynamicConfig {
 
     private String classNamePrefix = "";
     private String classNameSuffix = "";

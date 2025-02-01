@@ -1,18 +1,18 @@
-package com.robinloom.jweaver;
+package com.robinloom.jweaver.dynamic;
 
 import java.lang.reflect.Field;
 
-public final class WeavingMachine {
+public final class DynamicWeavingMachine {
 
     private final StringBuilder delegate;
-    public WeaverConfig config;
+    public DynamicConfig config;
 
-    public WeavingMachine(WeaverConfig config) {
+    public DynamicWeavingMachine(DynamicConfig config) {
         this.config = config;
         delegate = new StringBuilder();
     }
 
-    public WeavingMachine append(String string) {
+    public DynamicWeavingMachine append(String string) {
         delegate.append(string);
         return this;
     }

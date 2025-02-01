@@ -1,5 +1,6 @@
-package com.robinloom.jweaver;
+package com.robinloom.jweaver.dynamic;
 
+import com.robinloom.jweaver.JWeaver;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
