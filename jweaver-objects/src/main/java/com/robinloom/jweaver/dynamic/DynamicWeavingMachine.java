@@ -1,58 +1,55 @@
 package com.robinloom.jweaver.dynamic;
 
+import com.robinloom.jweaver.commons.WeavingMachine;
+import com.robinloom.jweaver.util.FieldOperations;
+
 import java.lang.reflect.Field;
 
-public final class DynamicWeavingMachine {
+final class DynamicWeavingMachine extends WeavingMachine {
 
-    private final StringBuilder delegate;
-    public DynamicConfig config;
+    private final DynamicConfig config;
 
     public DynamicWeavingMachine(DynamicConfig config) {
         this.config = config;
-        delegate = new StringBuilder();
     }
 
-    public DynamicWeavingMachine append(String string) {
-        delegate.append(string);
-        return this;
-    }
-
-    public void appendClassName(String className) {
+    void appendClassName(String className) {
         delegate.append(config.getClassNamePrefix());
         delegate.append(className);
         delegate.append(config.getClassNameSuffix());
         delegate.append(config.getClassNameFieldsSeparator());
     }
 
-    public void appendDataType(Field field) {
+    void appendDataType(Field field) {
         if (config.isShowDataTypes()) {
             delegate.append(field.getType().getSimpleName());
             delegate.append(" ");
         }
     }
 
-    public void appendFieldName(Field field) {
+    void appendFieldName(Field field) {
         String fieldName = field.getName();
         if (config.isCapitalizeFields()) {
-            fieldName = capitalize(fieldName);
+            fieldName = FieldOperations.capitalize(fieldName);
         }
         delegate.append(fieldName);
         delegate.append(config.getFieldValueSeparator());
     }
 
-    public void appendFieldValue(Object value) {
+    void appendFieldValue(Object value) {
         delegate.append(value);
         delegate.append(config.getFieldSeparator());
     }
 
+    @Override
     public void appendInaccessible() {
-        delegate.append("[?]");
+        super.appendInaccessible();
         delegate.append(config.getFieldSeparator());
     }
 
+    @Override
     public void appendAfterException(Exception e) {
-        delegate.append("[ERROR] ");
-        delegate.append(e.getClass().getSimpleName());
+        super.appendAfterException(e);
         delegate.append(config.getFieldSeparator());
     }
 
@@ -66,14 +63,6 @@ public final class DynamicWeavingMachine {
         if (!fieldSeparator.isEmpty()) {
             delegate.delete(delegate.length() - fieldSeparator.length(), delegate.length());
         }
-    }
-
-    private String capitalize(String s) {
-        return s.substring(0, 1).toUpperCase() + s.substring(1);
-    }
-
-    public String toString() {
-        return delegate.toString();
     }
 
 }

@@ -1,4 +1,4 @@
-package com.robinloom.jweaver.commons;
+package com.robinloom.jweaver.util;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -8,11 +8,6 @@ import java.util.List;
 public final class FieldOperations {
 
     private FieldOperations() {}
-
-    public static boolean isArray(Field field) {
-        Class<?> clazz = field.getType();
-        return clazz.isArray();
-    }
 
     public static List<Field> getFields(Class<?> clazz) {
         return List.of(clazz.getDeclaredFields());
@@ -25,6 +20,10 @@ public final class FieldOperations {
             clazz = clazz.getSuperclass();
         }
         return fields;
+    }
+
+    public static String capitalize(String fieldName) {
+        return Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
     }
 
 }

@@ -11,7 +11,13 @@ class DynamicWeaverTest {
 
     @Test
     void testNullSafety() {
-        Assertions.assertEquals("null", JWeaver.getDefault().weave(null));
+        Assertions.assertEquals("null", JWeaver.getDynamic().weave(null));
+    }
+
+    @Test
+    void testJdkClassesToString() {
+        Assertions.assertEquals("Test", JWeaver.getDynamic().weave("Test"));
+        Assertions.assertEquals("[]", JWeaver.getDynamic().weave(List.of()));
     }
 
     @Test
@@ -21,7 +27,7 @@ class DynamicWeaverTest {
         Person person = new Person("John Doe", LocalDate.of(1990, 1, 1));
         String expected = "Person[name=John Doe, birthday=1990-01-01]";
 
-        Assertions.assertEquals(expected, JWeaver.getDefault().weave(person));
+        Assertions.assertEquals(expected, JWeaver.getDynamic().weave(person));
     }
 
     @Test
@@ -31,7 +37,7 @@ class DynamicWeaverTest {
         Person person = new Person("Jane", new Person("Peter", null));
         String expected = "Person[name=Jane, neighbor=Person[name=Peter, neighbor=null]]";
 
-        Assertions.assertEquals(expected, JWeaver.getDefault().weave(person));
+        Assertions.assertEquals(expected, JWeaver.getDynamic().weave(person));
     }
 
     @Test
@@ -41,7 +47,7 @@ class DynamicWeaverTest {
         Person person = new Person("Jane", List.of("Peter", "Judy"));
         String expected = "Person[name=Jane, childrenNames=[Peter, Judy]]";
 
-        Assertions.assertEquals(expected, JWeaver.getDefault().weave(person));
+        Assertions.assertEquals(expected, JWeaver.getDynamic().weave(person));
     }
 
     @Test
@@ -54,7 +60,7 @@ class DynamicWeaverTest {
         Person person = new Person("Jane", List.of(new Person("Peter", List.of())));
         String expected = "Person[name=Jane, neighbors=[Person[name=Peter, neighbors=[]]]]";
 
-        Assertions.assertEquals(expected, JWeaver.getDefault().weave(person));
+        Assertions.assertEquals(expected, JWeaver.getDynamic().weave(person));
     }
 
     @Test
@@ -64,7 +70,7 @@ class DynamicWeaverTest {
         Person person = new Person(new int[]{0,1,2});
         String expected = "Person[numbers=[0,1,2]]";
 
-        Assertions.assertEquals(expected, JWeaver.getDefault().weave(person));
+        Assertions.assertEquals(expected, JWeaver.getDynamic().weave(person));
     }
 
     @Test
@@ -74,7 +80,7 @@ class DynamicWeaverTest {
         Person person = new Person(new String[]{"Anna", "Maria", "Quinn"});
         String expected = "Person[names=[Anna,Maria,Quinn]]";
 
-        Assertions.assertEquals(expected, JWeaver.getDefault().weave(person));
+        Assertions.assertEquals(expected, JWeaver.getDynamic().weave(person));
     }
 
     @Test
@@ -84,17 +90,7 @@ class DynamicWeaverTest {
         Person person = new Person(new Person[]{new Person(null)});
         String expected = "Person[neighbors=[Person[neighbors=null]]]";
 
-        Assertions.assertEquals(expected, JWeaver.getDefault().weave(person));
-    }
-
-    @Test
-    void testFieldCapitalization() {
-        record Person(String name, int age, boolean isTall) {}
-
-        Person person = new Person("Jane Doe", 18, false);
-        String expected = "Person[Name=Jane Doe, Age=18, IsTall=false]";
-
-        Assertions.assertEquals(expected, JWeaver.getDefault().capitalizeFields().weave(person));
+        Assertions.assertEquals(expected, JWeaver.getDynamic().weave(person));
     }
 
     @Test
@@ -104,7 +100,7 @@ class DynamicWeaverTest {
         Person person = new Person("Jane Doe", 18, false);
         String expected = "$Person$[name=Jane Doe, age=18, isTall=false]";
 
-        Assertions.assertEquals(expected, JWeaver.getDefault().classNamePrefix("$")
+        Assertions.assertEquals(expected, JWeaver.getDynamic().classNamePrefix("$")
                                                               .classNameSuffix("$")
                                                               .classNameFieldsSeparator("[")
                                                               .weave(person));
@@ -117,7 +113,7 @@ class DynamicWeaverTest {
         Person person = new Person("Jane Doe", 18, false);
         String expected = "Person[name:Jane Doe, age:18, isTall:false]";
 
-        Assertions.assertEquals(expected, JWeaver.getDefault().fieldValueSeparator(":").weave(person));
+        Assertions.assertEquals(expected, JWeaver.getDynamic().fieldValueSeparator(":").weave(person));
     }
 
     @Test
@@ -127,7 +123,7 @@ class DynamicWeaverTest {
         Person person = new Person("Jane Doe", 18, false);
         String expected = "Person[name=Jane Doe --- age=18 --- isTall=false]";
 
-        Assertions.assertEquals(expected, JWeaver.getDefault().fieldSeparator(" --- ").weave(person));
+        Assertions.assertEquals(expected, JWeaver.getDynamic().fieldSeparator(" --- ").weave(person));
     }
 
     @Test
@@ -137,17 +133,7 @@ class DynamicWeaverTest {
         Person person = new Person("Jane Doe", 18, false);
         String expected = "Person(name=Jane Doe, age=18, isTall=false)";
 
-        Assertions.assertEquals(expected, JWeaver.getDefault().classNameFieldsSeparator("(").globalSuffix(")").weave(person));
-    }
-
-    @Test
-    void testShowDataTypes() {
-        record Person(String name, int age, boolean isTall) {}
-
-        Person person = new Person("Jane Doe", 18, false);
-        String expected = "Person[String name=Jane Doe, int age=18, boolean isTall=false]";
-
-        Assertions.assertEquals(expected, JWeaver.getDefault().showDataTypes().weave(person));
+        Assertions.assertEquals(expected, JWeaver.getDynamic().classNameFieldsSeparator("(").globalSuffix(")").weave(person));
     }
 
     @Test
@@ -161,7 +147,7 @@ class DynamicWeaverTest {
                           age=18
                           isTall=false""";
 
-        Assertions.assertEquals(expected, JWeaver.getDefault().multiline().weave(person));
+        Assertions.assertEquals(expected, JWeaver.getDynamic().multiline().weave(person));
     }
 
     @Test
@@ -171,7 +157,7 @@ class DynamicWeaverTest {
 
             @Override
             public String toString() {
-                return JWeaver.getDefault().weave(this);
+                return JWeaver.getDynamic().weave(this);
             }
         }
 
@@ -181,6 +167,7 @@ class DynamicWeaverTest {
         second.twin = first;
 
         Assertions.assertDoesNotThrow(first::toString);
+        Assertions.assertDoesNotThrow(second::toString);
      }
 
     @Test
@@ -190,7 +177,7 @@ class DynamicWeaverTest {
 
             @Override
             public String toString() {
-                return JWeaver.getDefault().weave(this);
+                return JWeaver.getDynamic().weave(this);
             }
         }
 
@@ -202,6 +189,28 @@ class DynamicWeaverTest {
         third.sibling = first;
 
         Assertions.assertDoesNotThrow(first::toString);
+        Assertions.assertDoesNotThrow(second::toString);
+        Assertions.assertDoesNotThrow(third::toString);
+    }
+
+    @Test
+    void testFieldCapitalization() {
+        record Person(String name, int age, boolean isTall) {}
+
+        Person person = new Person("Jane Doe", 18, false);
+        String expected = "Person[Name=Jane Doe, Age=18, IsTall=false]";
+
+        Assertions.assertEquals(expected, JWeaver.getDynamic().capitalizeFields().weave(person));
+    }
+
+    @Test
+    void testShowDataTypes() {
+        record Person(String name, int age, boolean isTall) {}
+
+        Person person = new Person("Jane Doe", 18, false);
+        String expected = "Person[String name=Jane Doe, int age=18, boolean isTall=false]";
+
+        Assertions.assertEquals(expected, JWeaver.getDynamic().showDataTypes().weave(person));
     }
 
     @Test
@@ -211,7 +220,7 @@ class DynamicWeaverTest {
         Person person = new Person("John Doe", "password".toCharArray());
         String expected = "Person[name=John Doe]";
 
-        Assertions.assertEquals(expected, JWeaver.getDefault().excludeFields(List.of("password")).weave(person));
+        Assertions.assertEquals(expected, JWeaver.getDynamic().excludeFields(List.of("password")).weave(person));
     }
 
     @Test
@@ -221,7 +230,7 @@ class DynamicWeaverTest {
         Person person = new Person("John Doe", "password".toCharArray());
         String expected = "Person[name=John Doe]";
 
-        Assertions.assertEquals(expected, JWeaver.getDefault().includeFields(List.of("name")).weave(person));
+        Assertions.assertEquals(expected, JWeaver.getDynamic().includeFields(List.of("name")).weave(person));
     }
 
     @Test
@@ -245,7 +254,7 @@ class DynamicWeaverTest {
         Person person = new Person("John Doe", "blonde");
         String expected = "Person[name=John Doe, hairColor=blonde]";
 
-        Assertions.assertEquals(expected, JWeaver.getDefault().showInheritedFields().weave(person));
+        Assertions.assertEquals(expected, JWeaver.getDynamic().showInheritedFields().weave(person));
     }
 
 }

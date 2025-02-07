@@ -1,7 +1,8 @@
 package com.robinloom.jweaver.dynamic;
 
-import com.robinloom.jweaver.commons.FieldOperations;
-import com.robinloom.jweaver.commons.TypeStrings;
+import com.robinloom.jweaver.util.FieldOperations;
+import com.robinloom.jweaver.util.TypeDictionary;
+import com.robinloom.jweaver.util.TypeStrings;
 
 import java.lang.reflect.Field;
 import java.util.Collections;
@@ -11,7 +12,7 @@ import java.util.Set;
 
 public class DynamicWeaver {
 
-    private static final ThreadLocal<Set<Object>> history
+    protected static final ThreadLocal<Set<Object>> history
             = ThreadLocal.withInitial(() -> Collections.newSetFromMap(new IdentityHashMap<>()));
 
     private final DynamicConfig config;
@@ -90,6 +91,9 @@ public class DynamicWeaver {
         if (object == null) {
             return "null";
         }
+        if (TypeDictionary.isJdkType(object.getClass())) {
+            return object.toString();
+        }
 
         if (history.get().contains(object)) {
             return "";
@@ -106,20 +110,19 @@ public class DynamicWeaver {
             fields = FieldOperations.getFields(object.getClass());
         }
 
+        fields = fields.stream()
+                       .filter(config::isIncluded)
+                       .toList();
+
         for (Field field : fields) {
             try {
                 field.setAccessible(true);
-
-                if (config.isExcluded(field)) {
-                    continue;
-                }
-
                 Object value = field.get(object);
 
                 machine.appendDataType(field);
                 machine.appendFieldName(field);
 
-                if (FieldOperations.isArray(field)) {
+                if (TypeDictionary.isArray(field.getType())) {
                     machine.appendFieldValue(TypeStrings.array(value));
                 } else {
                     machine.appendFieldValue(value);
@@ -135,7 +138,6 @@ public class DynamicWeaver {
         if (history.get().size() == 1) {
             history.remove();
         }
-
         return machine.toString();
     }
 
