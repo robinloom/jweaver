@@ -68,7 +68,7 @@ class DynamicWeaverTest {
         record Person(int[] numbers) {}
 
         Person person = new Person(new int[]{0,1,2});
-        String expected = "Person[numbers=[0,1,2]]";
+        String expected = "Person[numbers=[0, 1, 2]]";
 
         Assertions.assertEquals(expected, JWeaver.getDynamic().weave(person));
     }
@@ -78,7 +78,7 @@ class DynamicWeaverTest {
         record Person(String[] names) {}
 
         Person person = new Person(new String[]{"Anna", "Maria", "Quinn"});
-        String expected = "Person[names=[Anna,Maria,Quinn]]";
+        String expected = "Person[names=[Anna, Maria, Quinn]]";
 
         Assertions.assertEquals(expected, JWeaver.getDynamic().weave(person));
     }
@@ -255,6 +255,26 @@ class DynamicWeaverTest {
         String expected = "Person[name=John Doe, hairColor=blonde]";
 
         Assertions.assertEquals(expected, JWeaver.getDynamic().showInheritedFields().weave(person));
+    }
+
+    @Test
+    void testCutLongList() {
+        record Entity(List<Character> chars) {}
+
+        Entity entity = new Entity(List.of('a', 'a', 'a', 'a', 'a'));
+        String expected = """
+                          Entity[chars=[a, a, ...]]""";
+        Assertions.assertEquals(expected, JWeaver.getDynamic().maxSequenceLength(2).weave(entity));
+    }
+
+    @Test
+    void testCutLongArray() {
+        record Entity(char[] chars) {}
+
+        Entity entity = new Entity(new char[]{'a', 'a', 'a', 'a', 'a'});
+        String expected = """
+                          Entity[chars=[a, a, ...]]""";
+         Assertions.assertEquals(expected, JWeaver.getDynamic().maxSequenceLength(2).weave(entity));
     }
 
 }

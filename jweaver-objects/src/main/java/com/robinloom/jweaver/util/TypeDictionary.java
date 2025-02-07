@@ -15,7 +15,8 @@ public final class TypeDictionary {
         return clazz.isPrimitive() ||
                clazz.getPackageName().startsWith("java.") ||
                clazz.getPackageName().startsWith("javax.") ||
-               clazz.getPackageName().startsWith("jdk.");
+               clazz.getPackageName().startsWith("jdk.") ||
+               clazz.getPackageName().startsWith("com.sun");
     }
 
     public static boolean isCollection(Class<?> clazz) {

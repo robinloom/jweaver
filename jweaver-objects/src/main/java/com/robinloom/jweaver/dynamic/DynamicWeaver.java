@@ -2,9 +2,9 @@ package com.robinloom.jweaver.dynamic;
 
 import com.robinloom.jweaver.util.FieldOperations;
 import com.robinloom.jweaver.util.TypeDictionary;
-import com.robinloom.jweaver.util.TypeStrings;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -57,6 +57,11 @@ public class DynamicWeaver {
 
     public DynamicWeaver globalSuffix(String suffix) {
         config.setGlobalSuffix(suffix);
+        return this;
+    }
+
+    public DynamicWeaver maxSequenceLength(int maxSequenceLength) {
+        config.setMaxSequenceLength(maxSequenceLength);
         return this;
     }
 
@@ -123,9 +128,11 @@ public class DynamicWeaver {
                 machine.appendFieldName(field);
 
                 if (TypeDictionary.isArray(field.getType())) {
-                    machine.appendFieldValue(TypeStrings.array(value));
+                    machine.appendArrayFieldValue(value);
+                } else if (TypeDictionary.isCollection(field.getType())) {
+                    machine.appendCollectionFieldValue((Collection<?>) value);
                 } else {
-                    machine.appendFieldValue(value);
+                    machine.appendFieldValue(value, fields.indexOf(field) == fields.size() - 1);
                 }
             } catch (ReflectiveOperationException e) {
                 machine.appendInaccessible();

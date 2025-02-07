@@ -12,6 +12,7 @@ public class WeaverConfig {
     private boolean capitalizeFields;
     private boolean showDataTypes;
     private boolean showInheritedFields;
+    private int maxSequenceLength = 10;
 
     public void setIncludedFields(List<String> includedFields) {
         this.includedFields = includedFields;
@@ -49,4 +50,13 @@ public class WeaverConfig {
     public void setShowInheritedFields(boolean showInheritedFields) {
         this.showInheritedFields = showInheritedFields;
     }
+
+    public int getMaxSequenceLength() {
+        return maxSequenceLength;
+    }
+
+    public void setMaxSequenceLength(int maxSequenceLength) {
+        this.maxSequenceLength = maxSequenceLength;
+    }
+
 }

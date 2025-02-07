@@ -3,7 +3,10 @@ package com.robinloom.jweaver.dynamic;
 import com.robinloom.jweaver.commons.WeavingMachine;
 import com.robinloom.jweaver.util.FieldOperations;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.Iterator;
 
 final class DynamicWeavingMachine extends WeavingMachine {
 
@@ -36,10 +39,48 @@ final class DynamicWeavingMachine extends WeavingMachine {
         delegate.append(config.getFieldValueSeparator());
     }
 
-    void appendFieldValue(Object value) {
+    void appendFieldValue(Object value, boolean isLast) {
         delegate.append(value);
-        delegate.append(config.getFieldSeparator());
+        if (!isLast) {
+            delegate.append(config.getFieldSeparator());
+        }
     }
+
+    void appendArrayFieldValue(Object value) {
+        delegate.append("[");
+        int length = Array.getLength(value);
+        for (int i = 0; i < length; i++) {
+            if (i == config.getMaxSequenceLength()) {
+                delegate.append("...");
+                break;
+            }
+
+            delegate.append(Array.get(value, i));
+            if (i < length - 1) {
+                delegate.append(", ");
+            }
+        }
+        delegate.append("]");
+    }
+
+     void appendCollectionFieldValue(Collection<?> value) {
+        delegate.append("[");
+        Iterator<?> iterator = value.iterator();
+        int i = 0;
+        while (iterator.hasNext()) {
+            if (i == config.getMaxSequenceLength()) {
+                delegate.append("...");
+                break;
+            }
+            delegate.append(iterator.next());
+            if (i < value.size() - 1) {
+                delegate.append(", ");
+            }
+
+            i++;
+        }
+        delegate.append("]");
+     }
 
     @Override
     public void appendInaccessible() {
@@ -54,15 +95,7 @@ final class DynamicWeavingMachine extends WeavingMachine {
     }
 
     public void appendSuffix() {
-        deleteLast();
         delegate.append(config.getGlobalSuffix());
-    }
-
-    private void deleteLast() {
-        String fieldSeparator = config.getFieldSeparator();
-        if (!fieldSeparator.isEmpty()) {
-            delegate.delete(delegate.length() - fieldSeparator.length(), delegate.length());
-        }
     }
 
 }
