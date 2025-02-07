@@ -4,6 +4,7 @@ import com.robinloom.jweaver.JWeaver;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.awt.*;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -380,5 +381,33 @@ public class TreeWeaverTest {
                           #-- birthday=1990-01-01""";
 
         Assertions.assertEquals(expected, JWeaver.getTree().branchChar('+').lastBranchChar('#').weave(person));
+    }
+
+    @Test
+    void testReusable() {
+        record Car(String brand, Color color) {}
+        record Person(String name, Car car) {}
+
+        TreeWeaver weaver = JWeaver.getTree();
+
+        Person first = new Person("Jane", new Car("Volvo", Color.BLUE));
+        String firstExpected = """
+                               Person
+                               |-- name=Jane
+                               `-- car
+                                   |-- brand=Volvo
+                                   `-- color=java.awt.Color[r=0,g=0,b=255]""";
+
+        Assertions.assertEquals(firstExpected, weaver.weave(first));
+
+        Person second = new Person("John", new Car("Audi", Color.BLACK));
+        String secondExpected = """
+                                Person
+                                |-- name=John
+                                `-- car
+                                    |-- brand=Audi
+                                    `-- color=java.awt.Color[r=0,g=0,b=0]""";
+
+        Assertions.assertEquals(secondExpected, weaver.weave(second));
     }
 }

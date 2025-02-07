@@ -4,6 +4,7 @@ import com.robinloom.jweaver.JWeaver;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.awt.*;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -52,10 +53,7 @@ class DynamicWeaverTest {
 
     @Test
     void testComplexCollection() {
-        record Person(String name, List<Person> neighbors) {
-            @Override
-            public int hashCode() { return 1; }
-        }
+        record Person(String name, List<Person> neighbors) {}
 
         Person person = new Person("Jane", List.of(new Person("Peter", List.of())));
         String expected = "Person[name=Jane, neighbors=[Person[name=Peter, neighbors=[]]]]";
@@ -275,6 +273,24 @@ class DynamicWeaverTest {
         String expected = """
                           Entity[chars=[a, a, ...]]""";
          Assertions.assertEquals(expected, JWeaver.getDynamic().maxSequenceLength(2).weave(entity));
+    }
+
+    @Test
+    void testReusable() {
+        record Car(String brand, Color color) {}
+        record Person(String name, Car car) {}
+
+        DynamicWeaver weaver = JWeaver.getDynamic();
+
+        Person first = new Person("Jane", new Car("Volvo", Color.BLUE));
+        String firstExpected = "Person[name=Jane, car=Car[brand=Volvo, color=java.awt.Color[r=0,g=0,b=255]]]";
+
+        Assertions.assertEquals(firstExpected, weaver.weave(first));
+
+        Person second = new Person("John", new Car("Audi", Color.BLACK));
+        String secondExpected = "Person[name=John, car=Car[brand=Audi, color=java.awt.Color[r=0,g=0,b=0]]]";
+
+        Assertions.assertEquals(secondExpected, weaver.weave(second));
     }
 
 }

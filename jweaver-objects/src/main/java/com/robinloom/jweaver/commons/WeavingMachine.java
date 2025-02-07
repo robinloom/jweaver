@@ -24,6 +24,8 @@ public abstract class WeavingMachine {
     }
 
     public String toString() {
-        return delegate.toString();
+        String result = delegate.toString();
+        delegate.setLength(0);
+        return result;
     }
 }
