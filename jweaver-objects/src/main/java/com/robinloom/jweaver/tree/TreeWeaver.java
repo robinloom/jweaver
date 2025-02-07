@@ -81,6 +81,9 @@ public class TreeWeaver {
     }
 
     private void traverseDepthFirst(TreeNode node, List<Boolean> siblingsAtCurrentLevel) {
+        if (machine.globalLimitReached()) {
+            return;
+        }
         if (node.isRoot()) {
             machine.append(node.getContent());
         } else {

@@ -33,4 +33,8 @@ final class TreeWeavingMachine extends WeavingMachine {
         delegate.append("-- ");
     }
 
+    public boolean globalLimitReached() {
+        return delegate.length() >= config.getGlobalLengthLimit();
+    }
+
 }

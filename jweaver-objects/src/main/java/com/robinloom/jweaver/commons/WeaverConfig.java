@@ -9,6 +9,7 @@ public class WeaverConfig {
     private List<String> includedFields = new ArrayList<>();
     private List<String> excludedFields = new ArrayList<>();
 
+    private int globalLengthLimit = 10000;
     private boolean capitalizeFields;
     private boolean showDataTypes;
     private boolean showInheritedFields;
@@ -59,4 +60,11 @@ public class WeaverConfig {
         this.maxSequenceLength = maxSequenceLength;
     }
 
+    public int getGlobalLengthLimit() {
+        return globalLengthLimit;
+    }
+
+    public void setGlobalLengthLimit(int globalLengthLimit) {
+        this.globalLengthLimit = globalLengthLimit;
+    }
 }

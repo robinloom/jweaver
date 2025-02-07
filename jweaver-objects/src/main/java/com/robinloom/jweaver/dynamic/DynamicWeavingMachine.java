@@ -94,6 +94,10 @@ final class DynamicWeavingMachine extends WeavingMachine {
         delegate.append(config.getFieldSeparator());
     }
 
+    public boolean globalLimitReached() {
+        return delegate.length() >= config.getGlobalLengthLimit();
+    }
+
     public void appendSuffix() {
         delegate.append(config.getGlobalSuffix());
     }

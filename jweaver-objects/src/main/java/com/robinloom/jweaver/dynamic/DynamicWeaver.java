@@ -120,6 +120,9 @@ public class DynamicWeaver {
                        .toList();
 
         for (Field field : fields) {
+            if (machine.globalLimitReached()) {
+                break;
+            }
             try {
                 field.setAccessible(true);
                 Object value = field.get(object);
