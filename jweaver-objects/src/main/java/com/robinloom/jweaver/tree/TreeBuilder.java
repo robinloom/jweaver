@@ -79,9 +79,9 @@ class TreeBuilder {
                     root.addChild(build(child, value));
                 }
             } catch (InaccessibleObjectException ioe) {
-                System.err.println(ioe.getMessage());
+                root.addChild("[?]");
             } catch (Exception e) {
-                System.err.println(object.getClass().getSimpleName());
+                root.addChild("[ERROR]");
             }
         }
 

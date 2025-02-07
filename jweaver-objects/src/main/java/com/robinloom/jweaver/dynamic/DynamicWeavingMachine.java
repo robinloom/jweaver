@@ -82,15 +82,16 @@ final class DynamicWeavingMachine extends WeavingMachine {
         delegate.append("]");
      }
 
-    @Override
     public void appendInaccessible() {
-        super.appendInaccessible();
+        delegate.append("[?]");
+        newline();
         delegate.append(config.getFieldSeparator());
     }
 
-    @Override
     public void appendAfterException(Exception e) {
-        super.appendAfterException(e);
+        delegate.append("[ERROR] ");
+        delegate.append(e.getClass().getSimpleName());
+        newline();
         delegate.append(config.getFieldSeparator());
     }
 

@@ -12,17 +12,6 @@ public abstract class WeavingMachine {
         delegate.append("\n");
     }
 
-    protected void appendInaccessible() {
-        delegate.append("[?]");
-        newline();
-    }
-
-    protected void appendAfterException(Exception e) {
-        delegate.append("[ERROR] ");
-        delegate.append(e.getClass().getSimpleName());
-        newline();
-    }
-
     public String toString() {
         String result = delegate.toString();
         delegate.setLength(0);
