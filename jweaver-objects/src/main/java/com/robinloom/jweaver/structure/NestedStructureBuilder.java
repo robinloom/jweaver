@@ -1,5 +1,6 @@
-package com.robinloom.jweaver.tree;
+package com.robinloom.jweaver.structure;
 
+import com.robinloom.jweaver.commons.WeaverConfig;
 import com.robinloom.jweaver.util.FieldOperations;
 import com.robinloom.jweaver.util.TypeDictionary;
 
@@ -12,19 +13,19 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 
-class TreeBuilder {
+public class NestedStructureBuilder {
 
     protected static final ThreadLocal<Set<Object>> history
             = ThreadLocal.withInitial(() -> Collections.newSetFromMap(new IdentityHashMap<>()));
 
-    private final TreeConfig config;
+    private final WeaverConfig config;
     private int depth = 0;
 
-    TreeBuilder(TreeConfig config) {
+    public NestedStructureBuilder(WeaverConfig config) {
         this.config = config;
     }
 
-    TreeNode build(TreeNode root, Object object) {
+    public NestedNode build(NestedNode root, Object object) {
         if (history.get().contains(object)) {
             return root;
         } else {
@@ -75,7 +76,7 @@ class TreeBuilder {
                 } else if (TypeDictionary.isArray(field.getType())) {
                     root.addChild(array(fieldName, value));
                 } else {
-                    TreeNode child = new TreeNode(fieldName);
+                    NestedNode child = new NestedNode(fieldName);
                     root.addChild(build(child, value));
                 }
             } catch (InaccessibleObjectException ioe) {
@@ -91,8 +92,8 @@ class TreeBuilder {
         return root;
     }
 
-    private TreeNode collection(String fieldName, Collection<?> collection) {
-        TreeNode root = new TreeNode(fieldName);
+    private NestedNode collection(String fieldName, Collection<?> collection) {
+        NestedNode root = new NestedNode(fieldName);
 
         depth++;
         if (depth == config.getMaxDepth()) {
@@ -114,7 +115,7 @@ class TreeBuilder {
             } else if (TypeDictionary.isArray(item.getClass())) {
                 root.addChild(array(prefix.trim(), item));
             } else {
-                TreeNode child = new TreeNode(prefix + item.getClass().getSimpleName());
+                NestedNode child = new NestedNode(prefix + item.getClass().getSimpleName());
                 root.addChild(build(child, item));
             }
             i++;
@@ -124,8 +125,8 @@ class TreeBuilder {
         return root;
     }
 
-    private TreeNode array(String fieldName, Object array) {
-        TreeNode root = new TreeNode(fieldName);
+    private NestedNode array(String fieldName, Object array) {
+        NestedNode root = new NestedNode(fieldName);
 
         depth++;
         if (depth == config.getMaxDepth()) {
@@ -148,7 +149,7 @@ class TreeBuilder {
             } else if (TypeDictionary.isArray(item.getClass())) {
                 root.addChild(array(prefix.trim(), item));
             } else {
-                TreeNode child = new TreeNode(prefix + item.getClass().getSimpleName());
+                NestedNode child = new NestedNode(prefix + item.getClass().getSimpleName());
                 root.addChild(build(child, item));
             }
         }

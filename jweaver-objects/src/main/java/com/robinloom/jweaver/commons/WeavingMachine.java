@@ -12,6 +12,10 @@ public abstract class WeavingMachine {
         delegate.append("\n");
     }
 
+    public void space() {
+        delegate.append(" ");
+    }
+
     public String toString() {
         String result = delegate.toString();
         delegate.setLength(0);

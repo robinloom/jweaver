@@ -1,24 +1,24 @@
-package com.robinloom.jweaver.tree;
+package com.robinloom.jweaver.structure;
 
 import java.util.ArrayList;
 import java.util.List;
 
-class TreeNode {
+public class NestedNode {
 
     private String fieldName;
-    private TreeNode parent;
+    private NestedNode parent;
     private final String value;
-    private final List<TreeNode> children = new ArrayList<>();
+    private final List<NestedNode> children = new ArrayList<>();
 
-    TreeNode(Object object) {
+    public NestedNode(Object object) {
         this.value = object.getClass().getSimpleName();
     }
 
-    TreeNode(String value) {
+    NestedNode(String value) {
         this.value = value;
     }
 
-    TreeNode(String fieldName, String value) {
+    NestedNode(String fieldName, String value) {
         this.fieldName = fieldName;
         this.value = value;
     }
@@ -28,21 +28,21 @@ class TreeNode {
     }
 
     void addChild(String fieldName, String value) {
-        TreeNode child = new TreeNode(fieldName, value);
+        NestedNode child = new NestedNode(fieldName, value);
         child.parent = this;
         children.add(child);
     }
 
-    void addChild(TreeNode child) {
+    void addChild(NestedNode child) {
         child.parent = this;
         children.add(child);
     }
 
-    boolean isRoot() {
+    public boolean isRoot() {
         return parent == null;
     }
 
-    boolean isLastChild() {
+    public boolean isLastChild() {
         if (isRoot()) {
             return false;
         } else {
@@ -50,7 +50,7 @@ class TreeNode {
         }
     }
 
-    String getContent() {
+    public String getContent() {
         if (fieldName == null) {
             return value;
         } else {
@@ -58,7 +58,15 @@ class TreeNode {
         }
     }
 
-    List<TreeNode> getChildren() {
+    public List<NestedNode> getChildren() {
         return children;
+    }
+
+    public int getLevel() {
+        if (isRoot()) {
+            return 0;
+        } else {
+            return parent.getLevel() + 1;
+        }
     }
 }

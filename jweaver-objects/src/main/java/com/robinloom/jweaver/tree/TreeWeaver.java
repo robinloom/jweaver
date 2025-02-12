@@ -1,5 +1,7 @@
 package com.robinloom.jweaver.tree;
 
+import com.robinloom.jweaver.structure.NestedStructureBuilder;
+import com.robinloom.jweaver.structure.NestedNode;
 import com.robinloom.jweaver.util.TypeDictionary;
 
 import java.util.ArrayList;
@@ -8,12 +10,12 @@ import java.util.List;
 public class TreeWeaver {
     
     private final TreeConfig config;
-    private final TreeBuilder treeBuilder;
+    private final NestedStructureBuilder nestedStructureBuilder;
     private final TreeWeavingMachine machine;
 
     public TreeWeaver() {
         config = new TreeConfig();
-        treeBuilder = new TreeBuilder(config);
+        nestedStructureBuilder = new NestedStructureBuilder(config);
         machine = new TreeWeavingMachine(config);
     }
 
@@ -72,7 +74,7 @@ public class TreeWeaver {
             return object.toString();
         }
 
-        TreeNode tree = treeBuilder.build(new TreeNode(object), object);
+        NestedNode tree = nestedStructureBuilder.build(new NestedNode(object), object);
 
         List<Boolean> siblingsAtCurrentLevel = new ArrayList<>();
         traverseDepthFirst(tree, siblingsAtCurrentLevel);
@@ -80,7 +82,7 @@ public class TreeWeaver {
         return machine.toString();
     }
 
-    private void traverseDepthFirst(TreeNode node, List<Boolean> siblingsAtCurrentLevel) {
+    private void traverseDepthFirst(NestedNode node, List<Boolean> siblingsAtCurrentLevel) {
         if (machine.globalLimitReached()) {
             return;
         }
@@ -106,10 +108,10 @@ public class TreeWeaver {
             machine.append(node.getContent());
         }
 
-        List<TreeNode> children = node.getChildren();
+        List<NestedNode> children = node.getChildren();
 
         for (int i = 0; i < children.size(); i++) {
-            TreeNode child = children.get(i);
+            NestedNode child = children.get(i);
 
             List<Boolean> siblingsAtNextLevel = new ArrayList<>(siblingsAtCurrentLevel);
 

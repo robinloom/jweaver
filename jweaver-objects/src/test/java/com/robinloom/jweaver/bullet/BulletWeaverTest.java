@@ -1,4 +1,4 @@
-package com.robinloom.jweaver.tree;
+package com.robinloom.jweaver.bullet;
 
 import com.robinloom.jweaver.JWeaver;
 import org.junit.jupiter.api.Assertions;
@@ -8,17 +8,17 @@ import java.awt.*;
 import java.time.LocalDate;
 import java.util.List;
 
-public class TreeWeaverTest {
+class BulletWeaverTest {
 
     @Test
     void testNullSafety() {
-        Assertions.assertEquals("null", JWeaver.getTree().weave(null));
+        Assertions.assertEquals("null", JWeaver.getBullet().weave(null));
     }
 
     @Test
     void testJdkClassesToString() {
-        Assertions.assertEquals("Test", JWeaver.getTree().weave("Test"));
-        Assertions.assertEquals("[]", JWeaver.getTree().weave(List.of()));
+        Assertions.assertEquals("Test", JWeaver.getDynamic().weave("Test"));
+        Assertions.assertEquals("[]", JWeaver.getDynamic().weave(List.of()));
     }
 
     @Test
@@ -28,10 +28,10 @@ public class TreeWeaverTest {
         Person person = new Person("John Doe", LocalDate.of(1990, 1, 1));
         String expected = """
                           Person
-                          |-- name=John Doe
-                          `-- birthday=1990-01-01""";
+                           - name=John Doe
+                           - birthday=1990-01-01""";
 
-        Assertions.assertEquals(expected, JWeaver.getTree().weave(person));
+        Assertions.assertEquals(expected, JWeaver.getBullet().weave(person));
     }
 
     @Test
@@ -39,16 +39,16 @@ public class TreeWeaverTest {
         record Person(String name, Person neighbor) {
             @Override
             public String toString() {
-                return JWeaver.getTree().weave(this);
+                return JWeaver.getBullet().weave(this);
             }
         }
 
         Person person = new Person("John Doe", new Person("Peter", null));
         String expected = """
                           Person
-                          |-- name=John Doe
-                          `-- neighbor
-                              `-- name=Peter""";
+                           - name=John Doe
+                           - neighbor
+                             - name=Peter""";
         Assertions.assertEquals(expected, person.toString());
     }
 
@@ -59,11 +59,11 @@ public class TreeWeaverTest {
         Person person = new Person("Jane", List.of("Peter", "Judy"));
         String expected = """
                           Person
-                          |-- name=Jane
-                          `-- childrenNames
-                              |-- (0) Peter
-                              `-- (1) Judy""";
-        Assertions.assertEquals(expected, JWeaver.getTree().weave(person));
+                           - name=Jane
+                           - childrenNames
+                             - (0) Peter
+                             - (1) Judy""";
+        Assertions.assertEquals(expected, JWeaver.getBullet().weave(person));
     }
 
     @Test
@@ -73,12 +73,12 @@ public class TreeWeaverTest {
         Person person = new Person("Jane", List.of("Peter", "Judy"), 29);
         String expected = """
                           Person
-                          |-- name=Jane
-                          |-- childrenNames
-                          |   |-- (0) Peter
-                          |   `-- (1) Judy
-                          `-- age=29""";
-        Assertions.assertEquals(expected, JWeaver.getTree().weave(person));
+                           - name=Jane
+                           - childrenNames
+                             - (0) Peter
+                             - (1) Judy
+                           - age=29""";
+        Assertions.assertEquals(expected, JWeaver.getBullet().weave(person));
     }
 
     @Test
@@ -90,18 +90,18 @@ public class TreeWeaverTest {
                       String bloodType) {}
 
         Person person = new Person("Jane", List.of("Peter", "Judy"), 29,
-                                   List.of("42 Wallaby Way, Sydney"), "0+");
+                List.of("42 Wallaby Way, Sydney"), "0+");
         String expected = """
                            Person
-                           |-- name=Jane
-                           |-- childrenNames
-                           |   |-- (0) Peter
-                           |   `-- (1) Judy
-                           |-- age=29
-                           |-- addresses
-                           |   `-- (0) 42 Wallaby Way, Sydney
-                           `-- bloodType=0+""";
-        Assertions.assertEquals(expected, JWeaver.getTree().weave(person));
+                            - name=Jane
+                            - childrenNames
+                              - (0) Peter
+                              - (1) Judy
+                            - age=29
+                            - addresses
+                              - (0) 42 Wallaby Way, Sydney
+                            - bloodType=0+""";
+        Assertions.assertEquals(expected, JWeaver.getBullet().weave(person));
     }
 
     @Test
@@ -111,14 +111,14 @@ public class TreeWeaverTest {
         Person person = new Person(List.of(List.of("A", "B"), List.of("C", "D")));
         String expected = """
                           Person
-                          `-- listOfLists
-                              |-- (0)
-                              |   |-- (0) A
-                              |   `-- (1) B
-                              `-- (1)
-                                  |-- (0) C
-                                  `-- (1) D""";
-        Assertions.assertEquals(expected, JWeaver.getTree().weave(person));
+                           - listOfLists
+                             - (0)
+                               - (0) A
+                               - (1) B
+                             - (1)
+                               - (0) C
+                               - (1) D""";
+        Assertions.assertEquals(expected, JWeaver.getBullet().weave(person));
     }
 
     @Test
@@ -131,12 +131,12 @@ public class TreeWeaverTest {
         Person person = new Person("John", List.of(new Person("Peter", List.of())));
         String expected = """
                           Person
-                          |-- name=John
-                          `-- neighbors
-                              `-- (0) Person
-                                  |-- name=Peter
-                                  `-- neighbors""";
-        Assertions.assertEquals(expected, JWeaver.getTree().weave(person));
+                           - name=John
+                           - neighbors
+                             - (0) Person
+                               - name=Peter
+                               - neighbors""";
+        Assertions.assertEquals(expected, JWeaver.getBullet().weave(person));
     }
 
     @Test
@@ -146,12 +146,12 @@ public class TreeWeaverTest {
         Person person = new Person(new int[]{0,1,2});
         String expected = """
                           Person
-                          `-- numbers
-                              |-- [0] 0
-                              |-- [1] 1
-                              `-- [2] 2""";
+                           - numbers
+                             - [0] 0
+                             - [1] 1
+                             - [2] 2""";
 
-        Assertions.assertEquals(expected, JWeaver.getTree().weave(person));
+        Assertions.assertEquals(expected, JWeaver.getBullet().weave(person));
     }
 
     @Test
@@ -161,12 +161,12 @@ public class TreeWeaverTest {
         Person person = new Person(new String[]{"Anna", "Maria", "Quinn"});
         String expected = """
                           Person
-                          `-- names
-                              |-- [0] Anna
-                              |-- [1] Maria
-                              `-- [2] Quinn""";
+                           - names
+                             - [0] Anna
+                             - [1] Maria
+                             - [2] Quinn""";
 
-        Assertions.assertEquals(expected, JWeaver.getTree().weave(person));
+        Assertions.assertEquals(expected, JWeaver.getBullet().weave(person));
     }
 
     @Test
@@ -174,17 +174,17 @@ public class TreeWeaverTest {
         record Person(int age, Person[] neighbors) {}
 
         Person person = new Person(40, new Person[]{new Person(15, null),
-                                                         new Person(12, null)});
+                new Person(12, null)});
         String expected = """
                           Person
-                          |-- age=40
-                          `-- neighbors
-                              |-- [0] Person
-                              |   `-- age=15
-                              `-- [1] Person
-                                  `-- age=12""";
+                           - age=40
+                           - neighbors
+                             - [0] Person
+                               - age=15
+                             - [1] Person
+                               - age=12""";
 
-        Assertions.assertEquals(expected, JWeaver.getTree().weave(person));
+        Assertions.assertEquals(expected, JWeaver.getBullet().weave(person));
     }
 
     @Test
@@ -194,18 +194,18 @@ public class TreeWeaverTest {
         Person person = new Person(new int[][]{ {0, 1}, {2, 3}, {4, 5}});
         String expected = """
                           Person
-                          `-- matrix
-                              |-- [0]
-                              |   |-- [0] 0
-                              |   `-- [1] 1
-                              |-- [1]
-                              |   |-- [0] 2
-                              |   `-- [1] 3
-                              `-- [2]
-                                  |-- [0] 4
-                                  `-- [1] 5""";
+                           - matrix
+                             - [0]
+                               - [0] 0
+                               - [1] 1
+                             - [1]
+                               - [0] 2
+                               - [1] 3
+                             - [2]
+                               - [0] 4
+                               - [1] 5""";
 
-        Assertions.assertEquals(expected, JWeaver.getTree().weave(person));
+        Assertions.assertEquals(expected, JWeaver.getBullet().weave(person));
     }
 
 
@@ -216,7 +216,7 @@ public class TreeWeaverTest {
 
             @Override
             public String toString() {
-                return JWeaver.getTree().weave(this);
+                return JWeaver.getBullet().weave(this);
             }
         }
 
@@ -236,7 +236,7 @@ public class TreeWeaverTest {
 
             @Override
             public String toString() {
-                return JWeaver.getTree().weave(this);
+                return JWeaver.getBullet().weave(this);
             }
         }
 
@@ -259,10 +259,10 @@ public class TreeWeaverTest {
         Person person = new Person("Jane Doe", LocalDate.of(1990, 1, 1));
         String expected = """
                           Person
-                          |-- Name=Jane Doe
-                          `-- Birthday=1990-01-01""";
+                           - Name=Jane Doe
+                           - Birthday=1990-01-01""";
 
-        Assertions.assertEquals(expected, JWeaver.getTree().capitalizeFields().weave(person));
+        Assertions.assertEquals(expected, JWeaver.getBullet().capitalizeFields().weave(person));
     }
 
     @Test
@@ -272,10 +272,10 @@ public class TreeWeaverTest {
         Person person = new Person("Jane Doe", LocalDate.of(1990, 1, 1));
         String expected = """
                           Person
-                          |-- {String} name=Jane Doe
-                          `-- {LocalDate} birthday=1990-01-01""";
+                           - {String} name=Jane Doe
+                           - {LocalDate} birthday=1990-01-01""";
 
-        Assertions.assertEquals(expected, JWeaver.getTree().showDataTypes().weave(person));
+        Assertions.assertEquals(expected, JWeaver.getBullet().showDataTypes().weave(person));
     }
 
     @Test
@@ -285,9 +285,9 @@ public class TreeWeaverTest {
         Person person = new Person("John Doe", "password".toCharArray());
         String expected = """
                           Person
-                          `-- name=John Doe""";
+                           - name=John Doe""";
 
-        Assertions.assertEquals(expected, JWeaver.getTree().excludeFields(List.of("password")).weave(person));
+        Assertions.assertEquals(expected, JWeaver.getBullet().excludeFields(List.of("password")).weave(person));
     }
 
     @Test
@@ -297,9 +297,9 @@ public class TreeWeaverTest {
         Person person = new Person("John Doe", "password".toCharArray());
         String expected = """
                           Person
-                          `-- name=John Doe""";
+                           - name=John Doe""";
 
-        Assertions.assertEquals(expected, JWeaver.getTree().includeFields(List.of("name")).weave(person));
+        Assertions.assertEquals(expected, JWeaver.getBullet().includeFields(List.of("name")).weave(person));
     }
 
     @Test
@@ -323,10 +323,10 @@ public class TreeWeaverTest {
         Person person = new Person("John Doe", "blonde");
         String expected = """
                            Person
-                           |-- name=John Doe
-                           `-- hairColor=blonde""";
+                            - name=John Doe
+                            - hairColor=blonde""";
 
-        Assertions.assertEquals(expected, JWeaver.getTree().showInheritedFields().weave(person));
+        Assertions.assertEquals(expected, JWeaver.getBullet().showInheritedFields().weave(person));
     }
 
     @Test
@@ -336,10 +336,10 @@ public class TreeWeaverTest {
         Person person = new Person(List.of(List.of("A", "B"), List.of("C", "D")));
         String expected = """
                           Person
-                          `-- listOfLists
-                              |-- (0)
-                              `-- (1)""";
-        Assertions.assertEquals(expected, JWeaver.getTree().maxDepth(3).weave(person));
+                           - listOfLists
+                             - (0)
+                             - (1)""";
+        Assertions.assertEquals(expected, JWeaver.getBullet().maxDepth(3).weave(person));
     }
 
     @Test
@@ -349,11 +349,11 @@ public class TreeWeaverTest {
         Entity entity = new Entity(List.of('a', 'a', 'a', 'a', 'a'));
         String expected = """
                           Entity
-                          `-- chars
-                              |-- (0) a
-                              |-- (1) a
-                              `-- 3 more""";
-        Assertions.assertEquals(expected, JWeaver.getTree().maxSequenceLength(2).weave(entity));
+                           - chars
+                             - (0) a
+                             - (1) a
+                             - 3 more""";
+        Assertions.assertEquals(expected, JWeaver.getBullet().maxSequenceLength(2).weave(entity));
     }
 
     @Test
@@ -363,24 +363,11 @@ public class TreeWeaverTest {
         Entity entity = new Entity(new char[]{'a', 'a', 'a', 'a', 'a'});
         String expected = """
                           Entity
-                          `-- chars
-                              |-- [0] a
-                              |-- [1] a
-                              `-- 3 more""";
-        Assertions.assertEquals(expected, JWeaver.getTree().maxSequenceLength(2).weave(entity));
-    }
-
-    @Test
-    void testCustomBranchChars() {
-        record Person(String name, LocalDate birthday) {}
-
-        Person person = new Person("John Doe", LocalDate.of(1990, 1, 1));
-        String expected = """
-                          Person
-                          +-- name=John Doe
-                          #-- birthday=1990-01-01""";
-
-        Assertions.assertEquals(expected, JWeaver.getTree().branchChar('+').lastBranchChar('#').weave(person));
+                           - chars
+                             - [0] a
+                             - [1] a
+                             - 3 more""";
+        Assertions.assertEquals(expected, JWeaver.getBullet().maxSequenceLength(2).weave(entity));
     }
 
     @Test
@@ -388,26 +375,62 @@ public class TreeWeaverTest {
         record Car(String brand, Color color) {}
         record Person(String name, Car car) {}
 
-        TreeWeaver weaver = JWeaver.getTree();
+        BulletWeaver weaver = JWeaver.getBullet();
 
         Person first = new Person("Jane", new Car("Volvo", Color.BLUE));
         String firstExpected = """
                                Person
-                               |-- name=Jane
-                               `-- car
-                                   |-- brand=Volvo
-                                   `-- color=java.awt.Color[r=0,g=0,b=255]""";
+                                - name=Jane
+                                - car
+                                  - brand=Volvo
+                                  - color=java.awt.Color[r=0,g=0,b=255]""";
 
         Assertions.assertEquals(firstExpected, weaver.weave(first));
 
         Person second = new Person("John", new Car("Audi", Color.BLACK));
         String secondExpected = """
                                 Person
-                                |-- name=John
-                                `-- car
-                                    |-- brand=Audi
-                                    `-- color=java.awt.Color[r=0,g=0,b=0]""";
+                                 - name=John
+                                 - car
+                                   - brand=Audi
+                                   - color=java.awt.Color[r=0,g=0,b=0]""";
 
         Assertions.assertEquals(secondExpected, weaver.weave(second));
+    }
+
+    @Test
+    public void testBulletCustomization() {
+        record Person(int age, Person[] neighbors) {}
+
+        Person person = new Person(40, new Person[]{new Person(15, null),
+                new Person(12, null)});
+        String expected = """
+                          Person
+                           * age=40
+                           * neighbors
+                             # [0] Person
+                               > age=15
+                             # [1] Person
+                               > age=12""";
+
+        String actual = JWeaver.getBullet().firstLevelBulletChar('*')
+                                           .secondLevelBulletChar('#')
+                                           .deeperLevelBulletChar('>')
+                               .weave(person);
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testCustomIndentation() {
+        record Person(String name, LocalDate birthday) {}
+
+        Person person = new Person("John Doe", LocalDate.of(1990, 1, 1));
+        String expected = """
+                          Person
+                             - name=John Doe
+                             - birthday=1990-01-01""";
+
+        Assertions.assertEquals(expected, JWeaver.getBullet().indentation(4).weave(person));
     }
 }

@@ -1,5 +1,6 @@
 package com.robinloom.jweaver;
 
+import com.robinloom.jweaver.bullet.BulletWeaver;
 import com.robinloom.jweaver.dynamic.DynamicWeaver;
 import com.robinloom.jweaver.tree.TreeWeaver;
 
@@ -17,6 +18,10 @@ public final class JWeaver {
 
     public static TreeWeaver getTree() {
         return new TreeWeaver();
+    }
+
+    public static BulletWeaver getBullet() {
+        return new BulletWeaver();
     }
 
 }

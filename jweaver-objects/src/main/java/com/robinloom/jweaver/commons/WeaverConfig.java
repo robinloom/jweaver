@@ -13,6 +13,7 @@ public class WeaverConfig {
     private boolean capitalizeFields;
     private boolean showDataTypes;
     private boolean showInheritedFields;
+    private int maxDepth;
     private int maxSequenceLength = 10;
 
     public void setIncludedFields(List<String> includedFields) {
@@ -50,6 +51,14 @@ public class WeaverConfig {
 
     public void setShowInheritedFields(boolean showInheritedFields) {
         this.showInheritedFields = showInheritedFields;
+    }
+
+    public int getMaxDepth() {
+        return maxDepth;
+    }
+
+    public void setMaxDepth(int maxDepth) {
+        this.maxDepth = maxDepth;
     }
 
     public int getMaxSequenceLength() {
