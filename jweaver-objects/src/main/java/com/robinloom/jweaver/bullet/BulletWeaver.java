@@ -34,7 +34,7 @@ public class BulletWeaver {
     }
 
     public BulletWeaver indentation(int indentation) {
-        config.setIndentation(indentation);
+        config. setIndentation(indentation);
         return this;
     }
 

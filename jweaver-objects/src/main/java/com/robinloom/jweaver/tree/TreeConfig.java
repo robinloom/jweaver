@@ -1,12 +1,17 @@
 package com.robinloom.jweaver.tree;
 
+import com.robinloom.jweaver.commons.Properties;
 import com.robinloom.jweaver.commons.WeaverConfig;
 
 class TreeConfig extends WeaverConfig {
 
-    private char branchChar = '|';
-    private char lastBranchChar = '`';
-    private int maxDepth = 4;
+    private char branchChar;
+    private char lastBranchChar;
+
+    public TreeConfig() {
+        branchChar = Properties.TREE_BRANCH_CHAR.getChar('|');
+        lastBranchChar = Properties.TREE_BRANCH_CHAR.getChar('`');
+    }
 
     public char getBranchChar() {
         return branchChar;
@@ -22,13 +27,5 @@ class TreeConfig extends WeaverConfig {
 
     public void setLastBranchChar(char lastBranchChar) {
         this.lastBranchChar = lastBranchChar;
-    }
-
-    public int getMaxDepth() {
-        return maxDepth;
-    }
-
-    public void setMaxDepth(int maxDepth) {
-        this.maxDepth = maxDepth;
     }
 }

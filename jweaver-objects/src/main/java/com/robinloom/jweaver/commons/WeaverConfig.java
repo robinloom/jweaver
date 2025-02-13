@@ -1,20 +1,30 @@
 package com.robinloom.jweaver.commons;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 
 public class WeaverConfig {
 
-    private List<String> includedFields = new ArrayList<>();
-    private List<String> excludedFields = new ArrayList<>();
+    private List<String> includedFields;
+    private List<String> excludedFields;
 
-    private int globalLengthLimit = 10000;
+    private int globalLengthLimit;
     private boolean capitalizeFields;
     private boolean showDataTypes;
     private boolean showInheritedFields;
     private int maxDepth;
-    private int maxSequenceLength = 10;
+    private int maxSequenceLength;
+
+    public WeaverConfig() {
+        includedFields = Properties.INCLUDED_FIELDS.getStringList(List.of());
+        excludedFields = Properties.EXCLUDED_FIELDS.getStringList(List.of());
+        globalLengthLimit = Properties.GLOBAL_LENGTH_LIMIT.getInt(10000);
+        capitalizeFields = Properties.CAPITALIZE_FIELDS.getBool(false);
+        showDataTypes = Properties.SHOW_DATATYPES.getBool(false);
+        showInheritedFields = Properties.SHOW_INHERITED_FIELDS.getBool(false);
+        maxDepth = Properties.MAX_DEPTH.getInt(4);
+        maxSequenceLength = Properties.MAX_SEQUENCE_LENGTH.getInt(10);
+    }
 
     public void setIncludedFields(List<String> includedFields) {
         this.includedFields = includedFields;

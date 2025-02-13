@@ -1,15 +1,25 @@
 package com.robinloom.jweaver.dynamic;
 
+import com.robinloom.jweaver.commons.Properties;
 import com.robinloom.jweaver.commons.WeaverConfig;
 
 class DynamicConfig extends WeaverConfig {
 
-    private String classNamePrefix = "";
-    private String classNameSuffix = "";
-    private String classNameFieldsSeparator = "[";
-    private String fieldValueSeparator = "=";
-    private String fieldSeparator = ", ";
-    private String globalSuffix = "]";
+    private String classNamePrefix;
+    private String classNameSuffix;
+    private String classNameFieldsSeparator;
+    private String fieldValueSeparator;
+    private String fieldSeparator;
+    private String globalSuffix;
+
+    public DynamicConfig() {
+        classNamePrefix = Properties.DYNAMIC_CLASS_NAME_PREFIX.get("");
+        classNameSuffix = Properties.DYNAMIC_CLASS_NAME_SUFFIX.get("");
+        classNameFieldsSeparator = Properties.DYNAMIC_CLASSNAME_FIELDS_SEPARATOR.get("[");
+        fieldValueSeparator = Properties.DYNAMIC_FIELD_VALUE_SEPARATOR.get("=");
+        fieldSeparator = Properties.DYNAMIC_FIELD_SEPARATOR.get(", ");
+        globalSuffix = Properties.DYNAMIC_GLOBAL_SUFFIX.get("]");
+    }
 
     public String getClassNamePrefix() {
         return classNamePrefix;
