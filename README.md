@@ -1,3 +1,5 @@
+![Build And Test](https://github.com/robinloom/jweaver/actions/workflows/build.yml/badge.svg)
+
 # JWeaver
 
 JWeaver makes it easy to generate well-structured, human-readable representations of Java objects. With a simple API, you can format objects dynamically, as a tree, or as a bullet list—each with customizable options to match your needs.
