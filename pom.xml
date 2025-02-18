@@ -9,6 +9,7 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>JWeaver</name>
+    <description>Base POM to build JWeaver project</description>
     <url>https://github.com/robinloom/jweaver</url>
     <inceptionYear>2025</inceptionYear>
 
