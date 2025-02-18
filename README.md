@@ -1,8 +1,8 @@
 # JWeaver
 ![Build And Test](https://github.com/robinloom/jweaver/actions/workflows/build.yml/badge.svg)
+![Maven Central Version](https://img.shields.io/maven-central/v/com.robinloom/jweaver)
 
-
-JWeaver makes it easy to generate well-structured, human-readable representations of Java objects. With a simple API, you can format objects dynamically, as a tree, or as a bullet list—each with customizable options to match your needs.
+JWeaver makes it easy to generate well-structured, human-readable representations of Java objects. With a simple API, you can format objects dynamically, as a tree, or as a bullet list - each with customizable options to match your needs.
 ## Features
 
 **JWeaver** offers three primary modes for presenting object data in a clear and appealing way:
@@ -50,14 +50,14 @@ Add JWeaver to your Maven project:
 ```xml
 <dependency>
     <groupId>com.robinloom</groupId>
-    <artifactId>jweaver</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <artifactId>jweaver-objects</artifactId>
+    <version>1.0.0</version>
 </dependency>
 ```
 </details> <details> <summary><strong>Gradle</strong></summary>
 
 ```
-implementation 'com.robinloom:jweaver:1.0.0-SNAPSHOT'
+implementation 'com.robinloom:jweaver-objects:1.0.0'
 ```
 </details>
 
