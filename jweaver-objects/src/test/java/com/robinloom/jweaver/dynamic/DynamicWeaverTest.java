@@ -232,6 +232,16 @@ class DynamicWeaverTest {
     }
 
     @Test
+    void testOmitClassName() {
+        record Person(String name, int age, boolean isTall) {}
+
+        Person person = new Person("Jane Doe", 18, false);
+        String expected = "name=Jane Doe, age=18, isTall=false";
+
+        Assertions.assertEquals(expected, JWeaver.getDynamic().omitClassName().globalSuffix("").weave(person));
+    }
+
+    @Test
     void testInheritance() {
         class Human {
             final String hairColor;

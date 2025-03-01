@@ -42,6 +42,7 @@ final class BulletWeavingMachine extends WeavingMachine {
 
     void append(String string) {
         delegate.append(string);
+        newline();
     }
 
     boolean globalLimitReached() {

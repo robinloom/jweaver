@@ -22,6 +22,7 @@ import java.util.List;
 public enum Properties {
     INCLUDED_FIELDS("com.robinloom.jweaver.includedFields"),
     EXCLUDED_FIELDS("com.robinloom.jweaver.excludedFields"),
+    OMIT_CLASS_NAME("com.robinloom.jweaver.omitClassName"),
     GLOBAL_LENGTH_LIMIT("com.robinloom.jweaver.globalLengthLimit"),
     CAPITALIZE_FIELDS("com.robinloom.jweaver.capitalizeFields"),
     SHOW_DATATYPES("com.robinloom.jweaver.showDataTypes"),

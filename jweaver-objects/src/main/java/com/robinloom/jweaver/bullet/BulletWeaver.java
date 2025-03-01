@@ -133,6 +133,16 @@ public class BulletWeaver implements Weaver {
     }
 
     /**
+     * Determines if the class name should be omitted when printing.
+     * By default, the class name is included.
+     * @return instance for chaining
+     */
+    public BulletWeaver omitClassName() {
+        config.setOmitClassName(true);
+        return this;
+    }
+
+    /**
      * Enables capitalization of field names.
      * firstName -> FirstName
      * @return instance for chaining
@@ -179,6 +189,7 @@ public class BulletWeaver implements Weaver {
         NestedNode structure = nestedStructureBuilder.build(new NestedNode(object), object);
         traverseDepthFirst(structure);
 
+        machine.removeLastNewline();
         return machine.toString();
     }
 
@@ -187,9 +198,10 @@ public class BulletWeaver implements Weaver {
             return;
         }
         if (node.isRoot()) {
-            machine.append(node.getContent());
+            if (config.isIncludeClassName()) {
+                machine.append(node.getContent());
+            }
         } else {
-            machine.newline();
             machine.indent(node.getLevel());
             machine.append(node.getContent());
         }

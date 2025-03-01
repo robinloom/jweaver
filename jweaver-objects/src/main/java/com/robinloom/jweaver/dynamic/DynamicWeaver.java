@@ -165,6 +165,16 @@ public class DynamicWeaver implements Weaver {
     }
 
     /**
+     * Determines if the class name should be omitted when printing.
+     * By default, the class name is included.
+     * @return instance for chaining
+     */
+    public DynamicWeaver omitClassName() {
+        config.setOmitClassName(true);
+        return this;
+    }
+
+    /**
      * Enables capitalization of field names.
      * firstName -> FirstName
      * @return instance for chaining
@@ -214,7 +224,9 @@ public class DynamicWeaver implements Weaver {
             history.get().add(object);
         }
 
-        machine.appendClassName(object.getClass().getSimpleName());
+        if (config.isIncludeClassName()) {
+            machine.appendClassName(object.getClass().getSimpleName());
+        }
 
         List<Field> fields;
         if (config.isShowInheritedFields()) {

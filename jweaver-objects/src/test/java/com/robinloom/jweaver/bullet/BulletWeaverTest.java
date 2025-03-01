@@ -303,6 +303,16 @@ class BulletWeaverTest {
     }
 
     @Test
+    void testOmitClassName() {
+        record Person(String name, LocalDate birthday) {}
+
+        Person person = new Person("Jane Doe", LocalDate.of(1990, 1, 1));
+        String expected = " - name=Jane Doe\n - birthday=1990-01-01";
+
+        Assertions.assertEquals(expected, JWeaver.getBullet().omitClassName().weave(person));
+    }
+
+    @Test
     void testInheritance() {
         class Human {
             final String hairColor;

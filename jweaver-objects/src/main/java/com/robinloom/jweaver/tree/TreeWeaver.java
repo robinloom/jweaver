@@ -117,6 +117,16 @@ public class TreeWeaver implements Weaver {
     }
 
     /**
+     * Determines if the class name should be omitted when printing.
+     * By default, the class name is included.
+     * @return instance for chaining
+     */
+    public TreeWeaver omitClassName() {
+        config.setOmitClassName(true);
+        return this;
+    }
+
+    /**
      * Enables capitalization of field names.
      * firstName -> FirstName
      * @return instance for chaining
@@ -164,7 +174,7 @@ public class TreeWeaver implements Weaver {
 
         List<Boolean> siblingsAtCurrentLevel = new ArrayList<>();
         traverseDepthFirst(tree, siblingsAtCurrentLevel);
-
+        machine.removeLastNewline();
         return machine.toString();
     }
 
@@ -173,10 +183,10 @@ public class TreeWeaver implements Weaver {
             return;
         }
         if (node.isRoot()) {
-            machine.append(node.getContent());
+            if (config.isIncludeClassName()) {
+                machine.append(node.getContent());
+            }
         } else {
-            machine.newline();
-
             for (int i = 0; i < siblingsAtCurrentLevel.size() - 1; i++) {
                 if (siblingsAtCurrentLevel.get(i)) {
                     machine.indentWithCrossingBranch();

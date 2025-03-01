@@ -28,6 +28,7 @@ final class TreeWeavingMachine extends WeavingMachine {
 
     void append(String string) {
         delegate.append(string);
+        newline();
     }
 
     void indent() {

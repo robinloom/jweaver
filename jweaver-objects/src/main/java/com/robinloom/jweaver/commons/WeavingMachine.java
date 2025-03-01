@@ -32,6 +32,12 @@ public abstract class WeavingMachine {
         delegate.append(" ");
     }
 
+    public void removeLastNewline() {
+        if (delegate.toString().endsWith("\n")) {
+            delegate.deleteCharAt(delegate.length() - 1);
+        }
+    }
+
     public String toString() {
         String result = delegate.toString();
         delegate.setLength(0);

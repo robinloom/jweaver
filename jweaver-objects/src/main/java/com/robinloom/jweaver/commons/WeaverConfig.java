@@ -24,6 +24,7 @@ public class WeaverConfig {
     private List<String> includedFields;
     private List<String> excludedFields;
 
+    private boolean omitClassName;
     private int globalLengthLimit;
     private boolean capitalizeFields;
     private boolean showDataTypes;
@@ -34,6 +35,7 @@ public class WeaverConfig {
     public WeaverConfig() {
         includedFields = Properties.INCLUDED_FIELDS.getStringList(List.of());
         excludedFields = Properties.EXCLUDED_FIELDS.getStringList(List.of());
+        omitClassName = Properties.OMIT_CLASS_NAME.getBool(false);
         globalLengthLimit = Properties.GLOBAL_LENGTH_LIMIT.getInt(10000);
         capitalizeFields = Properties.CAPITALIZE_FIELDS.getBool(false);
         showDataTypes = Properties.SHOW_DATATYPES.getBool(false);
@@ -49,6 +51,14 @@ public class WeaverConfig {
     public boolean isIncluded(Field field) {
         return !excludedFields.contains(field.getName()) &&
                 (includedFields.isEmpty() || includedFields.contains(field.getName()));
+    }
+
+    public boolean isIncludeClassName() {
+        return !this.omitClassName;
+    }
+
+    public void setOmitClassName(boolean omitClassName) {
+        this.omitClassName = omitClassName;
     }
 
     public void setExcludedFields(List<String> excludedFields) {
