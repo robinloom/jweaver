@@ -50,14 +50,14 @@ Add JWeaver to your Maven project:
 ```xml
 <dependency>
     <groupId>com.robinloom</groupId>
-    <artifactId>jweaver-objects</artifactId>
+    <artifactId>jweaver</artifactId>
     <version>1.0.0</version>
 </dependency>
 ```
 </details> <details> <summary><strong>Gradle</strong></summary>
 
 ```
-implementation 'com.robinloom:jweaver-objects:1.0.0'
+implementation 'com.robinloom:jweaver:1.0.0'
 ```
 </details>
 
