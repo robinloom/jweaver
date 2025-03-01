@@ -51,13 +51,13 @@ Add JWeaver to your Maven project:
 <dependency>
     <groupId>com.robinloom</groupId>
     <artifactId>jweaver</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
 </dependency>
 ```
 </details> <details> <summary><strong>Gradle</strong></summary>
 
 ```
-implementation 'com.robinloom:jweaver:1.0.0'
+implementation 'com.robinloom:jweaver:1.1.0'
 ```
 </details>
 
@@ -92,6 +92,20 @@ System.out.println(person);
 Output:
 ```yaml
 Person[name=John Doe, birthday=1990-01-01]
+```
+
+### Logging integration
+
+If you want to use JWeaver for logging, you can use `JWeaverLogger`. It wraps the `org.slf4.Logger` provided by your logging implementation and will invoke `weaver.weave(object)` on any objects associated with a format string.
+
+```java
+Car car = new Car("Audi", "Black");
+com.robinloom.jweaver.logging.LoggerFactory.getLogger(Main.class).info("My new car is {}", car);
+```
+
+Example output:
+```
+12:00:00.000 [main] INFO com.example.project.Main -- My new car is Car[brand=Audi, color=Black]
 ```
 
 ### Choosing a Weaver
