@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.robinloom</groupId>
         <artifactId>jweaver</artifactId>
-        <version>1.0.1-SNAPSHOT</version>
+        <version>1.1.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>jweaver-logging</artifactId>
@@ -27,7 +27,6 @@
         <dependency>
             <groupId>com.robinloom</groupId>
             <artifactId>jweaver-objects</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

@@ -61,6 +61,7 @@
                 <version>${junit.version}</version>
                 <scope>test</scope>
             </dependency>
+
             <dependency>
                 <groupId>com.robinloom</groupId>
                 <artifactId>jweaver-logging</artifactId>
@@ -69,6 +70,7 @@
             <dependency>
                 <groupId>com.robinloom</groupId>
                 <artifactId>jweaver-objects</artifactId>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
