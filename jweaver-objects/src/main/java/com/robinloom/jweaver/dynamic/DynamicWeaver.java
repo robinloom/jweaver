@@ -16,6 +16,7 @@
  */
 package com.robinloom.jweaver.dynamic;
 
+import com.robinloom.jweaver.commons.Weaver;
 import com.robinloom.jweaver.util.FieldOperations;
 import com.robinloom.jweaver.util.TypeDictionary;
 
@@ -36,7 +37,7 @@ import java.util.Set;
  * Person[name=John Doe, birthday=1990-01-01]
  * </pre>
  */
-public class DynamicWeaver {
+public class DynamicWeaver implements Weaver {
 
     protected static final ThreadLocal<Set<Object>> history
             = ThreadLocal.withInitial(() -> Collections.newSetFromMap(new IdentityHashMap<>()));

@@ -16,8 +16,9 @@
  */
 package com.robinloom.jweaver.tree;
 
-import com.robinloom.jweaver.structure.NestedStructureBuilder;
+import com.robinloom.jweaver.commons.Weaver;
 import com.robinloom.jweaver.structure.NestedNode;
+import com.robinloom.jweaver.structure.NestedStructureBuilder;
 import com.robinloom.jweaver.util.TypeDictionary;
 
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ import java.util.List;
  * `-- birthday=1990-01-01
  * </pre>
  */
-public class TreeWeaver {
+public class TreeWeaver implements Weaver {
     
     private final TreeConfig config;
     private final NestedStructureBuilder nestedStructureBuilder;

@@ -16,6 +16,7 @@
  */
 package com.robinloom.jweaver.bullet;
 
+import com.robinloom.jweaver.commons.Weaver;
 import com.robinloom.jweaver.structure.NestedNode;
 import com.robinloom.jweaver.structure.NestedStructureBuilder;
 import com.robinloom.jweaver.util.TypeDictionary;
@@ -33,7 +34,7 @@ import java.util.List;
  *  - birthday=1990-01-01
  * </pre>
  */
-public class BulletWeaver {
+public class BulletWeaver implements Weaver {
 
     private final BulletConfig config;
     private final NestedStructureBuilder nestedStructureBuilder;
