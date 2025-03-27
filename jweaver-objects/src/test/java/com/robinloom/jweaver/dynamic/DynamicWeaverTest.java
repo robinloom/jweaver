@@ -266,6 +266,16 @@ class DynamicWeaverTest {
     }
 
     @Test
+    void testAlphabeticalOrder() {
+        record Person(String name, LocalDate birthday) {}
+
+        Person person = new Person("John Doe", LocalDate.of(1990, 1, 1));
+        String expected = "Person[birthday=1990-01-01, name=John Doe]";
+
+        Assertions.assertEquals(expected, JWeaver.getDynamic().orderFieldsAlphabetically().weave(person));
+    }
+
+    @Test
     void testCutLongList() {
         record Entity(List<Character> chars) {}
 

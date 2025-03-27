@@ -25,12 +25,12 @@ public final class FieldOperations {
 
     private FieldOperations() {}
 
-    public static List<Field> getFields(Class<?> clazz) {
-        return List.of(clazz.getDeclaredFields());
+    public static ArrayList<Field> getFields(Class<?> clazz) {
+        return new ArrayList<>(List.of(clazz.getDeclaredFields()));
     }
 
-    public static List<Field> getAllFields(Class<?> clazz) {
-        List<Field> fields = new ArrayList<>();
+    public static ArrayList<Field> getAllFields(Class<?> clazz) {
+        ArrayList<Field> fields = new ArrayList<>();
         while (clazz != null) {
             Collections.addAll(fields, clazz.getDeclaredFields());
             clazz = clazz.getSuperclass();

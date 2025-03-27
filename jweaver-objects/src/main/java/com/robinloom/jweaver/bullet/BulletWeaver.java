@@ -171,6 +171,15 @@ public class BulletWeaver implements Weaver {
     }
 
     /**
+     * Will order field names alphabetically before printing.
+     * @return instance for chaining
+     */
+    public BulletWeaver orderFieldsAlphabetically() {
+        config.setOrderFieldsAlphabetically(true);
+        return this;
+    }
+
+    /**
      * Generates a string representation of the given object via reflections.
      * Prints the class name followed by every accessible field in a list structure.
      * For JDK classes, a regular <code>toString()</code> result is returned.

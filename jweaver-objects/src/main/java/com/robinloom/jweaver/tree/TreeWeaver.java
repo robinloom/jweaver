@@ -155,6 +155,15 @@ public class TreeWeaver implements Weaver {
     }
 
     /**
+     * Will order field names alphabetically before printing.
+     * @return instance for chaining
+     */
+    public TreeWeaver orderFieldsAlphabetically() {
+        config.setOrderFieldsAlphabetically(true);
+        return this;
+    }
+
+    /**
      * Generates a string representation of the given object via reflections.
      * Prints the class name followed by every accessible field in a tree structure.
      * For JDK classes, a regular <code>toString()</code> result is returned.

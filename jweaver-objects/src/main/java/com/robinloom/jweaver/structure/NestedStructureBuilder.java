@@ -23,11 +23,7 @@ import com.robinloom.jweaver.util.TypeDictionary;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InaccessibleObjectException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class NestedStructureBuilder {
 
@@ -59,6 +55,10 @@ public class NestedStructureBuilder {
             fields = FieldOperations.getAllFields(object.getClass());
         } else {
             fields = FieldOperations.getFields(object.getClass());
+        }
+
+        if (config.isOrderFieldsAlphabetically()) {
+            fields.sort(Comparator.comparing(Field::getName));
         }
 
         fields = fields.stream()

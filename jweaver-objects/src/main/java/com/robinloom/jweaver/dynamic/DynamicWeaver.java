@@ -21,11 +21,7 @@ import com.robinloom.jweaver.util.FieldOperations;
 import com.robinloom.jweaver.util.TypeDictionary;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * DynamicWeaver generates a string representation for a given object by combining
@@ -203,6 +199,15 @@ public class DynamicWeaver implements Weaver {
     }
 
     /**
+     * Will order field names alphabetically before printing.
+     * @return instance for chaining
+     */
+    public DynamicWeaver orderFieldsAlphabetically() {
+        config.setOrderFieldsAlphabetically(true);
+        return this;
+    }
+
+    /**
      * Generates a string representation of the given object via reflections.
      * Prints the class name followed by every accessible field.
      * For JDK classes, a regular <code>toString()</code> result is returned.
@@ -233,6 +238,10 @@ public class DynamicWeaver implements Weaver {
             fields = FieldOperations.getAllFields(object.getClass());
         } else {
             fields = FieldOperations.getFields(object.getClass());
+        }
+
+        if (config.isOrderFieldsAlphabetically()) {
+            fields.sort(Comparator.comparing(Field::getName));
         }
 
         fields = fields.stream()

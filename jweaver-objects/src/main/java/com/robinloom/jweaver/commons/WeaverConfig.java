@@ -29,6 +29,7 @@ public class WeaverConfig {
     private boolean capitalizeFields;
     private boolean showDataTypes;
     private boolean showInheritedFields;
+    private boolean orderFieldsAlphabetically;
     private int maxDepth;
     private int maxSequenceLength;
 
@@ -87,6 +88,14 @@ public class WeaverConfig {
 
     public void setShowInheritedFields(boolean showInheritedFields) {
         this.showInheritedFields = showInheritedFields;
+    }
+
+    public boolean isOrderFieldsAlphabetically() {
+        return orderFieldsAlphabetically;
+    }
+
+    public void setOrderFieldsAlphabetically(boolean orderFieldsAlphabetically) {
+        this.orderFieldsAlphabetically = orderFieldsAlphabetically;
     }
 
     public int getMaxDepth() {
