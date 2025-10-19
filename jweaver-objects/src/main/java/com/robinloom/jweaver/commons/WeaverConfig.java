@@ -16,6 +16,8 @@
  */
 package com.robinloom.jweaver.commons;
 
+import com.robinloom.jweaver.annotation.WeaveIgnore;
+
 import java.lang.reflect.Field;
 import java.util.List;
 
@@ -50,7 +52,8 @@ public class WeaverConfig {
 
     public boolean isIncluded(Field field) {
         return !excludedFields.contains(field.getName()) &&
-                (includedFields.isEmpty() || includedFields.contains(field.getName()));
+                (includedFields.isEmpty() || includedFields.contains(field.getName())) &&
+                (!field.isAnnotationPresent(WeaveIgnore.class));
     }
 
     public boolean isIncludeClassName() {

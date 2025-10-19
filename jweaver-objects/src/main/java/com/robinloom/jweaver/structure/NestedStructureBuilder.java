@@ -16,6 +16,8 @@
  */
 package com.robinloom.jweaver.structure;
 
+import com.robinloom.jweaver.annotation.WeaveName;
+import com.robinloom.jweaver.annotation.WeaveRedact;
 import com.robinloom.jweaver.commons.WeaverConfig;
 import com.robinloom.jweaver.util.FieldOperations;
 import com.robinloom.jweaver.util.TypeDictionary;
@@ -73,7 +75,13 @@ public class NestedStructureBuilder {
                     dataType = "{" + field.getType().getSimpleName() + "} ";
                 }
 
-                String fieldName = field.getName();
+                String fieldName;
+                if (field.isAnnotationPresent(WeaveName.class)) {
+                    fieldName = field.getAnnotation(WeaveName.class).value();
+                } else {
+                    fieldName = field.getName();
+                }
+
                 if (config.isCapitalizeFields()) {
                     fieldName = FieldOperations.capitalize(fieldName);
                 }
@@ -82,6 +90,10 @@ public class NestedStructureBuilder {
 
                 Object value = field.get(object);
                 if (value == null) {
+                    continue;
+                }
+                if (field.isAnnotationPresent(WeaveRedact.class)) {
+                    root.addChild(fieldName, field.getAnnotation(WeaveRedact.class).maskString());
                     continue;
                 }
 
