@@ -175,7 +175,10 @@ public class TreeWeaver implements Weaver {
         List<Boolean> siblingsAtCurrentLevel = new ArrayList<>();
         traverseDepthFirst(tree, siblingsAtCurrentLevel);
         machine.removeLastNewline();
-        return machine.toString();
+
+        String result = machine.toString();
+        machine.reset();
+        return result;
     }
 
     private void traverseDepthFirst(NestedNode node, List<Boolean> siblingsAtCurrentLevel) {

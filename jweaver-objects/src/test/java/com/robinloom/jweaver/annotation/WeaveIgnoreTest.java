@@ -33,4 +33,14 @@ class WeaveIgnoreTest {
                            - name=John0815""";
         Assertions.assertEquals(expected, JWeaver.getBullet().weave(account));
     }
+
+    @Test
+    void testCardWeaver() {
+        WeaveIgnoreTest.Account account = new WeaveIgnoreTest.Account("John0815", "password");
+        String expected = """
+                         ╭ Account ────────╮
+                         │ name : John0815 │
+                         ╰─────────────────╯""";
+        Assertions.assertEquals(expected, JWeaver.getCard().weave(account));
+    }
 }
