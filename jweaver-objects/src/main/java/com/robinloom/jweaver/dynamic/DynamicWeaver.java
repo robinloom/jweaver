@@ -16,6 +16,8 @@
  */
 package com.robinloom.jweaver.dynamic;
 
+import com.robinloom.jweaver.annotation.WeaveName;
+import com.robinloom.jweaver.annotation.WeaveRedact;
 import com.robinloom.jweaver.commons.Weaver;
 import com.robinloom.jweaver.util.FieldOperations;
 import com.robinloom.jweaver.util.TypeDictionary;
@@ -255,9 +257,16 @@ public class DynamicWeaver implements Weaver {
             try {
                 field.setAccessible(true);
                 Object value = field.get(object);
+                if (field.isAnnotationPresent(WeaveRedact.class)) {
+                    value = field.getAnnotation(WeaveRedact.class).maskString();
+                }
 
                 machine.appendDataType(field);
-                machine.appendFieldName(field);
+                if (field.isAnnotationPresent(WeaveName.class)) {
+                    machine.appendFieldName(field.getAnnotation(WeaveName.class).value());
+                } else {
+                    machine.appendFieldName(field.getName());
+                }
 
                 if (TypeDictionary.isArray(field.getType())) {
                     machine.appendArrayFieldValue(value);
@@ -277,7 +286,10 @@ public class DynamicWeaver implements Weaver {
         if (history.get().size() == 1) {
             history.remove();
         }
-        return machine.toString();
+
+        String result = machine.toString();
+        machine.reset();
+        return result;
     }
 
 }

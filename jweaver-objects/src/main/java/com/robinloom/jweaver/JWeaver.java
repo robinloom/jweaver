@@ -17,6 +17,7 @@
 package com.robinloom.jweaver;
 
 import com.robinloom.jweaver.bullet.BulletWeaver;
+import com.robinloom.jweaver.card.CardWeaver;
 import com.robinloom.jweaver.dynamic.DynamicWeaver;
 import com.robinloom.jweaver.tree.TreeWeaver;
 
@@ -65,6 +66,10 @@ public final class JWeaver {
      */
     public static BulletWeaver getBullet() {
         return new BulletWeaver();
+    }
+
+    public static CardWeaver getCard() {
+        return new CardWeaver();
     }
 
 }

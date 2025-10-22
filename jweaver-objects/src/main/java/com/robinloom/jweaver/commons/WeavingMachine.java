@@ -38,9 +38,12 @@ public abstract class WeavingMachine {
         }
     }
 
+    @Override
     public String toString() {
-        String result = delegate.toString();
+        return delegate.toString();
+    }
+
+    public void reset() {
         delegate.setLength(0);
-        return result;
     }
 }

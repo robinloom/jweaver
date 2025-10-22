@@ -46,12 +46,11 @@ final class DynamicWeavingMachine extends WeavingMachine {
         }
     }
 
-    void appendFieldName(Field field) {
-        String fieldName = field.getName();
+    void appendFieldName(String field) {
         if (config.isCapitalizeFields()) {
-            fieldName = FieldOperations.capitalize(fieldName);
+            field = FieldOperations.capitalize(field);
         }
-        delegate.append(fieldName);
+        delegate.append(field);
         delegate.append(config.getFieldValueSeparator());
     }
 
