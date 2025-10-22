@@ -35,4 +35,15 @@ class WeaveRedactTest {
                            - password=***""";
         Assertions.assertEquals(expected, JWeaver.getBullet().weave(account));
     }
+
+    @Test
+    void testCardWeaver() {
+        Account account = new Account("John0815", "password");
+        String expected = """
+                         ╭ Account ────────────╮
+                         │ name     : John0815 │
+                         │ password : ***      │
+                         ╰─────────────────────╯""";
+        Assertions.assertEquals(expected, JWeaver.getCard().weave(account));
+    }
 }

@@ -37,4 +37,16 @@ class WeaveNameTest {
                            - Dad=Martin""";
         Assertions.assertEquals(expected, JWeaver.getBullet().weave(person));
     }
+
+    @Test
+    void testCardWeaver() {
+        WeaveNameTest.Person person = new WeaveNameTest.Person("John", "Gina", "Martin");
+        String expected = """
+                         ╭ Person ───────╮
+                         │ name : John   │
+                         │ Mom  : Gina   │
+                         │ Dad  : Martin │
+                         ╰───────────────╯""";
+        Assertions.assertEquals(expected, JWeaver.getCard().weave(person));
+    }
 }

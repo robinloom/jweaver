@@ -286,7 +286,10 @@ public class DynamicWeaver implements Weaver {
         if (history.get().size() == 1) {
             history.remove();
         }
-        return machine.toString();
+
+        String result = machine.toString();
+        machine.reset();
+        return result;
     }
 
 }

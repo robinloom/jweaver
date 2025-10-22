@@ -199,7 +199,10 @@ public class BulletWeaver implements Weaver {
         traverseDepthFirst(structure);
 
         machine.removeLastNewline();
-        return machine.toString();
+
+        String result = machine.toString();
+        machine.reset();
+        return result;
     }
 
     private void traverseDepthFirst(NestedNode node) {
