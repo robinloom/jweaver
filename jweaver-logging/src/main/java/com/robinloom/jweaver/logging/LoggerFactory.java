@@ -18,7 +18,7 @@ package com.robinloom.jweaver.logging;
 
 import com.robinloom.jweaver.JWeaver;
 import com.robinloom.jweaver.commons.Weaver;
-import com.robinloom.jweaver.dynamic.DynamicWeaver;
+import com.robinloom.jweaver.flat.FlatWeaver;
 import org.slf4j.Logger;
 
 /**
@@ -28,13 +28,13 @@ import org.slf4j.Logger;
 public class LoggerFactory {
 
     /**
-     * Gets a {@link JWeaverLogger} pre-initialized with a {@link DynamicWeaver}.
+     * Gets a {@link JWeaverLogger} pre-initialized with a {@link FlatWeaver}.
      * @param clazz class to return the Logger for
      * @return the JWeaverLogger wrapping a SLF4J Logger
      */
     public static Logger getLogger(Class<?> clazz) {
         Logger delegate = org.slf4j.LoggerFactory.getLogger(clazz);
-        return new JWeaverLogger(delegate, JWeaver.getDefault());
+        return new JWeaverLogger(delegate, JWeaver.Internal.flat());
     }
 
     /**
@@ -49,13 +49,13 @@ public class LoggerFactory {
     }
 
     /**
-     * Gets a {@link JWeaverLogger} pre-initialized with a {@link DynamicWeaver}.
+     * Gets a {@link JWeaverLogger} pre-initialized with a {@link FlatWeaver}.
      * @param name name of the SLF4J Logger
      * @return the JWeaverLogger wrapping a SLF4J Logger
      */
     public static Logger getLogger(String name) {
         Logger delegate = org.slf4j.LoggerFactory.getLogger(name);
-        return new JWeaverLogger(delegate, JWeaver.getDefault());
+        return new JWeaverLogger(delegate, JWeaver.Internal.flat());
     }
 
     /**

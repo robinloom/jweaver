@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.robinloom.jweaver.dynamic;
+package com.robinloom.jweaver.flat;
 
 import com.robinloom.jweaver.annotation.WeaveName;
 import com.robinloom.jweaver.annotation.WeaveRedact;
@@ -35,17 +35,17 @@ import java.util.*;
  * Person[name=John Doe, birthday=1990-01-01]
  * </pre>
  */
-public class DynamicWeaver implements Weaver {
+public class FlatWeaver implements Weaver {
 
     protected static final ThreadLocal<Set<Object>> history
             = ThreadLocal.withInitial(() -> Collections.newSetFromMap(new IdentityHashMap<>()));
 
-    private final DynamicConfig config;
-    private final DynamicWeavingMachine machine;
+    private final FlatConfig config;
+    private final FlatWeavingMachine machine;
 
-    public DynamicWeaver() {
-        this.config = new DynamicConfig();
-        this.machine = new DynamicWeavingMachine(config);
+    public FlatWeaver() {
+        this.config = new FlatConfig();
+        this.machine = new FlatWeavingMachine(config);
     }
 
     /**
@@ -53,7 +53,7 @@ public class DynamicWeaver implements Weaver {
      * The result will be a multiline output.
      * @return instance for chaining
      */
-    public DynamicWeaver multiline() {
+    public FlatWeaver multiline() {
         config.setFieldSeparator("\n");
         config.setClassNameFieldsSeparator("\n");
         config.setGlobalSuffix("");
@@ -66,7 +66,7 @@ public class DynamicWeaver implements Weaver {
      * @param classNamePrefix the string to use
      * @return instance for chaining
      */
-    public DynamicWeaver classNamePrefix(String classNamePrefix) {
+    public FlatWeaver classNamePrefix(String classNamePrefix) {
         config.setClassNamePrefix(classNamePrefix);
         return this;
     }
@@ -77,7 +77,7 @@ public class DynamicWeaver implements Weaver {
      * @param classNameSuffix the string to use
      * @return instance for chaining
      */
-    public DynamicWeaver classNameSuffix(String classNameSuffix) {
+    public FlatWeaver classNameSuffix(String classNameSuffix) {
         config.setClassNameSuffix(classNameSuffix);
         return this;
     }
@@ -89,7 +89,7 @@ public class DynamicWeaver implements Weaver {
      * @param separator the separator string to use
      * @return instance for chaining
      */
-    public DynamicWeaver classNameFieldsSeparator(String separator) {
+    public FlatWeaver classNameFieldsSeparator(String separator) {
         config.setClassNameFieldsSeparator(separator);
         return this;
     }
@@ -100,7 +100,7 @@ public class DynamicWeaver implements Weaver {
      * @param separator the separator string to use
      * @return instance for chaining
      */
-    public DynamicWeaver fieldValueSeparator(String separator) {
+    public FlatWeaver fieldValueSeparator(String separator) {
         config.setFieldValueSeparator(separator);
         return this;
     }
@@ -111,7 +111,7 @@ public class DynamicWeaver implements Weaver {
      * @param separator the separator string to use.
      * @return instance for chaining
      */
-    public DynamicWeaver fieldSeparator(String separator) {
+    public FlatWeaver fieldSeparator(String separator) {
         config.setFieldSeparator(separator);
         return this;
     }
@@ -122,7 +122,7 @@ public class DynamicWeaver implements Weaver {
      * @param suffix the string to be used.
      * @return instance for chaining.
      */
-    public DynamicWeaver globalSuffix(String suffix) {
+    public FlatWeaver globalSuffix(String suffix) {
         config.setGlobalSuffix(suffix);
         return this;
     }
@@ -133,7 +133,7 @@ public class DynamicWeaver implements Weaver {
      * @param maxSequenceLength an integer value
      * @return instance for chaining
      */
-    public DynamicWeaver maxSequenceLength(int maxSequenceLength) {
+    public FlatWeaver maxSequenceLength(int maxSequenceLength) {
         config.setMaxSequenceLength(maxSequenceLength);
         return this;
     }
@@ -144,7 +144,7 @@ public class DynamicWeaver implements Weaver {
      * @param fields list of strings containing included field names
      * @return instance for chaining
      */
-    public DynamicWeaver includeFields(List<String> fields) {
+    public FlatWeaver includeFields(List<String> fields) {
         config.setIncludedFields(fields);
         config.setExcludedFields(List.of());
         return this;
@@ -156,7 +156,7 @@ public class DynamicWeaver implements Weaver {
      * @param fields list of strings containing excluded field names
      * @return instance for chaining
      */
-    public DynamicWeaver excludeFields(List<String> fields) {
+    public FlatWeaver excludeFields(List<String> fields) {
         config.setExcludedFields(fields);
         config.setIncludedFields(List.of());
         return this;
@@ -167,7 +167,7 @@ public class DynamicWeaver implements Weaver {
      * By default, the class name is included.
      * @return instance for chaining
      */
-    public DynamicWeaver omitClassName() {
+    public FlatWeaver omitClassName() {
         config.setOmitClassName(true);
         return this;
     }
@@ -177,7 +177,7 @@ public class DynamicWeaver implements Weaver {
      * firstName -> FirstName
      * @return instance for chaining
      */
-    public DynamicWeaver capitalizeFields() {
+    public FlatWeaver capitalizeFields() {
         config.setCapitalizeFields(true);
         return this;
     }
@@ -186,7 +186,7 @@ public class DynamicWeaver implements Weaver {
      * Enables the printing of data types
      * @return instance for chaining
      */
-    public DynamicWeaver showDataTypes() {
+    public FlatWeaver showDataTypes() {
         config.setShowDataTypes(true);
         return this;
     }
@@ -195,7 +195,7 @@ public class DynamicWeaver implements Weaver {
      * Activates the inclusion of inherited fields.
      * @return instance for chaining
      */
-    public DynamicWeaver showInheritedFields() {
+    public FlatWeaver showInheritedFields() {
         config.setShowInheritedFields(true);
         return this;
     }
@@ -204,7 +204,7 @@ public class DynamicWeaver implements Weaver {
      * Will order field names alphabetically before printing.
      * @return instance for chaining
      */
-    public DynamicWeaver orderFieldsAlphabetically() {
+    public FlatWeaver orderFieldsAlphabetically() {
         config.setOrderFieldsAlphabetically(true);
         return this;
     }
