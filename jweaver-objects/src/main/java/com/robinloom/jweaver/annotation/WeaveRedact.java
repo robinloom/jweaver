@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
  * Use {@code @WeaveRedact} to hide sensitive information such as passwords,
  * API keys, tokens, or personally identifiable data. Redacted values will
  * be replaced by a sequence of mask characters (for example {@code ***}).
- * <p>
+ * </p>
  *
  * <pre>{@code
  * public class Credentials {
