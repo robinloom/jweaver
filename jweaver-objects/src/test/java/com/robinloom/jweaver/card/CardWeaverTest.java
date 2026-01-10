@@ -12,13 +12,13 @@ public class CardWeaverTest {
 
     @Test
     void testNullSafety() {
-        Assertions.assertEquals("null", JWeaver.getCard().weave(null));
+        Assertions.assertEquals("null", JWeaver.Internal.card().weave(null));
     }
 
     @Test
     void testJdkClassesToString() {
-        Assertions.assertEquals("Test", JWeaver.getCard().weave("Test"));
-        Assertions.assertEquals("[]", JWeaver.getCard().weave(List.of()));
+        Assertions.assertEquals("Test", JWeaver.Internal.card().weave("Test"));
+        Assertions.assertEquals("[]", JWeaver.Internal.card().weave(List.of()));
     }
 
     @Test
@@ -32,7 +32,7 @@ public class CardWeaverTest {
                           │ birthday : 1990-01-01 │
                           ╰───────────────────────╯""";
 
-        Assertions.assertEquals(expected, JWeaver.getCard().weave(person));
+        Assertions.assertEquals(expected, JWeaver.Internal.card().weave(person));
     }
 
     @Test
@@ -51,7 +51,7 @@ public class CardWeaverTest {
                 │ neighbor : Person@8e493f55 │
                 ╰────────────────────────────╯""";
 
-        Assertions.assertEquals(expected, JWeaver.getCard().weave(person));
+        Assertions.assertEquals(expected, JWeaver.Internal.card().weave(person));
     }
 
     @Test
@@ -65,7 +65,7 @@ public class CardWeaverTest {
                           │ childrenNames : @List(2) │
                           ╰──────────────────────────╯""";
 
-        Assertions.assertEquals(expected, JWeaver.getCard().weave(person));
+        Assertions.assertEquals(expected, JWeaver.Internal.card().weave(person));
     }
 
     @Test
@@ -78,7 +78,7 @@ public class CardWeaverTest {
                           │ name      : Jane     │
                           │ neighbors : @List(1) │
                           ╰──────────────────────╯""";
-        Assertions.assertEquals(expected, JWeaver.getCard().weave(person));
+        Assertions.assertEquals(expected, JWeaver.Internal.card().weave(person));
     }
 
     @Test
@@ -92,7 +92,7 @@ public class CardWeaverTest {
                           │ numbers : int[3] │
                           ╰──────────────────╯""";
 
-        Assertions.assertEquals(expected, JWeaver.getCard().weave(person));
+        Assertions.assertEquals(expected, JWeaver.Internal.card().weave(person));
     }
 
     @Test
@@ -105,7 +105,7 @@ public class CardWeaverTest {
                          │ names : String[3] │
                          ╰───────────────────╯""";
 
-        Assertions.assertEquals(expected, JWeaver.getCard().weave(person));
+        Assertions.assertEquals(expected, JWeaver.Internal.card().weave(person));
     }
 
     @Test
@@ -118,7 +118,7 @@ public class CardWeaverTest {
                           │ neighbors : Person[1] │
                           ╰───────────────────────╯""";
 
-        Assertions.assertEquals(expected, JWeaver.getCard().weave(person));
+        Assertions.assertEquals(expected, JWeaver.Internal.card().weave(person));
     }
 
     @Test
@@ -128,7 +128,7 @@ public class CardWeaverTest {
 
             @Override
             public String toString() {
-                return JWeaver.getCard().weave(this);
+                return JWeaver.Internal.card().weave(this);
             }
         }
 
@@ -148,7 +148,7 @@ public class CardWeaverTest {
 
             @Override
             public String toString() {
-                return JWeaver.getCard().weave(this);
+                return JWeaver.Internal.card().weave(this);
             }
         }
 
@@ -174,7 +174,7 @@ public class CardWeaverTest {
                          │ name : John Doe │
                          ╰─────────────────╯""";
 
-        Assertions.assertEquals(expected, JWeaver.getCard().excludeFields(List.of("password")).weave(person));
+        Assertions.assertEquals(expected, JWeaver.Internal.card().excludeFields(List.of("password")).weave(person));
     }
 
     @Test
@@ -188,7 +188,7 @@ public class CardWeaverTest {
                          │ name : John Doe │
                          ╰─────────────────╯""";
 
-        Assertions.assertEquals(expected, JWeaver.getCard().includeFields(List.of("name")).weave(person));
+        Assertions.assertEquals(expected, JWeaver.Internal.card().includeFields(List.of("name")).weave(person));
     }
 
     @Test
@@ -202,7 +202,7 @@ public class CardWeaverTest {
                           │ birthday : 1990-01-01 │
                           ╰───────────────────────╯""";
 
-        Assertions.assertEquals(expected, JWeaver.getCard().omitClassName().weave(person));
+        Assertions.assertEquals(expected, JWeaver.Internal.card().omitClassName().weave(person));
     }
 
     @Test
@@ -217,7 +217,7 @@ public class CardWeaverTest {
                           │ IsTall : false    │
                           ╰───────────────────╯""";
 
-        Assertions.assertEquals(expected, JWeaver.getCard().capitalizeFields().weave(person));
+        Assertions.assertEquals(expected, JWeaver.Internal.card().capitalizeFields().weave(person));
     }
 
     @Test
@@ -232,7 +232,7 @@ public class CardWeaverTest {
                           │ boolean isTall : false    │
                           ╰───────────────────────────╯""";
 
-        Assertions.assertEquals(expected, JWeaver.getCard().showDataTypes().weave(person));
+        Assertions.assertEquals(expected, JWeaver.Internal.card().showDataTypes().weave(person));
     }
 
     @Test
@@ -260,7 +260,7 @@ public class CardWeaverTest {
                           │ hairColor : blonde   │
                           ╰──────────────────────╯""";
 
-        Assertions.assertEquals(expected, JWeaver.getCard().showInheritedFields().weave(person));
+        Assertions.assertEquals(expected, JWeaver.Internal.card().showInheritedFields().weave(person));
     }
 
     @Test
@@ -274,7 +274,7 @@ public class CardWeaverTest {
                           | birthday : 1990-01-01 |
                           +-----------------------+""";
 
-        Assertions.assertEquals(expected, JWeaver.getCard().boxChars(BoxChars.ASCII).weave(person));
+        Assertions.assertEquals(expected, JWeaver.Internal.card().boxChars(BoxChars.ASCII).weave(person));
     }
 
     @Test
@@ -289,6 +289,6 @@ public class CardWeaverTest {
                           ┃ password : char[8]  ┃
                           ┗━━━━━━━━━━━━━━━━━━━━━┛""";
 
-        Assertions.assertEquals(expected, JWeaver.getCard().boxChars(BoxChars.UNICODE_HEAVY).weave(person));
+        Assertions.assertEquals(expected, JWeaver.Internal.card().boxChars(BoxChars.UNICODE_HEAVY).weave(person));
     }
 }
