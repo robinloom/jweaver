@@ -41,8 +41,7 @@ import com.robinloom.jweaver.tree.TreeWeaver;
  *   <li>Collections: limited to a safe number of elements</li>
  *   <li>Circular or reciprocal references</li>
  *   <li>Sensitive fields such as passwords or tokens (automatically ignored)</li>
- * </ul>
- * </p>
+ * </ul></p>
  *
  * <p><b>Advanced usage:</b> For power users who want specific renderers or a custom
  * context, the {@link Internal} class provides access to different weavers and
