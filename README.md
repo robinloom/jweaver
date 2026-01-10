@@ -5,16 +5,17 @@
 JWeaver makes it easy to generate well-structured, human-readable representations of Java objects. With a simple API, you can format objects dynamically, as a tree, or as a bullet list - each with customizable options to match your needs.
 ## Features
 
-**JWeaver** offers three primary modes for presenting object data in a clear and appealing way:
+**JWeaver** offers different output modes (called "Weavers") for presenting object data in a clear and appealing way:
 
 ### Dynamic
-A flat, concise representation of an object's properties.
+
+The default output mode. A flat, concise representation of an object's properties.
 
 ```
 Person[name=John Doe, birthday=1990-01-01]
 ```
 
-The configuration of the output is highly dynamic:
+The configuration of the output is highly customizable:
 
 ```
 == Person ==
@@ -22,23 +23,33 @@ name: John Doe
 birthday: 1990-01-01
 ```
 
-### Tree
-A hierarchical representation that visually outlines nested object structures.
+Further modes are listed in the expandable sections below.
 
-```
-Person
-|-- name=John Doe
-`-- birthday=1990-01-01
-```
+<details>
+    <summary><strong>Tree</strong></summary>
 
-### Bullet
-A list-style representation where each property appears as its own bullet point.
+    Person
+    |-- name=John Doe
+    `-- birthday=1990-01-01
+</details>
 
-```
-- Person
-  - name: John Doe
-  - birthday: 1990-01-01
-```
+<details>
+    <summary><strong>Bullet</strong></summary>
+
+    Person
+      - name=John Doe
+      - birthday=1990-01-01
+</details>
+
+<details>
+    <summary><strong>Card</strong></summary>
+
+    ╭ Person ───────────────╮
+    │ name     : John Doe   │
+    │ birthday : 1990-01-01 │
+    ╰───────────────────────╯
+</details>
+
 
 ## Installation
 
