@@ -44,7 +44,7 @@ import com.robinloom.jweaver.tree.TreeWeaver;
  * </ul></p>
  *
  * <p><b>Advanced usage:</b> For power users who want specific renderers or a custom
- * context, the {@link Internal} class provides access to different weavers and
+ * context, the {@link Advanced} class provides access to different weavers and
  * full control:</p>
  *
  * <pre>{@code
@@ -57,6 +57,8 @@ import com.robinloom.jweaver.tree.TreeWeaver;
  */
 public final class JWeaver {
 
+    private static final Weaver DEFAULT_WEAVER = new FlatWeaver();
+
     private JWeaver() {}
 
     /**
@@ -68,18 +70,15 @@ public final class JWeaver {
      * @return a well-structured, human-readable representation of that object
      */
     public static String weave(Object object) {
-        return Internal.DEFAULT_WEAVER.weave(object);
+        return DEFAULT_WEAVER.weave(object);
     }
 
     /**
-     * Advanced / internal API.
+     * Advanced API.
      * For power users who want specific renderers or custom context.
      * Not recommended for casual use.
      */
-    public static final class Internal {
-
-        // Default renderer used by `weave()`
-        static final Weaver DEFAULT_WEAVER = new FlatWeaver();
+    public static final class Advanced {
 
         /** Access FlatWeaver explicitly */
         public static FlatWeaver flat() { return new FlatWeaver(); }

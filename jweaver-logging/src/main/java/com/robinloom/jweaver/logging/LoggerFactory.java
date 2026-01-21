@@ -34,7 +34,7 @@ public class LoggerFactory {
      */
     public static Logger getLogger(Class<?> clazz) {
         Logger delegate = org.slf4j.LoggerFactory.getLogger(clazz);
-        return new JWeaverLogger(delegate, JWeaver.Internal.flat());
+        return new JWeaverLogger(delegate, JWeaver.Advanced.flat());
     }
 
     /**
@@ -55,7 +55,7 @@ public class LoggerFactory {
      */
     public static Logger getLogger(String name) {
         Logger delegate = org.slf4j.LoggerFactory.getLogger(name);
-        return new JWeaverLogger(delegate, JWeaver.Internal.flat());
+        return new JWeaverLogger(delegate, JWeaver.Advanced.flat());
     }
 
     /**

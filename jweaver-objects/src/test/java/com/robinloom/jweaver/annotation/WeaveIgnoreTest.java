@@ -13,7 +13,7 @@ class WeaveIgnoreTest {
     void testDynamicWeaver() {
         WeaveIgnoreTest.Account account = new WeaveIgnoreTest.Account("John0815", "password");
         String expected = "Account[name=John0815]";
-        Assertions.assertEquals(expected, JWeaver.Internal.flat().weave(account));
+        Assertions.assertEquals(expected, JWeaver.Advanced.flat().weave(account));
     }
 
     @Test
@@ -22,7 +22,7 @@ class WeaveIgnoreTest {
         String expected = """
                           Account
                           `-- name=John0815""";
-        Assertions.assertEquals(expected, JWeaver.Internal.tree().weave(account));
+        Assertions.assertEquals(expected, JWeaver.Advanced.tree().weave(account));
     }
 
     @Test
@@ -31,7 +31,7 @@ class WeaveIgnoreTest {
         String expected = """
                           Account
                            - name=John0815""";
-        Assertions.assertEquals(expected, JWeaver.Internal.bullet().weave(account));
+        Assertions.assertEquals(expected, JWeaver.Advanced.bullet().weave(account));
     }
 
     @Test
@@ -41,6 +41,6 @@ class WeaveIgnoreTest {
                          ╭ Account ────────╮
                          │ name : John0815 │
                          ╰─────────────────╯""";
-        Assertions.assertEquals(expected, JWeaver.Internal.card().weave(account));
+        Assertions.assertEquals(expected, JWeaver.Advanced.card().weave(account));
     }
 }

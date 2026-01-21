@@ -13,7 +13,7 @@ class WeaveRedactTest {
     void testDynamicWeaver() {
         Account account = new Account("John0815", "password");
         String expected = "Account[name=John0815, password=***]";
-        Assertions.assertEquals(expected, JWeaver.Internal.flat().weave(account));
+        Assertions.assertEquals(expected, JWeaver.Advanced.flat().weave(account));
     }
 
     @Test
@@ -23,7 +23,7 @@ class WeaveRedactTest {
                           Account
                           |-- name=John0815
                           `-- password=***""";
-        Assertions.assertEquals(expected, JWeaver.Internal.tree().weave(account));
+        Assertions.assertEquals(expected, JWeaver.Advanced.tree().weave(account));
     }
 
     @Test
@@ -33,7 +33,7 @@ class WeaveRedactTest {
                           Account
                            - name=John0815
                            - password=***""";
-        Assertions.assertEquals(expected, JWeaver.Internal.bullet().weave(account));
+        Assertions.assertEquals(expected, JWeaver.Advanced.bullet().weave(account));
     }
 
     @Test
@@ -44,6 +44,6 @@ class WeaveRedactTest {
                          │ name     : John0815 │
                          │ password : ***      │
                          ╰─────────────────────╯""";
-        Assertions.assertEquals(expected, JWeaver.Internal.card().weave(account));
+        Assertions.assertEquals(expected, JWeaver.Advanced.card().weave(account));
     }
 }

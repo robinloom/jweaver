@@ -7,9 +7,9 @@ import org.slf4j.Logger;
 public class JWeaverLoggerTest {
 
     Logger LOGGER_BY_CLASS = LoggerFactory.getLogger(JWeaverLoggerTest.class);
-    Logger LOGGER_BY_CLASS_TREE = LoggerFactory.getLogger(JWeaverLoggerTest.class, JWeaver.Internal.tree());
+    Logger LOGGER_BY_CLASS_TREE = LoggerFactory.getLogger(JWeaverLoggerTest.class, JWeaver.Advanced.tree());
     Logger LOGGER_BY_NAME = LoggerFactory.getLogger("Test");
-    Logger LOGGER_BY_NAME_BULLET = LoggerFactory.getLogger("Test", JWeaver.Internal.bullet());
+    Logger LOGGER_BY_NAME_BULLET = LoggerFactory.getLogger("Test", JWeaver.Advanced.bullet());
 
     record Person(String name, int age) {}
     record Car(String name, int year) {}

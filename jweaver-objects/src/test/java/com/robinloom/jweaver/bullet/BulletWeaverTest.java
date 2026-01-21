@@ -12,13 +12,13 @@ class BulletWeaverTest {
 
     @Test
     void testNullSafety() {
-        Assertions.assertEquals("null", JWeaver.Internal.bullet().weave(null));
+        Assertions.assertEquals("null", JWeaver.Advanced.bullet().weave(null));
     }
 
     @Test
     void testJdkClassesToString() {
-        Assertions.assertEquals("Test", JWeaver.Internal.flat().weave("Test"));
-        Assertions.assertEquals("[]", JWeaver.Internal.flat().weave(List.of()));
+        Assertions.assertEquals("Test", JWeaver.Advanced.flat().weave("Test"));
+        Assertions.assertEquals("[]", JWeaver.Advanced.flat().weave(List.of()));
     }
 
     @Test
@@ -31,7 +31,7 @@ class BulletWeaverTest {
                            - name=John Doe
                            - birthday=1990-01-01""";
 
-        Assertions.assertEquals(expected, JWeaver.Internal.bullet().weave(person));
+        Assertions.assertEquals(expected, JWeaver.Advanced.bullet().weave(person));
     }
 
     @Test
@@ -39,7 +39,7 @@ class BulletWeaverTest {
         record Person(String name, Person neighbor) {
             @Override
             public String toString() {
-                return JWeaver.Internal.bullet().weave(this);
+                return JWeaver.Advanced.bullet().weave(this);
             }
         }
 
@@ -63,7 +63,7 @@ class BulletWeaverTest {
                            - childrenNames
                              - (0) Peter
                              - (1) Judy""";
-        Assertions.assertEquals(expected, JWeaver.Internal.bullet().weave(person));
+        Assertions.assertEquals(expected, JWeaver.Advanced.bullet().weave(person));
     }
 
     @Test
@@ -78,7 +78,7 @@ class BulletWeaverTest {
                              - (0) Peter
                              - (1) Judy
                            - age=29""";
-        Assertions.assertEquals(expected, JWeaver.Internal.bullet().weave(person));
+        Assertions.assertEquals(expected, JWeaver.Advanced.bullet().weave(person));
     }
 
     @Test
@@ -101,7 +101,7 @@ class BulletWeaverTest {
                             - addresses
                               - (0) 42 Wallaby Way, Sydney
                             - bloodType=0+""";
-        Assertions.assertEquals(expected, JWeaver.Internal.bullet().weave(person));
+        Assertions.assertEquals(expected, JWeaver.Advanced.bullet().weave(person));
     }
 
     @Test
@@ -118,7 +118,7 @@ class BulletWeaverTest {
                              - (1)
                                - (0) C
                                - (1) D""";
-        Assertions.assertEquals(expected, JWeaver.Internal.bullet().weave(person));
+        Assertions.assertEquals(expected, JWeaver.Advanced.bullet().weave(person));
     }
 
     @Test
@@ -136,7 +136,7 @@ class BulletWeaverTest {
                              - (0) Person
                                - name=Peter
                                - neighbors""";
-        Assertions.assertEquals(expected, JWeaver.Internal.bullet().weave(person));
+        Assertions.assertEquals(expected, JWeaver.Advanced.bullet().weave(person));
     }
 
     @Test
@@ -151,7 +151,7 @@ class BulletWeaverTest {
                              - [1] 1
                              - [2] 2""";
 
-        Assertions.assertEquals(expected, JWeaver.Internal.bullet().weave(person));
+        Assertions.assertEquals(expected, JWeaver.Advanced.bullet().weave(person));
     }
 
     @Test
@@ -166,7 +166,7 @@ class BulletWeaverTest {
                              - [1] Maria
                              - [2] Quinn""";
 
-        Assertions.assertEquals(expected, JWeaver.Internal.bullet().weave(person));
+        Assertions.assertEquals(expected, JWeaver.Advanced.bullet().weave(person));
     }
 
     @Test
@@ -184,7 +184,7 @@ class BulletWeaverTest {
                              - [1] Person
                                - age=12""";
 
-        Assertions.assertEquals(expected, JWeaver.Internal.bullet().weave(person));
+        Assertions.assertEquals(expected, JWeaver.Advanced.bullet().weave(person));
     }
 
     @Test
@@ -205,7 +205,7 @@ class BulletWeaverTest {
                                - [0] 4
                                - [1] 5""";
 
-        Assertions.assertEquals(expected, JWeaver.Internal.bullet().weave(person));
+        Assertions.assertEquals(expected, JWeaver.Advanced.bullet().weave(person));
     }
 
 
@@ -216,7 +216,7 @@ class BulletWeaverTest {
 
             @Override
             public String toString() {
-                return JWeaver.Internal.bullet().weave(this);
+                return JWeaver.Advanced.bullet().weave(this);
             }
         }
 
@@ -236,7 +236,7 @@ class BulletWeaverTest {
 
             @Override
             public String toString() {
-                return JWeaver.Internal.bullet().weave(this);
+                return JWeaver.Advanced.bullet().weave(this);
             }
         }
 
@@ -262,7 +262,7 @@ class BulletWeaverTest {
                            - Name=Jane Doe
                            - Birthday=1990-01-01""";
 
-        Assertions.assertEquals(expected, JWeaver.Internal.bullet().capitalizeFields().weave(person));
+        Assertions.assertEquals(expected, JWeaver.Advanced.bullet().capitalizeFields().weave(person));
     }
 
     @Test
@@ -275,7 +275,7 @@ class BulletWeaverTest {
                            - {String} name=Jane Doe
                            - {LocalDate} birthday=1990-01-01""";
 
-        Assertions.assertEquals(expected, JWeaver.Internal.bullet().showDataTypes().weave(person));
+        Assertions.assertEquals(expected, JWeaver.Advanced.bullet().showDataTypes().weave(person));
     }
 
     @Test
@@ -287,7 +287,7 @@ class BulletWeaverTest {
                           Person
                            - name=John Doe""";
 
-        Assertions.assertEquals(expected, JWeaver.Internal.bullet().excludeFields(List.of("password")).weave(person));
+        Assertions.assertEquals(expected, JWeaver.Advanced.bullet().excludeFields(List.of("password")).weave(person));
     }
 
     @Test
@@ -299,7 +299,7 @@ class BulletWeaverTest {
                           Person
                            - name=John Doe""";
 
-        Assertions.assertEquals(expected, JWeaver.Internal.bullet().includeFields(List.of("name")).weave(person));
+        Assertions.assertEquals(expected, JWeaver.Advanced.bullet().includeFields(List.of("name")).weave(person));
     }
 
     @Test
@@ -309,7 +309,7 @@ class BulletWeaverTest {
         Person person = new Person("Jane Doe", LocalDate.of(1990, 1, 1));
         String expected = " - name=Jane Doe\n - birthday=1990-01-01";
 
-        Assertions.assertEquals(expected, JWeaver.Internal.bullet().omitClassName().weave(person));
+        Assertions.assertEquals(expected, JWeaver.Advanced.bullet().omitClassName().weave(person));
     }
 
     @Test
@@ -336,7 +336,7 @@ class BulletWeaverTest {
                             - name=John Doe
                             - hairColor=blonde""";
 
-        Assertions.assertEquals(expected, JWeaver.Internal.bullet().showInheritedFields().weave(person));
+        Assertions.assertEquals(expected, JWeaver.Advanced.bullet().showInheritedFields().weave(person));
     }
 
     @Test
@@ -349,7 +349,7 @@ class BulletWeaverTest {
                            - birthday=1990-01-01
                            - name=John Doe""";
 
-        Assertions.assertEquals(expected, JWeaver.Internal.bullet().orderFieldsAlphabetically().weave(person));
+        Assertions.assertEquals(expected, JWeaver.Advanced.bullet().orderFieldsAlphabetically().weave(person));
     }
 
     @Test
@@ -362,7 +362,7 @@ class BulletWeaverTest {
                            - listOfLists
                              - (0)
                              - (1)""";
-        Assertions.assertEquals(expected, JWeaver.Internal.bullet().maxDepth(3).weave(person));
+        Assertions.assertEquals(expected, JWeaver.Advanced.bullet().maxDepth(3).weave(person));
     }
 
     @Test
@@ -376,7 +376,7 @@ class BulletWeaverTest {
                              - (0) a
                              - (1) a
                              - 3 more""";
-        Assertions.assertEquals(expected, JWeaver.Internal.bullet().maxSequenceLength(2).weave(entity));
+        Assertions.assertEquals(expected, JWeaver.Advanced.bullet().maxSequenceLength(2).weave(entity));
     }
 
     @Test
@@ -390,7 +390,7 @@ class BulletWeaverTest {
                              - [0] a
                              - [1] a
                              - 3 more""";
-        Assertions.assertEquals(expected, JWeaver.Internal.bullet().maxSequenceLength(2).weave(entity));
+        Assertions.assertEquals(expected, JWeaver.Advanced.bullet().maxSequenceLength(2).weave(entity));
     }
 
     @Test
@@ -398,7 +398,7 @@ class BulletWeaverTest {
         record Car(String brand, Color color) {}
         record Person(String name, Car car) {}
 
-        BulletWeaver weaver = JWeaver.Internal.bullet();
+        BulletWeaver weaver = JWeaver.Advanced.bullet();
 
         Person first = new Person("Jane", new Car("Volvo", Color.BLUE));
         String firstExpected = """
@@ -436,7 +436,7 @@ class BulletWeaverTest {
                              # [1] Person
                                > age=12""";
 
-        String actual = JWeaver.Internal.bullet().firstLevelBulletChar('*')
+        String actual = JWeaver.Advanced.bullet().firstLevelBulletChar('*')
                                            .secondLevelBulletChar('#')
                                            .deeperLevelBulletChar('>')
                                .weave(person);
@@ -454,6 +454,6 @@ class BulletWeaverTest {
                              - name=John Doe
                              - birthday=1990-01-01""";
 
-        Assertions.assertEquals(expected, JWeaver.Internal.bullet().indentation(4).weave(person));
+        Assertions.assertEquals(expected, JWeaver.Advanced.bullet().indentation(4).weave(person));
     }
 }

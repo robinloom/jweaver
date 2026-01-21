@@ -13,7 +13,7 @@ class WeaveNameTest {
     void testDynamicWeaver() {
         WeaveNameTest.Person person = new WeaveNameTest.Person("John", "Gina", "Martin");
         String expected = "Person[name=John, Mom=Gina, Dad=Martin]";
-        Assertions.assertEquals(expected, JWeaver.Internal.flat().weave(person));
+        Assertions.assertEquals(expected, JWeaver.Advanced.flat().weave(person));
     }
 
     @Test
@@ -24,7 +24,7 @@ class WeaveNameTest {
                           |-- name=John
                           |-- Mom=Gina
                           `-- Dad=Martin""";
-        Assertions.assertEquals(expected, JWeaver.Internal.tree().weave(person));
+        Assertions.assertEquals(expected, JWeaver.Advanced.tree().weave(person));
     }
 
     @Test
@@ -35,7 +35,7 @@ class WeaveNameTest {
                            - name=John
                            - Mom=Gina
                            - Dad=Martin""";
-        Assertions.assertEquals(expected, JWeaver.Internal.bullet().weave(person));
+        Assertions.assertEquals(expected, JWeaver.Advanced.bullet().weave(person));
     }
 
     @Test
@@ -47,6 +47,6 @@ class WeaveNameTest {
                          │ Mom  : Gina   │
                          │ Dad  : Martin │
                          ╰───────────────╯""";
-        Assertions.assertEquals(expected, JWeaver.Internal.card().weave(person));
+        Assertions.assertEquals(expected, JWeaver.Advanced.card().weave(person));
     }
 }
