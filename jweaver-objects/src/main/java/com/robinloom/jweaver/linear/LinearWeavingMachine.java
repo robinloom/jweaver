@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.robinloom.jweaver.flat;
+package com.robinloom.jweaver.linear;
 
 import com.robinloom.jweaver.commons.WeavingMachine;
 import com.robinloom.jweaver.util.FieldOperations;
@@ -24,11 +24,11 @@ import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Iterator;
 
-final class FlatWeavingMachine extends WeavingMachine {
+final class LinearWeavingMachine extends WeavingMachine {
 
-    private final FlatConfig config;
+    private final LinearConfig config;
 
-    public FlatWeavingMachine(FlatConfig config) {
+    public LinearWeavingMachine(LinearConfig config) {
         this.config = config;
     }
 

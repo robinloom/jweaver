@@ -13,7 +13,7 @@ class WeaveRedactTest {
     void testDynamicWeaver() {
         Account account = new Account("John0815", "password");
         String expected = "Account[name=John0815, password=***]";
-        Assertions.assertEquals(expected, JWeaver.Advanced.flat().weave(account));
+        Assertions.assertEquals(expected, JWeaver.Advanced.linear().weave(account));
     }
 
     @Test

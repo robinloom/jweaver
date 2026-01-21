@@ -13,7 +13,7 @@ class WeaveIgnoreTest {
     void testDynamicWeaver() {
         WeaveIgnoreTest.Account account = new WeaveIgnoreTest.Account("John0815", "password");
         String expected = "Account[name=John0815]";
-        Assertions.assertEquals(expected, JWeaver.Advanced.flat().weave(account));
+        Assertions.assertEquals(expected, JWeaver.Advanced.linear().weave(account));
     }
 
     @Test

@@ -13,7 +13,7 @@ class WeaveNameTest {
     void testDynamicWeaver() {
         WeaveNameTest.Person person = new WeaveNameTest.Person("John", "Gina", "Martin");
         String expected = "Person[name=John, Mom=Gina, Dad=Martin]";
-        Assertions.assertEquals(expected, JWeaver.Advanced.flat().weave(person));
+        Assertions.assertEquals(expected, JWeaver.Advanced.linear().weave(person));
     }
 
     @Test

@@ -17,8 +17,8 @@ class BulletWeaverTest {
 
     @Test
     void testJdkClassesToString() {
-        Assertions.assertEquals("Test", JWeaver.Advanced.flat().weave("Test"));
-        Assertions.assertEquals("[]", JWeaver.Advanced.flat().weave(List.of()));
+        Assertions.assertEquals("Test", JWeaver.Advanced.linear().weave("Test"));
+        Assertions.assertEquals("[]", JWeaver.Advanced.linear().weave(List.of()));
     }
 
     @Test

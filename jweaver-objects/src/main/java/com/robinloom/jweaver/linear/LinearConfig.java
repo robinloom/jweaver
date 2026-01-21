@@ -14,12 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.robinloom.jweaver.flat;
+package com.robinloom.jweaver.linear;
 
 import com.robinloom.jweaver.commons.Properties;
 import com.robinloom.jweaver.commons.WeaverConfig;
 
-class FlatConfig extends WeaverConfig {
+class LinearConfig extends WeaverConfig {
 
     private String classNamePrefix;
     private String classNameSuffix;
@@ -28,7 +28,7 @@ class FlatConfig extends WeaverConfig {
     private String fieldSeparator;
     private String globalSuffix;
 
-    public FlatConfig() {
+    public LinearConfig() {
         classNamePrefix = Properties.DYNAMIC_CLASS_NAME_PREFIX.get("");
         classNameSuffix = Properties.DYNAMIC_CLASS_NAME_SUFFIX.get("");
         classNameFieldsSeparator = Properties.DYNAMIC_CLASSNAME_FIELDS_SEPARATOR.get("[");

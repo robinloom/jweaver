@@ -19,7 +19,7 @@ package com.robinloom.jweaver;
 import com.robinloom.jweaver.bullet.BulletWeaver;
 import com.robinloom.jweaver.card.CardWeaver;
 import com.robinloom.jweaver.commons.Weaver;
-import com.robinloom.jweaver.flat.FlatWeaver;
+import com.robinloom.jweaver.linear.LinearWeaver;
 import com.robinloom.jweaver.tree.TreeWeaver;
 
 /**
@@ -48,8 +48,8 @@ import com.robinloom.jweaver.tree.TreeWeaver;
  * full control:</p>
  *
  * <pre>{@code
- * String treeResult = JWeaver.Internal.tree().weave(myObject);
- * String bulletResult = JWeaver.Internal.bullet().weave(myObject);
+ * String treeResult = JWeaver.Advanced.tree().weave(myObject);
+ * String bulletResult = JWeaver.Advanced.bullet().weave(myObject);
  * }</pre>
  *
  * <p>This design keeps the API minimal and safe for most users while allowing
@@ -57,7 +57,7 @@ import com.robinloom.jweaver.tree.TreeWeaver;
  */
 public final class JWeaver {
 
-    private static final Weaver DEFAULT_WEAVER = new FlatWeaver();
+    private static final Weaver DEFAULT_WEAVER = new LinearWeaver();
 
     private JWeaver() {}
 
@@ -81,7 +81,7 @@ public final class JWeaver {
     public static final class Advanced {
 
         /** Access FlatWeaver explicitly */
-        public static FlatWeaver flat() { return new FlatWeaver(); }
+        public static LinearWeaver linear() { return new LinearWeaver(); }
 
         /** Access TreeWeaver explicitly */
         public static TreeWeaver tree() { return new TreeWeaver(); }

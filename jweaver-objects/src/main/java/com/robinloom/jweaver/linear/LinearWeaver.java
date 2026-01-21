@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.robinloom.jweaver.flat;
+package com.robinloom.jweaver.linear;
 
 import com.robinloom.jweaver.annotation.WeaveName;
 import com.robinloom.jweaver.annotation.WeaveRedact;
@@ -26,7 +26,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 /**
- * DynamicWeaver generates a string representation for a given object by combining
+ * LinearWeaver generates a string representation for a given object by combining
  * the object information (class name, field names, values) with a set of separator strings.
  * The set of separator strings is dynamically configurable.
  * <p>
@@ -35,17 +35,17 @@ import java.util.*;
  * Person[name=John Doe, birthday=1990-01-01]
  * </pre>
  */
-public class FlatWeaver implements Weaver {
+public class LinearWeaver implements Weaver {
 
     protected static final ThreadLocal<Set<Object>> history
             = ThreadLocal.withInitial(() -> Collections.newSetFromMap(new IdentityHashMap<>()));
 
-    private final FlatConfig config;
-    private final FlatWeavingMachine machine;
+    private final LinearConfig config;
+    private final LinearWeavingMachine machine;
 
-    public FlatWeaver() {
-        this.config = new FlatConfig();
-        this.machine = new FlatWeavingMachine(config);
+    public LinearWeaver() {
+        this.config = new LinearConfig();
+        this.machine = new LinearWeavingMachine(config);
     }
 
     /**
@@ -53,7 +53,7 @@ public class FlatWeaver implements Weaver {
      * The result will be a multiline output.
      * @return instance for chaining
      */
-    public FlatWeaver multiline() {
+    public LinearWeaver multiline() {
         config.setFieldSeparator("\n");
         config.setClassNameFieldsSeparator("\n");
         config.setGlobalSuffix("");
@@ -66,7 +66,7 @@ public class FlatWeaver implements Weaver {
      * @param classNamePrefix the string to use
      * @return instance for chaining
      */
-    public FlatWeaver classNamePrefix(String classNamePrefix) {
+    public LinearWeaver classNamePrefix(String classNamePrefix) {
         config.setClassNamePrefix(classNamePrefix);
         return this;
     }
@@ -77,7 +77,7 @@ public class FlatWeaver implements Weaver {
      * @param classNameSuffix the string to use
      * @return instance for chaining
      */
-    public FlatWeaver classNameSuffix(String classNameSuffix) {
+    public LinearWeaver classNameSuffix(String classNameSuffix) {
         config.setClassNameSuffix(classNameSuffix);
         return this;
     }
@@ -89,7 +89,7 @@ public class FlatWeaver implements Weaver {
      * @param separator the separator string to use
      * @return instance for chaining
      */
-    public FlatWeaver classNameFieldsSeparator(String separator) {
+    public LinearWeaver classNameFieldsSeparator(String separator) {
         config.setClassNameFieldsSeparator(separator);
         return this;
     }
@@ -100,7 +100,7 @@ public class FlatWeaver implements Weaver {
      * @param separator the separator string to use
      * @return instance for chaining
      */
-    public FlatWeaver fieldValueSeparator(String separator) {
+    public LinearWeaver fieldValueSeparator(String separator) {
         config.setFieldValueSeparator(separator);
         return this;
     }
@@ -111,7 +111,7 @@ public class FlatWeaver implements Weaver {
      * @param separator the separator string to use.
      * @return instance for chaining
      */
-    public FlatWeaver fieldSeparator(String separator) {
+    public LinearWeaver fieldSeparator(String separator) {
         config.setFieldSeparator(separator);
         return this;
     }
@@ -122,7 +122,7 @@ public class FlatWeaver implements Weaver {
      * @param suffix the string to be used.
      * @return instance for chaining.
      */
-    public FlatWeaver globalSuffix(String suffix) {
+    public LinearWeaver globalSuffix(String suffix) {
         config.setGlobalSuffix(suffix);
         return this;
     }
@@ -133,7 +133,7 @@ public class FlatWeaver implements Weaver {
      * @param maxSequenceLength an integer value
      * @return instance for chaining
      */
-    public FlatWeaver maxSequenceLength(int maxSequenceLength) {
+    public LinearWeaver maxSequenceLength(int maxSequenceLength) {
         config.setMaxSequenceLength(maxSequenceLength);
         return this;
     }
@@ -144,7 +144,7 @@ public class FlatWeaver implements Weaver {
      * @param fields list of strings containing included field names
      * @return instance for chaining
      */
-    public FlatWeaver includeFields(List<String> fields) {
+    public LinearWeaver includeFields(List<String> fields) {
         config.setIncludedFields(fields);
         config.setExcludedFields(List.of());
         return this;
@@ -156,7 +156,7 @@ public class FlatWeaver implements Weaver {
      * @param fields list of strings containing excluded field names
      * @return instance for chaining
      */
-    public FlatWeaver excludeFields(List<String> fields) {
+    public LinearWeaver excludeFields(List<String> fields) {
         config.setExcludedFields(fields);
         config.setIncludedFields(List.of());
         return this;
@@ -167,7 +167,7 @@ public class FlatWeaver implements Weaver {
      * By default, the class name is included.
      * @return instance for chaining
      */
-    public FlatWeaver omitClassName() {
+    public LinearWeaver omitClassName() {
         config.setOmitClassName(true);
         return this;
     }
@@ -177,7 +177,7 @@ public class FlatWeaver implements Weaver {
      * firstName -> FirstName
      * @return instance for chaining
      */
-    public FlatWeaver capitalizeFields() {
+    public LinearWeaver capitalizeFields() {
         config.setCapitalizeFields(true);
         return this;
     }
@@ -186,7 +186,7 @@ public class FlatWeaver implements Weaver {
      * Enables the printing of data types
      * @return instance for chaining
      */
-    public FlatWeaver showDataTypes() {
+    public LinearWeaver showDataTypes() {
         config.setShowDataTypes(true);
         return this;
     }
@@ -195,7 +195,7 @@ public class FlatWeaver implements Weaver {
      * Activates the inclusion of inherited fields.
      * @return instance for chaining
      */
-    public FlatWeaver showInheritedFields() {
+    public LinearWeaver showInheritedFields() {
         config.setShowInheritedFields(true);
         return this;
     }
@@ -204,7 +204,7 @@ public class FlatWeaver implements Weaver {
      * Will order field names alphabetically before printing.
      * @return instance for chaining
      */
-    public FlatWeaver orderFieldsAlphabetically() {
+    public LinearWeaver orderFieldsAlphabetically() {
         config.setOrderFieldsAlphabetically(true);
         return this;
     }
