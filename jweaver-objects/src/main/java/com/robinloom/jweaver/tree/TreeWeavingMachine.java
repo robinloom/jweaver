@@ -20,12 +20,6 @@ import com.robinloom.jweaver.commons.WeavingMachine;
 
 final class TreeWeavingMachine extends WeavingMachine {
 
-    private final TreeConfig config;
-
-    TreeWeavingMachine(TreeConfig config) {
-        this.config = config;
-    }
-
     void append(String string) {
         delegate.append(string);
         newline();
@@ -41,17 +35,17 @@ final class TreeWeavingMachine extends WeavingMachine {
     }
 
     void appendBranch() {
-        delegate.append(config.getBranchChar());
+        delegate.append("|");
         delegate.append("-- ");
     }
 
     void appendLastBranch() {
-        delegate.append(config.getLastBranchChar());
+        delegate.append("`");
         delegate.append("-- ");
     }
 
     public boolean globalLimitReached() {
-        return delegate.length() >= config.getGlobalLengthLimit();
+        return delegate.length() >= 10_000;
     }
 
 }

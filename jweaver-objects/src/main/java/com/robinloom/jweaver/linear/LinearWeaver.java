@@ -16,6 +16,8 @@
  */
 package com.robinloom.jweaver.linear;
 
+import com.robinloom.jweaver.Mode;
+import com.robinloom.jweaver.annotation.WeaveIgnore;
 import com.robinloom.jweaver.annotation.WeaveName;
 import com.robinloom.jweaver.annotation.WeaveRedact;
 import com.robinloom.jweaver.commons.Weaver;
@@ -40,173 +42,10 @@ public class LinearWeaver implements Weaver {
     protected static final ThreadLocal<Set<Object>> history
             = ThreadLocal.withInitial(() -> Collections.newSetFromMap(new IdentityHashMap<>()));
 
-    private final LinearConfig config;
-    private final LinearWeavingMachine machine;
+    public LinearWeaver() {}
 
-    public LinearWeaver() {
-        this.config = new LinearConfig();
-        this.machine = new LinearWeavingMachine(config);
-    }
-
-    /**
-     * Sets newline '\n' as separator for fields and for classname and fields.
-     * The result will be a multiline output.
-     * @return instance for chaining
-     */
-    public LinearWeaver multiline() {
-        config.setFieldSeparator("\n");
-        config.setClassNameFieldsSeparator("\n");
-        config.setGlobalSuffix("");
-        return this;
-    }
-
-    /**
-     * Sets a string to be placed before the class name.
-     * Default is empty string.
-     * @param classNamePrefix the string to use
-     * @return instance for chaining
-     */
-    public LinearWeaver classNamePrefix(String classNamePrefix) {
-        config.setClassNamePrefix(classNamePrefix);
-        return this;
-    }
-
-    /**
-     * Sets a string to be placed after the class name.
-     * Default is empty string.
-     * @param classNameSuffix the string to use
-     * @return instance for chaining
-     */
-    public LinearWeaver classNameSuffix(String classNameSuffix) {
-        config.setClassNameSuffix(classNameSuffix);
-        return this;
-    }
-
-    /**
-     * Sets a string to separate the class name and the fields to be printed.
-     * Will be between the class name suffix and the first field.
-     * Default string is "[".
-     * @param separator the separator string to use
-     * @return instance for chaining
-     */
-    public LinearWeaver classNameFieldsSeparator(String separator) {
-        config.setClassNameFieldsSeparator(separator);
-        return this;
-    }
-
-    /**
-     * Sets a string to separate the field name and the corresponding value.
-     * Default string is "=".
-     * @param separator the separator string to use
-     * @return instance for chaining
-     */
-    public LinearWeaver fieldValueSeparator(String separator) {
-        config.setFieldValueSeparator(separator);
-        return this;
-    }
-
-    /**
-     * Sets a string that is used to separate the printed fields.
-     * Default string is ","
-     * @param separator the separator string to use.
-     * @return instance for chaining
-     */
-    public LinearWeaver fieldSeparator(String separator) {
-        config.setFieldSeparator(separator);
-        return this;
-    }
-
-    /**
-     * Sets a string that is placed at the end of the generated string.
-     * Default string is "]".
-     * @param suffix the string to be used.
-     * @return instance for chaining.
-     */
-    public LinearWeaver globalSuffix(String suffix) {
-        config.setGlobalSuffix(suffix);
-        return this;
-    }
-
-    /**
-     * Sets the maximum length of collections and arrays to be included in the output.
-     * Elements that exceed the limit will be summarized (... 57 more).
-     * @param maxSequenceLength an integer value
-     * @return instance for chaining
-     */
-    public LinearWeaver maxSequenceLength(int maxSequenceLength) {
-        config.setMaxSequenceLength(maxSequenceLength);
-        return this;
-    }
-
-    /**
-     * Sets the names of fields that should be included in the output.
-     * By default, every field is included.
-     * @param fields list of strings containing included field names
-     * @return instance for chaining
-     */
-    public LinearWeaver includeFields(List<String> fields) {
-        config.setIncludedFields(fields);
-        config.setExcludedFields(List.of());
-        return this;
-    }
-
-    /**
-     * Sets the names of fields that should be excluded from the output.
-     * By default, no field is excluded.
-     * @param fields list of strings containing excluded field names
-     * @return instance for chaining
-     */
-    public LinearWeaver excludeFields(List<String> fields) {
-        config.setExcludedFields(fields);
-        config.setIncludedFields(List.of());
-        return this;
-    }
-
-    /**
-     * Determines if the class name should be omitted when printing.
-     * By default, the class name is included.
-     * @return instance for chaining
-     */
-    public LinearWeaver omitClassName() {
-        config.setOmitClassName(true);
-        return this;
-    }
-
-    /**
-     * Enables capitalization of field names.
-     * firstName -> FirstName
-     * @return instance for chaining
-     */
-    public LinearWeaver capitalizeFields() {
-        config.setCapitalizeFields(true);
-        return this;
-    }
-
-    /**
-     * Enables the printing of data types
-     * @return instance for chaining
-     */
-    public LinearWeaver showDataTypes() {
-        config.setShowDataTypes(true);
-        return this;
-    }
-
-    /**
-     * Activates the inclusion of inherited fields.
-     * @return instance for chaining
-     */
-    public LinearWeaver showInheritedFields() {
-        config.setShowInheritedFields(true);
-        return this;
-    }
-
-    /**
-     * Will order field names alphabetically before printing.
-     * @return instance for chaining
-     */
-    public LinearWeaver orderFieldsAlphabetically() {
-        config.setOrderFieldsAlphabetically(true);
-        return this;
+    public String weave(Object object) {
+        return weave(object, Mode.INLINE);
     }
 
     /**
@@ -217,7 +56,9 @@ public class LinearWeaver implements Weaver {
      * @param object object to generate a string representation for
      * @return a well-structured, human-readable representation of that object
      */
-    public String weave(Object object) {
+    public String weave(Object object, Mode mode) {
+        LinearWeavingMachine machine = new LinearWeavingMachine(mode);
+
         if (object == null) {
             return "null";
         }
@@ -231,23 +72,17 @@ public class LinearWeaver implements Weaver {
             history.get().add(object);
         }
 
-        if (config.isIncludeClassName()) {
-            machine.appendClassName(object.getClass().getSimpleName());
-        }
+        machine.appendClassName(object.getClass().getSimpleName());
 
         List<Field> fields;
-        if (config.isShowInheritedFields()) {
+        if (mode == Mode.MULTILINE_VERBOSE) {
             fields = FieldOperations.getAllFields(object.getClass());
         } else {
             fields = FieldOperations.getFields(object.getClass());
         }
 
-        if (config.isOrderFieldsAlphabetically()) {
-            fields.sort(Comparator.comparing(Field::getName));
-        }
-
         fields = fields.stream()
-                       .filter(config::isIncluded)
+                       .filter(f -> !f.isAnnotationPresent(WeaveIgnore.class))
                        .toList();
 
         for (Field field : fields) {

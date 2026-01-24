@@ -1,15 +1,15 @@
 package com.robinloom.jweaver.logging;
 
-import com.robinloom.jweaver.JWeaver;
+import com.robinloom.jweaver.Mode;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 
 public class JWeaverLoggerTest {
 
     Logger LOGGER_BY_CLASS = LoggerFactory.getLogger(JWeaverLoggerTest.class);
-    Logger LOGGER_BY_CLASS_TREE = LoggerFactory.getLogger(JWeaverLoggerTest.class, JWeaver.Advanced.tree());
+    Logger LOGGER_BY_CLASS_TREE = LoggerFactory.getLogger(JWeaverLoggerTest.class, Mode.TREE);
     Logger LOGGER_BY_NAME = LoggerFactory.getLogger("Test");
-    Logger LOGGER_BY_NAME_BULLET = LoggerFactory.getLogger("Test", JWeaver.Advanced.bullet());
+    Logger LOGGER_BY_NAME_BULLET = LoggerFactory.getLogger("Test", Mode.BULLET);
 
     record Person(String name, int age) {}
     record Car(String name, int year) {}

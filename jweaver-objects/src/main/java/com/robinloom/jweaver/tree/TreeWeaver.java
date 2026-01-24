@@ -16,6 +16,7 @@
  */
 package com.robinloom.jweaver.tree;
 
+import com.robinloom.jweaver.Mode;
 import com.robinloom.jweaver.commons.Weaver;
 import com.robinloom.jweaver.structure.NestedNode;
 import com.robinloom.jweaver.structure.NestedStructureBuilder;
@@ -39,128 +40,10 @@ import java.util.List;
  */
 public class TreeWeaver implements Weaver {
     
-    private final TreeConfig config;
-    private final NestedStructureBuilder nestedStructureBuilder;
-    private final TreeWeavingMachine machine;
+    private final TreeWeavingMachine machine = new TreeWeavingMachine();
 
-    public TreeWeaver() {
-        config = new TreeConfig();
-        nestedStructureBuilder = new NestedStructureBuilder(config);
-        machine = new TreeWeavingMachine(config);
-    }
-
-    /**
-     * Sets the maximum depth for the resulting tree.
-     * @param maxDepth an integer for the maximum depth
-     * @return instance for chaining
-     */
-    public TreeWeaver maxDepth(int maxDepth) {
-        config.setMaxDepth(maxDepth);
-        return this;
-    }
-
-    /**
-     * Sets the maximum length of collections and arrays to be included in the output.
-     * Elements that exceed the limit will be summarized (... 57 more).
-     * @param maxSequenceLength an integer value
-     * @return instance for chaining
-     */
-    public TreeWeaver maxSequenceLength(int maxSequenceLength) {
-        config.setMaxSequenceLength(maxSequenceLength);
-        return this;
-    }
-
-    /**
-     * Sets the character that will be used for a simple branch of the tree.
-     * Default is '|'
-     * @param branchChar the character to use
-     * @return instance for chaining
-     */
-    public TreeWeaver branchChar(char branchChar) {
-        config.setBranchChar(branchChar);
-        return this;
-    }
-
-    /**
-     * Sets the character that will be used as the last char of a branch on a certain level
-     * Default is '`'
-     * @param lastBranchChar the character to use
-     * @return instance for chaining
-     */
-    public TreeWeaver lastBranchChar(char lastBranchChar) {
-        config.setLastBranchChar(lastBranchChar);
-        return this;
-    }
-
-    /**
-     * Sets the names of fields that should be included in the output.
-     * By default, every field is included.
-     * @param fields list of strings containing included field names
-     * @return instance for chaining
-     */
-    public TreeWeaver includeFields(List<String> fields) {
-        config.setIncludedFields(fields);
-        config.setExcludedFields(List.of());
-        return this;
-    }
-
-    /**
-     * Sets the names of fields that should be excluded from the output.
-     * By default, no field is excluded.
-     * @param fields list of strings containing excluded field names
-     * @return instance for chaining
-     */
-    public TreeWeaver excludeFields(List<String> fields) {
-        config.setExcludedFields(fields);
-        config.setIncludedFields(List.of());
-        return this;
-    }
-
-    /**
-     * Determines if the class name should be omitted when printing.
-     * By default, the class name is included.
-     * @return instance for chaining
-     */
-    public TreeWeaver omitClassName() {
-        config.setOmitClassName(true);
-        return this;
-    }
-
-    /**
-     * Enables capitalization of field names.
-     * firstName -> FirstName
-     * @return instance for chaining
-     */
-    public TreeWeaver capitalizeFields() {
-        config.setCapitalizeFields(true);
-        return this;
-    }
-
-    /**
-     * Enables the printing of data types
-     * @return instance for chaining
-     */
-    public TreeWeaver showDataTypes() {
-        config.setShowDataTypes(true);
-        return this;
-    }
-
-    /**
-     * Activates the inclusion of inherited fields.
-     * @return instance for chaining
-     */
-    public TreeWeaver showInheritedFields() {
-        config.setShowInheritedFields(true);
-        return this;
-    }
-
-    /**
-     * Will order field names alphabetically before printing.
-     * @return instance for chaining
-     */
-    public TreeWeaver orderFieldsAlphabetically() {
-        config.setOrderFieldsAlphabetically(true);
-        return this;
+    public String weave(Object object) {
+        return weave(object, Mode.TREE);
     }
 
     /**
@@ -171,7 +54,7 @@ public class TreeWeaver implements Weaver {
      * @param object object to generate a string representation for
      * @return a well-structured, human-readable representation of that object
      */
-    public String weave(Object object) {
+    public String weave(Object object, Mode mode) {
         if (object == null) {
             return "null";
         }
@@ -179,7 +62,7 @@ public class TreeWeaver implements Weaver {
             return object.toString();
         }
 
-        NestedNode tree = nestedStructureBuilder.build(new NestedNode(object), object);
+        NestedNode tree = new NestedStructureBuilder().build(new NestedNode(object), object);
 
         List<Boolean> siblingsAtCurrentLevel = new ArrayList<>();
         traverseDepthFirst(tree, siblingsAtCurrentLevel);
@@ -195,9 +78,7 @@ public class TreeWeaver implements Weaver {
             return;
         }
         if (node.isRoot()) {
-            if (config.isIncludeClassName()) {
-                machine.append(node.getContent());
-            }
+           machine.append(node.getContent());
         } else {
             for (int i = 0; i < siblingsAtCurrentLevel.size() - 1; i++) {
                 if (siblingsAtCurrentLevel.get(i)) {

@@ -24,12 +24,40 @@ public abstract class WeavingMachine {
         delegate = new StringBuilder();
     }
 
+    public void append(Object object) {
+        delegate.append(object);
+    }
+
     public void newline() {
         delegate.append("\n");
     }
 
     public void space() {
         delegate.append(" ");
+    }
+
+    public void comma() {
+        delegate.append(",");
+    }
+
+    public void colon() {
+        delegate.append(":");
+    }
+
+    public void lbracket() {
+        delegate.append("[");
+    }
+
+    public void rbracket() {
+        delegate.append("]");
+    }
+
+    public void equals() {
+        delegate.append("=");
+    }
+
+    public void hyphen() {
+        delegate.append("-");
     }
 
     public void removeLastNewline() {

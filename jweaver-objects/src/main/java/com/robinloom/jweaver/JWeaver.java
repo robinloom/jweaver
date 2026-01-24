@@ -16,86 +16,56 @@
  */
 package com.robinloom.jweaver;
 
-import com.robinloom.jweaver.bullet.BulletWeaver;
-import com.robinloom.jweaver.card.CardWeaver;
 import com.robinloom.jweaver.commons.Weaver;
-import com.robinloom.jweaver.linear.LinearWeaver;
-import com.robinloom.jweaver.tree.TreeWeaver;
 
 /**
- * The main entry point for object weaving in JWeaver.
+ * Central entry point of the JWeaver API.
+ * <p>
+ * JWeaver provides a simple, zero-decision way to generate human-readable
+ * string representations of arbitrary Java objects using reflection.
+ * It is designed as a drop-in replacement for handwritten {@code toString()}
+ * implementations.
+ * <p>
+ * The default {@link #weave(Object)} method uses the {@link Mode#INLINE} mode,
+ * which produces a compact, single-line representation suitable for logging
+ * and debugging. Alternative output styles can be selected explicitly via
+ * {@link #weave(Object, Mode)}.
+ * <p>
+ * Internally, JWeaver selects an appropriate {@code Weaver} implementation
+ * based on the chosen {@link Mode}. Circular object references are detected
+ * automatically to ensure safe output.
+ * <p>
+ * This class is intentionally non-instantiable and exposes only static
+ * convenience methods.
  *
- * <p><b>Minimal usage:</b> Most users can simply call {@link #weave(Object)} to get a
- * human-readable, structured string representation of any object without having
- * to write a <code>toString()</code> method or make any configuration decisions:</p>
- *
- * <pre>{@code
- * String result = JWeaver.weave(myObject);
- * System.out.println(result);
- * }</pre>
- *
- * <p>The default weaving strategy automatically handles:
- * <ul>
- *   <li>Small objects: compact one-line output</li>
- *   <li>Large or nested objects: structured tree output</li>
- *   <li>Collections: limited to a safe number of elements</li>
- *   <li>Circular or reciprocal references</li>
- *   <li>Sensitive fields such as passwords or tokens (automatically ignored)</li>
- * </ul></p>
- *
- * <p><b>Advanced usage:</b> For power users who want specific renderers or a custom
- * context, the {@link Advanced} class provides access to different weavers and
- * full control:</p>
- *
- * <pre>{@code
- * String treeResult = JWeaver.Advanced.tree().weave(myObject);
- * String bulletResult = JWeaver.Advanced.bullet().weave(myObject);
- * }</pre>
- *
- * <p>This design keeps the API minimal and safe for most users while allowing
- * extensibility and experimentation for advanced scenarios.</p>
+ * @see Mode
  */
 public final class JWeaver {
-
-    private static final Weaver DEFAULT_WEAVER = new LinearWeaver();
 
     private JWeaver() {}
 
     /**
-     * Generates a string representation of the given object via reflections.
-     * Prints the class name followed by every accessible field.
-     * For JDK classes, a regular <code>toString()</code> result is returned.
-     * Detects reciprocal and circular object dependencies.
-     * @param object object to generate a string representation for
-     * @return a well-structured, human-readable representation of that object
+     * Generates a string representation of the given object using the default
+     * {@link Mode#INLINE} mode.
+     *
+     * @param object the object to generate a string representation for
+     * @return a human-readable string representation of the given object
      */
     public static String weave(Object object) {
-        return DEFAULT_WEAVER.weave(object);
+        return weave(object, Mode.INLINE);
     }
 
     /**
-     * Advanced API.
-     * For power users who want specific renderers or custom context.
-     * Not recommended for casual use.
+     * Generates a string representation of the given object using the specified
+     * {@link Mode}.
+     *
+     * @param object the object to generate a string representation for
+     * @param mode the output mode controlling structure and level of detail
+     * @return a human-readable string representation of the given object
      */
-    public static final class Advanced {
-
-        /** Access FlatWeaver explicitly */
-        public static LinearWeaver linear() { return new LinearWeaver(); }
-
-        /** Access TreeWeaver explicitly */
-        public static TreeWeaver tree() { return new TreeWeaver(); }
-
-        /** Access BulletWeaver explicitly */
-        public static BulletWeaver bullet() { return new BulletWeaver(); }
-
-        /** Access CardWeaver explicitly */
-        public static CardWeaver card() { return new CardWeaver(); }
-
-        /** Allows a custom context or renderer */
-        public static String weaveWith(Weaver weaver, Object object) {
-            return weaver.weave(object);
-        }
+    public static String weave(Object object, Mode mode) {
+        Weaver weaver = Mode.getWeaverForMode(mode);
+        return weaver.weave(object, mode);
     }
 
 }

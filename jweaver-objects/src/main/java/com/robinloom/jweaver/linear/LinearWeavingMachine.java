@@ -16,6 +16,7 @@
  */
 package com.robinloom.jweaver.linear;
 
+import com.robinloom.jweaver.Mode;
 import com.robinloom.jweaver.commons.WeavingMachine;
 import com.robinloom.jweaver.util.FieldOperations;
 
@@ -26,96 +27,128 @@ import java.util.Iterator;
 
 final class LinearWeavingMachine extends WeavingMachine {
 
-    private final LinearConfig config;
+    private final int SEQUENCE_LIMIT = 10;
+    private final Mode mode;
 
-    public LinearWeavingMachine(LinearConfig config) {
-        this.config = config;
+    public LinearWeavingMachine(Mode mode) {
+        this.mode = mode;
     }
 
     void appendClassName(String className) {
-        delegate.append(config.getClassNamePrefix());
-        delegate.append(className);
-        delegate.append(config.getClassNameSuffix());
-        delegate.append(config.getClassNameFieldsSeparator());
+        if (mode == Mode.INLINE) {
+            append(className);
+            lbracket();
+        } else if (mode.isMultiline()) {
+            equals();
+            space();
+            append(className);
+            space();
+            equals();
+        }
     }
 
     void appendDataType(Field field) {
-        if (config.isShowDataTypes()) {
-            delegate.append(field.getType().getSimpleName());
-            delegate.append(" ");
+        if (mode == Mode.MULTILINE_VERBOSE) {
+            append(field.getType().getSimpleName());
+            space();
         }
     }
 
     void appendFieldName(String field) {
-        if (config.isCapitalizeFields()) {
+        if (mode == Mode.MULTILINE_VERBOSE) {
             field = FieldOperations.capitalize(field);
         }
-        delegate.append(field);
-        delegate.append(config.getFieldValueSeparator());
+        append(field);
+        if (mode == Mode.INLINE) {
+            equals();
+        } else if (mode.isMultiline()) {
+            colon();
+            space();
+        }
     }
 
     void appendFieldValue(Object value, boolean isLast) {
-        delegate.append(value);
+        append(value);
         if (!isLast) {
-            delegate.append(config.getFieldSeparator());
+            if (mode == Mode.INLINE) {
+                comma();
+                space();
+            } else if (mode.isMultiline()) {
+                newline();
+            }
         }
     }
 
     void appendArrayFieldValue(Object value) {
-        delegate.append("[");
+        lbracket();
         int length = Array.getLength(value);
         for (int i = 0; i < length; i++) {
-            if (i == config.getMaxSequenceLength()) {
-                delegate.append("...");
+            if (i == SEQUENCE_LIMIT) {
+                append("...");
                 break;
             }
 
-            delegate.append(Array.get(value, i));
+            append(Array.get(value, i));
             if (i < length - 1) {
-                delegate.append(", ");
+                comma();
+                space();
             }
         }
-        delegate.append("]");
+        rbracket();
     }
 
      void appendCollectionFieldValue(Collection<?> value) {
-        delegate.append("[");
+        lbracket();
         Iterator<?> iterator = value.iterator();
         int i = 0;
         while (iterator.hasNext()) {
-            if (i == config.getMaxSequenceLength()) {
-                delegate.append("...");
+            if (i == SEQUENCE_LIMIT) {
+                append("...");
                 break;
             }
-            delegate.append(iterator.next());
+            append(iterator.next());
             if (i < value.size() - 1) {
-                delegate.append(", ");
+                comma();
+                space();
             }
 
             i++;
         }
-        delegate.append("]");
+        rbracket();
      }
 
     public void appendInaccessible() {
-        delegate.append("[?]");
+        append("[?]");
         newline();
-        delegate.append(config.getFieldSeparator());
+        if (mode == Mode.INLINE) {
+            comma();
+            space();
+        } else if (mode.isMultiline()) {
+            newline();
+        }
     }
 
     public void appendAfterException(Exception e) {
-        delegate.append("[ERROR] ");
-        delegate.append(e.getClass().getSimpleName());
+        append("[ERROR]");
+        space();
+        append(e.getClass().getSimpleName());
         newline();
-        delegate.append(config.getFieldSeparator());
+        if (mode == Mode.INLINE) {
+            comma();
+            space();
+        } else if (mode.isMultiline()) {
+            newline();
+        }
     }
 
     public boolean globalLimitReached() {
-        return delegate.length() >= config.getGlobalLengthLimit();
+        return delegate.length() >= 10_000;
     }
 
     public void appendSuffix() {
-        delegate.append(config.getGlobalSuffix());
+        if (mode == Mode.INLINE) {
+            rbracket();
+        }
     }
 
 }

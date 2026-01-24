@@ -16,9 +16,7 @@
  */
 package com.robinloom.jweaver.logging;
 
-import com.robinloom.jweaver.JWeaver;
-import com.robinloom.jweaver.commons.Weaver;
-import com.robinloom.jweaver.linear.LinearWeaver;
+import com.robinloom.jweaver.Mode;
 import org.slf4j.Logger;
 
 /**
@@ -28,44 +26,44 @@ import org.slf4j.Logger;
 public class LoggerFactory {
 
     /**
-     * Gets a {@link JWeaverLogger} pre-initialized with a {@link LinearWeaver}.
+     * Gets a {@link JWeaverLogger} pre-initialized with Mode.INLINE.
      * @param clazz class to return the Logger for
      * @return the JWeaverLogger wrapping a SLF4J Logger
      */
     public static Logger getLogger(Class<?> clazz) {
         Logger delegate = org.slf4j.LoggerFactory.getLogger(clazz);
-        return new JWeaverLogger(delegate, JWeaver.Advanced.linear());
+        return new JWeaverLogger(delegate, Mode.INLINE);
     }
 
     /**
-     * Gets a {@link JWeaverLogger} using the provided Weaver.
+     * Gets a {@link JWeaverLogger} using the provided Mode.
      * @param clazz class to return the Logger for
-     * @param weaver the Weaver to use for printing objects
+     * @param mode the Mode to use for printing objects
      * @return the JWeaverLogger wrapping a SLF4J Logger
      */
-    public static Logger getLogger(Class<?> clazz, Weaver weaver) {
+    public static Logger getLogger(Class<?> clazz, Mode mode) {
         Logger delegate = org.slf4j.LoggerFactory.getLogger(clazz);
-        return new JWeaverLogger(delegate, weaver);
+        return new JWeaverLogger(delegate, mode);
     }
 
     /**
-     * Gets a {@link JWeaverLogger} pre-initialized with a {@link LinearWeaver}.
+     * Gets a {@link JWeaverLogger} pre-initialized with Mode.INLINE.
      * @param name name of the SLF4J Logger
      * @return the JWeaverLogger wrapping a SLF4J Logger
      */
     public static Logger getLogger(String name) {
         Logger delegate = org.slf4j.LoggerFactory.getLogger(name);
-        return new JWeaverLogger(delegate, JWeaver.Advanced.linear());
+        return new JWeaverLogger(delegate, Mode.INLINE);
     }
 
     /**
-     * Gets a {@link JWeaverLogger} using the provided Weaver.
+     * Gets a {@link JWeaverLogger} using the provided Mode.
      * @param name name of the SLF4J Logger
-     * @param weaver the Weaver to use for printing objects
+     * @param mode the Mode to use for printing objects
      * @return the JWeaverLogger wrapping a SLF4J Logger
      */
-    public static Logger getLogger(String name, Weaver weaver) {
+    public static Logger getLogger(String name, Mode mode) {
         Logger delegate = org.slf4j.LoggerFactory.getLogger(name);
-        return new JWeaverLogger(delegate, weaver);
+        return new JWeaverLogger(delegate, mode);
     }
 }

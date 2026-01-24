@@ -25,10 +25,10 @@ final class CardWeavingMachine extends WeavingMachine {
     private int longestField = -1;
     private int overallWidth = -1;
 
-    private final CardConfig config;
+    private final BoxChars boxChars;
 
-    public CardWeavingMachine(CardConfig config) {
-        this.config = config;
+    public CardWeavingMachine() {
+        this.boxChars = BoxChars.UNICODE_LIGHT;
     }
 
     void determineLongestField(Map<String, String> wovenFields) {
@@ -41,34 +41,29 @@ final class CardWeavingMachine extends WeavingMachine {
         for (Map.Entry<String, String> entry : wovenFields.entrySet()) {
             overallWidth = Math.max(overallWidth, sub(entry).length() + 1);
         }
-        if (config.isIncludeClassName()) {
-            overallWidth = Math.max(overallWidth, clazzName.length() + 4);
-        }
+        overallWidth = Math.max(overallWidth, clazzName.length() + 4);
     }
 
     void appendClassname(String clazzName) {
-        delegate.append(config.getTlBoxChar());
-        if (config.isIncludeClassName()) {
-            space();
-            delegate.append(clazzName);
-            space();
-            delegate.append(config.getHBoxCharNTimes(overallWidth-clazzName.length()-3));
-        } else {
-            delegate.append(config.getHBoxCharNTimes(overallWidth-1));
-        }
-        delegate.append(config.getTrBoxChar());
+        delegate.append(boxChars.tl());
+        space();
+        delegate.append(clazzName);
+        space();
+        delegate.append(boxChars.h(overallWidth-clazzName.length()-3));
+
+        delegate.append(boxChars.tr());
     }
 
     void appendField(Map.Entry<String, String> field) {
         String sub = sub(field);
         delegate.append(sub);
         delegate.append(" ".repeat(overallWidth-sub.length()));
-        delegate.append(config.getVBoxChar());
+        delegate.append(boxChars.v());
     }
 
     String sub(Map.Entry<String, String> field) {
         StringBuilder sub = new StringBuilder();
-        sub.append(config.getVBoxChar());
+        sub.append(boxChars.v());
         sub.append(" ");
         sub.append(field.getKey());
         sub.append(" ".repeat(longestField-field.getKey().length()+1));
@@ -79,9 +74,9 @@ final class CardWeavingMachine extends WeavingMachine {
 
     void appendFooter() {
         newline();
-        delegate.append(config.getBlBoxChar());
-        delegate.append(config.getHBoxCharNTimes(overallWidth-1));
-        delegate.append(config.getBrBoxChar());
+        delegate.append(boxChars.bl());
+        delegate.append(boxChars.h(overallWidth-1));
+        delegate.append(boxChars.br());
     }
 
 }

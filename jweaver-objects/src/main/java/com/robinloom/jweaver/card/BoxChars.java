@@ -17,7 +17,10 @@
 package com.robinloom.jweaver.card;
 
 public record BoxChars(char tl, char tr, char bl, char br, char v, char h) {
+
     static final BoxChars UNICODE_LIGHT = new BoxChars('╭','╮','╰','╯','│','─');
-    static final BoxChars UNICODE_HEAVY = new BoxChars('┏','┓','┗','┛','┃','━');
-    static final BoxChars ASCII = new BoxChars('+', '+', '+', '+', '|', '-');
+
+    public String h(int n) {
+        return String.valueOf(this.h).repeat(n);
+    }
 }

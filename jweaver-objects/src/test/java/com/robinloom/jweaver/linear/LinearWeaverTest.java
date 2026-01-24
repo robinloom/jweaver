@@ -1,6 +1,7 @@
 package com.robinloom.jweaver.linear;
 
 import com.robinloom.jweaver.JWeaver;
+import com.robinloom.jweaver.Mode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -12,13 +13,13 @@ class LinearWeaverTest {
 
     @Test
     void testNullSafety() {
-        Assertions.assertEquals("null", JWeaver.Advanced.linear().weave(null));
+        Assertions.assertEquals("null", JWeaver.weave(null, Mode.INLINE));
     }
 
     @Test
     void testJdkClassesToString() {
-        Assertions.assertEquals("Test", JWeaver.Advanced.linear().weave("Test"));
-        Assertions.assertEquals("[]", JWeaver.Advanced.linear().weave(List.of()));
+        Assertions.assertEquals("Test", JWeaver.weave("Test", Mode.INLINE));
+        Assertions.assertEquals("[]", JWeaver.weave(List.of(), Mode.INLINE));
     }
 
     @Test
@@ -28,7 +29,7 @@ class LinearWeaverTest {
         Person person = new Person("John Doe", LocalDate.of(1990, 1, 1));
         String expected = "Person[name=John Doe, birthday=1990-01-01]";
 
-        Assertions.assertEquals(expected, JWeaver.Advanced.linear().weave(person));
+        Assertions.assertEquals(expected, JWeaver.weave(person, Mode.INLINE));
     }
 
     @Test
@@ -38,7 +39,7 @@ class LinearWeaverTest {
         Person person = new Person("Jane", new Person("Peter", null));
         String expected = "Person[name=Jane, neighbor=Person[name=Peter, neighbor=null]]";
 
-        Assertions.assertEquals(expected, JWeaver.Advanced.linear().weave(person));
+        Assertions.assertEquals(expected, JWeaver.weave(person, Mode.INLINE));
     }
 
     @Test
@@ -48,7 +49,7 @@ class LinearWeaverTest {
         Person person = new Person("Jane", List.of("Peter", "Judy"));
         String expected = "Person[name=Jane, childrenNames=[Peter, Judy]]";
 
-        Assertions.assertEquals(expected, JWeaver.Advanced.linear().weave(person));
+        Assertions.assertEquals(expected, JWeaver.weave(person, Mode.INLINE));
     }
 
     @Test
@@ -58,7 +59,7 @@ class LinearWeaverTest {
         Person person = new Person("Jane", List.of(new Person("Peter", List.of())));
         String expected = "Person[name=Jane, neighbors=[Person[name=Peter, neighbors=[]]]]";
 
-        Assertions.assertEquals(expected, JWeaver.Advanced.linear().weave(person));
+        Assertions.assertEquals(expected, JWeaver.weave(person, Mode.INLINE));
     }
 
     @Test
@@ -68,7 +69,7 @@ class LinearWeaverTest {
         Person person = new Person(new int[]{0,1,2});
         String expected = "Person[numbers=[0, 1, 2]]";
 
-        Assertions.assertEquals(expected, JWeaver.Advanced.linear().weave(person));
+        Assertions.assertEquals(expected, JWeaver.weave(person, Mode.INLINE));
     }
 
     @Test
@@ -78,7 +79,7 @@ class LinearWeaverTest {
         Person person = new Person(new String[]{"Anna", "Maria", "Quinn"});
         String expected = "Person[names=[Anna, Maria, Quinn]]";
 
-        Assertions.assertEquals(expected, JWeaver.Advanced.linear().weave(person));
+        Assertions.assertEquals(expected, JWeaver.weave(person, Mode.INLINE));
     }
 
     @Test
@@ -88,64 +89,7 @@ class LinearWeaverTest {
         Person person = new Person(new Person[]{new Person(null)});
         String expected = "Person[neighbors=[Person[neighbors=null]]]";
 
-        Assertions.assertEquals(expected, JWeaver.Advanced.linear().weave(person));
-    }
-
-    @Test
-    void testCustomClassNameFormat() {
-        record Person(String name, int age, boolean isTall) {}
-
-        Person person = new Person("Jane Doe", 18, false);
-        String expected = "$Person$[name=Jane Doe, age=18, isTall=false]";
-
-        Assertions.assertEquals(expected, JWeaver.Advanced.linear().classNamePrefix("$")
-                                                              .classNameSuffix("$")
-                                                              .classNameFieldsSeparator("[")
-                                                              .weave(person));
-    }
-
-    @Test
-    void testCustomFieldValueSeparator() {
-        record Person(String name, int age, boolean isTall) {}
-
-        Person person = new Person("Jane Doe", 18, false);
-        String expected = "Person[name:Jane Doe, age:18, isTall:false]";
-
-        Assertions.assertEquals(expected, JWeaver.Advanced.linear().fieldValueSeparator(":").weave(person));
-    }
-
-    @Test
-    void testCustomFieldSeparator() {
-        record Person(String name, int age, boolean isTall) {}
-
-        Person person = new Person("Jane Doe", 18, false);
-        String expected = "Person[name=Jane Doe --- age=18 --- isTall=false]";
-
-        Assertions.assertEquals(expected, JWeaver.Advanced.linear().fieldSeparator(" --- ").weave(person));
-    }
-
-    @Test
-    void testCustomGlobalSuffix() {
-        record Person(String name, int age, boolean isTall) {}
-
-        Person person = new Person("Jane Doe", 18, false);
-        String expected = "Person(name=Jane Doe, age=18, isTall=false)";
-
-        Assertions.assertEquals(expected, JWeaver.Advanced.linear().classNameFieldsSeparator("(").globalSuffix(")").weave(person));
-    }
-
-    @Test
-    void testMultilineSettings() {
-        record Person(String name, int age, boolean isTall) {}
-
-        Person person = new Person("Jane Doe", 18, false);
-        String expected = """
-                          Person
-                          name=Jane Doe
-                          age=18
-                          isTall=false""";
-
-        Assertions.assertEquals(expected, JWeaver.Advanced.linear().multiline().weave(person));
+        Assertions.assertEquals(expected, JWeaver.weave(person, Mode.INLINE));
     }
 
     @Test
@@ -155,7 +99,7 @@ class LinearWeaverTest {
 
             @Override
             public String toString() {
-                return JWeaver.Advanced.linear().weave(this);
+                return JWeaver.weave(this, Mode.INLINE);
             }
         }
 
@@ -175,7 +119,7 @@ class LinearWeaverTest {
 
             @Override
             public String toString() {
-                return JWeaver.Advanced.linear().weave(this);
+                return JWeaver.weave(this, Mode.INLINE);
             }
         }
 
@@ -189,128 +133,6 @@ class LinearWeaverTest {
         Assertions.assertDoesNotThrow(first::toString);
         Assertions.assertDoesNotThrow(second::toString);
         Assertions.assertDoesNotThrow(third::toString);
-    }
-
-    @Test
-    void testFieldCapitalization() {
-        record Person(String name, int age, boolean isTall) {}
-
-        Person person = new Person("Jane Doe", 18, false);
-        String expected = "Person[Name=Jane Doe, Age=18, IsTall=false]";
-
-        Assertions.assertEquals(expected, JWeaver.Advanced.linear().capitalizeFields().weave(person));
-    }
-
-    @Test
-    void testShowDataTypes() {
-        record Person(String name, int age, boolean isTall) {}
-
-        Person person = new Person("Jane Doe", 18, false);
-        String expected = "Person[String name=Jane Doe, int age=18, boolean isTall=false]";
-
-        Assertions.assertEquals(expected, JWeaver.Advanced.linear().showDataTypes().weave(person));
-    }
-
-    @Test
-    void testExcludeField() {
-        record Person(String name, char[] password) {}
-
-        Person person = new Person("John Doe", "password".toCharArray());
-        String expected = "Person[name=John Doe]";
-
-        Assertions.assertEquals(expected, JWeaver.Advanced.linear().excludeFields(List.of("password")).weave(person));
-    }
-
-    @Test
-    void testIncludeField() {
-        record Person(String name, char[] password) {}
-
-        Person person = new Person("John Doe", "password".toCharArray());
-        String expected = "Person[name=John Doe]";
-
-        Assertions.assertEquals(expected, JWeaver.Advanced.linear().includeFields(List.of("name")).weave(person));
-    }
-
-    @Test
-    void testOmitClassName() {
-        record Person(String name, int age, boolean isTall) {}
-
-        Person person = new Person("Jane Doe", 18, false);
-        String expected = "name=Jane Doe, age=18, isTall=false";
-
-        Assertions.assertEquals(expected, JWeaver.Advanced.linear().omitClassName().globalSuffix("").weave(person));
-    }
-
-    @Test
-    void testInheritance() {
-        class Human {
-            final String hairColor;
-
-            public Human(String hairColor) {
-                this.hairColor = hairColor;
-            }
-        }
-        class Person extends Human {
-            final String name;
-
-            public Person(String name, String hairColor) {
-                super(hairColor);
-                this.name = name;
-            }
-        }
-
-        Person person = new Person("John Doe", "blonde");
-        String expected = "Person[name=John Doe, hairColor=blonde]";
-
-        Assertions.assertEquals(expected, JWeaver.Advanced.linear().showInheritedFields().weave(person));
-    }
-
-    @Test
-    void testAlphabeticalOrder() {
-        record Person(String name, LocalDate birthday) {}
-
-        Person person = new Person("John Doe", LocalDate.of(1990, 1, 1));
-        String expected = "Person[birthday=1990-01-01, name=John Doe]";
-
-        Assertions.assertEquals(expected, JWeaver.Advanced.linear().orderFieldsAlphabetically().weave(person));
-    }
-
-    @Test
-    void testCutLongList() {
-        record Entity(List<Character> chars) {}
-
-        Entity entity = new Entity(List.of('a', 'a', 'a', 'a', 'a'));
-        String expected = """
-                          Entity[chars=[a, a, ...]]""";
-        Assertions.assertEquals(expected, JWeaver.Advanced.linear().maxSequenceLength(2).weave(entity));
-    }
-
-    @Test
-    void testCutLongArray() {
-        record Entity(char[] chars) {}
-
-        Entity entity = new Entity(new char[]{'a', 'a', 'a', 'a', 'a'});
-        String expected = """
-                          Entity[chars=[a, a, ...]]""";
-         Assertions.assertEquals(expected, JWeaver.Advanced.linear().maxSequenceLength(2).weave(entity));
-    }
-
-    @Test
-    void testReusable() {
-        record Car(String brand, Color color) {}
-        record Person(String name, Car car) {}
-
-        LinearWeaver weaver = JWeaver.Advanced.linear();
-
-        Person first = new Person("Jane", new Car("Volvo", Color.BLUE));
-        String firstExpected = "Person[name=Jane, car=Car[brand=Volvo, color=java.awt.Color[r=0,g=0,b=255]]]";
-
-        Assertions.assertEquals(firstExpected, weaver.weave(first));
-
-        Person second = new Person("John", new Car("Audi", Color.BLACK));
-        String secondExpected = "Person[name=John, car=Car[brand=Audi, color=java.awt.Color[r=0,g=0,b=0]]]";
-
-        Assertions.assertEquals(secondExpected, weaver.weave(second));
     }
 
 }

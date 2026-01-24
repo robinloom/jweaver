@@ -20,22 +20,16 @@ import com.robinloom.jweaver.commons.WeavingMachine;
 
 final class BulletWeavingMachine extends WeavingMachine {
 
-    private final BulletConfig config;
-
-    BulletWeavingMachine(BulletConfig config) {
-        this.config = config;
-    }
-
     void indent(int level) {
-        delegate.append(" ".repeat(config.getIndentation() * level - 1));
+        delegate.append(" ".repeat(2 * level - 1));
         if (level == 1) {
-            delegate.append(config.getFirstLevelBulletChar());
+            hyphen();
             space();
         } else if (level == 2) {
-            delegate.append(config.getSecondLevelBulletChar());
+            hyphen();
             space();
         } else if (level > 2) {
-            delegate.append(config.getDeeperLevelBulletChar());
+            hyphen();
             space();
         }
     }
@@ -46,6 +40,6 @@ final class BulletWeavingMachine extends WeavingMachine {
     }
 
     boolean globalLimitReached() {
-        return delegate.length() >= config.getGlobalLengthLimit();
+        return delegate.length() >= 10_000;
     }
 }

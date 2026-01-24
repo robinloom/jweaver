@@ -1,6 +1,7 @@
 package com.robinloom.jweaver.card;
 
 import com.robinloom.jweaver.JWeaver;
+import com.robinloom.jweaver.Mode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -12,13 +13,13 @@ public class CardWeaverTest {
 
     @Test
     void testNullSafety() {
-        Assertions.assertEquals("null", JWeaver.Advanced.card().weave(null));
+        Assertions.assertEquals("null", JWeaver.weave(null, Mode.CARD));
     }
 
     @Test
     void testJdkClassesToString() {
-        Assertions.assertEquals("Test", JWeaver.Advanced.card().weave("Test"));
-        Assertions.assertEquals("[]", JWeaver.Advanced.card().weave(List.of()));
+        Assertions.assertEquals("Test", JWeaver.weave("Test", Mode.CARD));
+        Assertions.assertEquals("[]", JWeaver.weave(List.of(), Mode.CARD));
     }
 
     @Test
@@ -32,7 +33,7 @@ public class CardWeaverTest {
                           │ birthday : 1990-01-01 │
                           ╰───────────────────────╯""";
 
-        Assertions.assertEquals(expected, JWeaver.Advanced.card().weave(person));
+        Assertions.assertEquals(expected, JWeaver.weave(person, Mode.CARD));
     }
 
     @Test
@@ -51,7 +52,7 @@ public class CardWeaverTest {
                 │ neighbor : Person@8e493f55 │
                 ╰────────────────────────────╯""";
 
-        Assertions.assertEquals(expected, JWeaver.Advanced.card().weave(person));
+        Assertions.assertEquals(expected, JWeaver.weave(person, Mode.CARD));
     }
 
     @Test
@@ -65,7 +66,7 @@ public class CardWeaverTest {
                           │ childrenNames : @List(2) │
                           ╰──────────────────────────╯""";
 
-        Assertions.assertEquals(expected, JWeaver.Advanced.card().weave(person));
+        Assertions.assertEquals(expected, JWeaver.weave(person, Mode.CARD));
     }
 
     @Test
@@ -78,7 +79,7 @@ public class CardWeaverTest {
                           │ name      : Jane     │
                           │ neighbors : @List(1) │
                           ╰──────────────────────╯""";
-        Assertions.assertEquals(expected, JWeaver.Advanced.card().weave(person));
+        Assertions.assertEquals(expected, JWeaver.weave(person, Mode.CARD));
     }
 
     @Test
@@ -92,7 +93,7 @@ public class CardWeaverTest {
                           │ numbers : int[3] │
                           ╰──────────────────╯""";
 
-        Assertions.assertEquals(expected, JWeaver.Advanced.card().weave(person));
+        Assertions.assertEquals(expected, JWeaver.weave(person, Mode.CARD));
     }
 
     @Test
@@ -105,7 +106,7 @@ public class CardWeaverTest {
                          │ names : String[3] │
                          ╰───────────────────╯""";
 
-        Assertions.assertEquals(expected, JWeaver.Advanced.card().weave(person));
+        Assertions.assertEquals(expected, JWeaver.weave(person, Mode.CARD));
     }
 
     @Test
@@ -118,7 +119,7 @@ public class CardWeaverTest {
                           │ neighbors : Person[1] │
                           ╰───────────────────────╯""";
 
-        Assertions.assertEquals(expected, JWeaver.Advanced.card().weave(person));
+        Assertions.assertEquals(expected, JWeaver.weave(person, Mode.CARD));
     }
 
     @Test
@@ -128,7 +129,7 @@ public class CardWeaverTest {
 
             @Override
             public String toString() {
-                return JWeaver.Advanced.card().weave(this);
+                return JWeaver.weave(this, Mode.CARD);
             }
         }
 
@@ -148,7 +149,7 @@ public class CardWeaverTest {
 
             @Override
             public String toString() {
-                return JWeaver.Advanced.card().weave(this);
+                return JWeaver.weave(this, Mode.CARD);
             }
         }
 
@@ -162,133 +163,5 @@ public class CardWeaverTest {
         Assertions.assertDoesNotThrow(first::toString);
         Assertions.assertDoesNotThrow(second::toString);
         Assertions.assertDoesNotThrow(third::toString);
-    }
-
-    @Test
-    void testExcludeField() {
-        record Person(String name, char[] password) {}
-
-        Person person = new Person("John Doe", "password".toCharArray());
-        String expected = """
-                         ╭ Person ─────────╮
-                         │ name : John Doe │
-                         ╰─────────────────╯""";
-
-        Assertions.assertEquals(expected, JWeaver.Advanced.card().excludeFields(List.of("password")).weave(person));
-    }
-
-    @Test
-    void testIncludeField() {
-        record Person(String name, char[] password) {
-        }
-
-        Person person = new Person("John Doe", "password".toCharArray());
-        String expected = """
-                         ╭ Person ─────────╮
-                         │ name : John Doe │
-                         ╰─────────────────╯""";
-
-        Assertions.assertEquals(expected, JWeaver.Advanced.card().includeFields(List.of("name")).weave(person));
-    }
-
-    @Test
-    void testOmitClassName() {
-        record Person(String name, LocalDate birthday) {}
-
-        Person person = new Person("John Doe", LocalDate.of(1990, 1, 1));
-        String expected = """
-                          ╭───────────────────────╮
-                          │ name     : John Doe   │
-                          │ birthday : 1990-01-01 │
-                          ╰───────────────────────╯""";
-
-        Assertions.assertEquals(expected, JWeaver.Advanced.card().omitClassName().weave(person));
-    }
-
-    @Test
-    void testFieldCapitalization() {
-        record Person(String name, int age, boolean isTall) {}
-
-        Person person = new Person("Jane Doe", 18, false);
-        String expected = """
-                          ╭ Person ───────────╮
-                          │ Name   : Jane Doe │
-                          │ Age    : 18       │
-                          │ IsTall : false    │
-                          ╰───────────────────╯""";
-
-        Assertions.assertEquals(expected, JWeaver.Advanced.card().capitalizeFields().weave(person));
-    }
-
-    @Test
-    void testShowDataTypes() {
-        record Person(String name, int age, boolean isTall) {}
-
-        Person person = new Person("Jane Doe", 18, false);
-        String expected = """
-                          ╭ Person ───────────────────╮
-                          │ String name    : Jane Doe │
-                          │ int age        : 18       │
-                          │ boolean isTall : false    │
-                          ╰───────────────────────────╯""";
-
-        Assertions.assertEquals(expected, JWeaver.Advanced.card().showDataTypes().weave(person));
-    }
-
-    @Test
-    void testInheritance() {
-        class Human {
-            final String hairColor;
-
-            public Human(String hairColor) {
-                this.hairColor = hairColor;
-            }
-        }
-        class Person extends Human {
-            final String name;
-
-            public Person(String name, String hairColor) {
-                super(hairColor);
-                this.name = name;
-            }
-        }
-
-        Person person = new Person("John Doe", "blonde");
-        String expected = """
-                          ╭ Person ──────────────╮
-                          │ name      : John Doe │
-                          │ hairColor : blonde   │
-                          ╰──────────────────────╯""";
-
-        Assertions.assertEquals(expected, JWeaver.Advanced.card().showInheritedFields().weave(person));
-    }
-
-    @Test
-    void testAsciiBoxChars() {
-        record Person(String name, LocalDate birthday) {}
-
-        Person person = new Person("John Doe", LocalDate.of(1990, 1, 1));
-        String expected = """
-                          + Person ---------------+
-                          | name     : John Doe   |
-                          | birthday : 1990-01-01 |
-                          +-----------------------+""";
-
-        Assertions.assertEquals(expected, JWeaver.Advanced.card().boxChars(BoxChars.ASCII).weave(person));
-    }
-
-    @Test
-    void testHeavyUnicodeBoxChars() {
-        record Person(String name, char[] password) {
-        }
-
-        Person person = new Person("John Doe", "password".toCharArray());
-        String expected = """
-                          ┏ Person ━━━━━━━━━━━━━┓
-                          ┃ name     : John Doe ┃
-                          ┃ password : char[8]  ┃
-                          ┗━━━━━━━━━━━━━━━━━━━━━┛""";
-
-        Assertions.assertEquals(expected, JWeaver.Advanced.card().boxChars(BoxChars.UNICODE_HEAVY).weave(person));
     }
 }

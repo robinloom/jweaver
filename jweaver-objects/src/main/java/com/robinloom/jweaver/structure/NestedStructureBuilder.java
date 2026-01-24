@@ -16,9 +16,9 @@
  */
 package com.robinloom.jweaver.structure;
 
+import com.robinloom.jweaver.annotation.WeaveIgnore;
 import com.robinloom.jweaver.annotation.WeaveName;
 import com.robinloom.jweaver.annotation.WeaveRedact;
-import com.robinloom.jweaver.commons.WeaverConfig;
 import com.robinloom.jweaver.util.FieldOperations;
 import com.robinloom.jweaver.util.TypeDictionary;
 
@@ -32,12 +32,10 @@ public class NestedStructureBuilder {
     protected static final ThreadLocal<Set<Object>> history
             = ThreadLocal.withInitial(() -> Collections.newSetFromMap(new IdentityHashMap<>()));
 
-    private final WeaverConfig config;
-    private int depth = 0;
+    private final int SEQUENCE_LIMIT = 10;
+    private final int MAX_DEPTH = 4;
 
-    public NestedStructureBuilder(WeaverConfig config) {
-        this.config = config;
-    }
+    private int depth = 0;
 
     public NestedNode build(NestedNode root, Object object) {
         if (history.get().contains(object)) {
@@ -47,43 +45,27 @@ public class NestedStructureBuilder {
         }
 
         depth++;
-        if (depth == config.getMaxDepth()) {
+        if (depth == MAX_DEPTH) {
             depth--;
             return root;
         }
 
-        List<Field> fields;
-        if (config.isShowInheritedFields()) {
-            fields = FieldOperations.getAllFields(object.getClass());
-        } else {
-            fields = FieldOperations.getFields(object.getClass());
-        }
-
-        if (config.isOrderFieldsAlphabetically()) {
-            fields.sort(Comparator.comparing(Field::getName));
-        }
+        List<Field> fields = FieldOperations.getFields(object.getClass());
 
         fields = fields.stream()
-                .filter(config::isIncluded)
+                .filter(f -> !f.isAnnotationPresent(WeaveIgnore.class))
                 .toList();
 
         for (Field field : fields) {
             try {
                 field.setAccessible(true);
                 String dataType = "";
-                if (config.isShowDataTypes()) {
-                    dataType = "{" + field.getType().getSimpleName() + "} ";
-                }
 
                 String fieldName;
                 if (field.isAnnotationPresent(WeaveName.class)) {
                     fieldName = field.getAnnotation(WeaveName.class).value();
                 } else {
                     fieldName = field.getName();
-                }
-
-                if (config.isCapitalizeFields()) {
-                    fieldName = FieldOperations.capitalize(fieldName);
                 }
 
                 fieldName = dataType + fieldName;
@@ -124,7 +106,7 @@ public class NestedStructureBuilder {
         NestedNode root = new NestedNode(fieldName);
 
         depth++;
-        if (depth == config.getMaxDepth()) {
+        if (depth == MAX_DEPTH) {
             depth--;
             return root;
         }
@@ -133,7 +115,7 @@ public class NestedStructureBuilder {
         for (Object item : collection) {
             String prefix = "(" + i + ") ";
 
-            if (i >= config.getMaxSequenceLength()) {
+            if (i >= SEQUENCE_LIMIT) {
                 root.addChild((collection.size()-i) + " more");
                 break;
             } else if (TypeDictionary.isSimpleType(item.getClass())) {
@@ -157,7 +139,7 @@ public class NestedStructureBuilder {
         NestedNode root = new NestedNode(fieldName);
 
         depth++;
-        if (depth == config.getMaxDepth()) {
+        if (depth == MAX_DEPTH) {
             depth--;
             return root;
         }
@@ -167,7 +149,7 @@ public class NestedStructureBuilder {
             Object item = Array.get(array, i);
             String prefix = "[" + i + "] ";
 
-            if (i >= config.getMaxSequenceLength()) {
+            if (i >= SEQUENCE_LIMIT) {
                 root.addChild((arrayLength-i) + " more");
                 break;
             } else if (TypeDictionary.isSimpleType(item.getClass())) {

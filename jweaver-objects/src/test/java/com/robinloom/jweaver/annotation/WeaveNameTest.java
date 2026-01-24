@@ -1,6 +1,7 @@
 package com.robinloom.jweaver.annotation;
 
 import com.robinloom.jweaver.JWeaver;
+import com.robinloom.jweaver.Mode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -10,10 +11,10 @@ class WeaveNameTest {
     }
 
     @Test
-    void testDynamicWeaver() {
+    void testLinearWeaver() {
         WeaveNameTest.Person person = new WeaveNameTest.Person("John", "Gina", "Martin");
         String expected = "Person[name=John, Mom=Gina, Dad=Martin]";
-        Assertions.assertEquals(expected, JWeaver.Advanced.linear().weave(person));
+        Assertions.assertEquals(expected, JWeaver.weave(person, Mode.INLINE));
     }
 
     @Test
@@ -24,7 +25,7 @@ class WeaveNameTest {
                           |-- name=John
                           |-- Mom=Gina
                           `-- Dad=Martin""";
-        Assertions.assertEquals(expected, JWeaver.Advanced.tree().weave(person));
+        Assertions.assertEquals(expected, JWeaver.weave(person, Mode.TREE));
     }
 
     @Test
@@ -35,7 +36,7 @@ class WeaveNameTest {
                            - name=John
                            - Mom=Gina
                            - Dad=Martin""";
-        Assertions.assertEquals(expected, JWeaver.Advanced.bullet().weave(person));
+        Assertions.assertEquals(expected, JWeaver.weave(person, Mode.BULLET));
     }
 
     @Test
@@ -47,6 +48,6 @@ class WeaveNameTest {
                          │ Mom  : Gina   │
                          │ Dad  : Martin │
                          ╰───────────────╯""";
-        Assertions.assertEquals(expected, JWeaver.Advanced.card().weave(person));
+        Assertions.assertEquals(expected, JWeaver.weave(person, Mode.CARD));
     }
 }

@@ -1,6 +1,7 @@
 package com.robinloom.jweaver.annotation;
 
 import com.robinloom.jweaver.JWeaver;
+import com.robinloom.jweaver.Mode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -10,10 +11,10 @@ class WeaveRedactTest {
     }
 
     @Test
-    void testDynamicWeaver() {
+    void testLinearWeaver() {
         Account account = new Account("John0815", "password");
         String expected = "Account[name=John0815, password=***]";
-        Assertions.assertEquals(expected, JWeaver.Advanced.linear().weave(account));
+        Assertions.assertEquals(expected, JWeaver.weave(account, Mode.INLINE));
     }
 
     @Test
@@ -23,7 +24,7 @@ class WeaveRedactTest {
                           Account
                           |-- name=John0815
                           `-- password=***""";
-        Assertions.assertEquals(expected, JWeaver.Advanced.tree().weave(account));
+        Assertions.assertEquals(expected, JWeaver.weave(account, Mode.TREE));
     }
 
     @Test
@@ -33,7 +34,7 @@ class WeaveRedactTest {
                           Account
                            - name=John0815
                            - password=***""";
-        Assertions.assertEquals(expected, JWeaver.Advanced.bullet().weave(account));
+        Assertions.assertEquals(expected, JWeaver.weave(account, Mode.BULLET));
     }
 
     @Test
@@ -44,6 +45,6 @@ class WeaveRedactTest {
                          │ name     : John0815 │
                          │ password : ***      │
                          ╰─────────────────────╯""";
-        Assertions.assertEquals(expected, JWeaver.Advanced.card().weave(account));
+        Assertions.assertEquals(expected, JWeaver.weave(account, Mode.CARD));
     }
 }

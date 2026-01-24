@@ -16,6 +16,8 @@
  */
 package com.robinloom.jweaver.card;
 
+import com.robinloom.jweaver.Mode;
+import com.robinloom.jweaver.annotation.WeaveIgnore;
 import com.robinloom.jweaver.annotation.WeaveName;
 import com.robinloom.jweaver.annotation.WeaveRedact;
 import com.robinloom.jweaver.commons.Weaver;
@@ -46,84 +48,8 @@ public class CardWeaver implements Weaver {
     protected static final ThreadLocal<Set<Object>> history
             = ThreadLocal.withInitial(() -> Collections.newSetFromMap(new IdentityHashMap<>()));
 
-    private final CardWeavingMachine machine;
-    private final CardConfig config;
-
-    public CardWeaver() {
-        this.config = new CardConfig();
-        this.machine = new CardWeavingMachine(config);
-    }
-
-    /**
-     * Sets the names of fields that should be included in the output.
-     * By default, every field is included.
-     * @param fields list of strings containing included field names
-     * @return instance for chaining
-     */
-    public CardWeaver includeFields(List<String> fields) {
-        config.setIncludedFields(fields);
-        config.setExcludedFields(List.of());
-        return this;
-    }
-
-    /**
-     * Sets the names of fields that should be excluded from the output.
-     * By default, no field is excluded.
-     * @param fields list of strings containing excluded field names
-     * @return instance for chaining
-     */
-    public CardWeaver excludeFields(List<String> fields) {
-        config.setExcludedFields(fields);
-        config.setIncludedFields(List.of());
-        return this;
-    }
-
-    /**
-     * Determines if the class name should be omitted when printing.
-     * By default, the class name is included.
-     * @return instance for chaining
-     */
-    public CardWeaver omitClassName() {
-        config.setOmitClassName(true);
-        return this;
-    }
-
-    /**
-     * Enables capitalization of field names.
-     * firstName -> FirstName
-     * @return instance for chaining
-     */
-    public CardWeaver capitalizeFields() {
-        config.setCapitalizeFields(true);
-        return this;
-    }
-
-    /**
-     * Enables the printing of data types
-     * @return instance for chaining
-     */
-    public CardWeaver showDataTypes() {
-        config.setShowDataTypes(true);
-        return this;
-    }
-
-    /**
-     * Activates the inclusion of inherited fields.
-     * @return instance for chaining
-     */
-    public CardWeaver showInheritedFields() {
-        config.setShowInheritedFields(true);
-        return this;
-    }
-
-    /**
-     * Sets the set of characters to use for the box bordering the content
-     * @param boxChars the charset to use for the card box
-     * @return instance for chaining
-     */
-    public CardWeaver boxChars(BoxChars boxChars) {
-        config.setBoxChars(boxChars);
-        return this;
+    public String weave(Object object) {
+        return weave(object, Mode.CARD);
     }
 
     /**
@@ -135,7 +61,7 @@ public class CardWeaver implements Weaver {
      * @param object object to generate a string representation for
      * @return a well-structured, human-readable representation of that object
      */
-    public String weave(Object object) {
+    public String weave(Object object, Mode mode) {
         if (object == null) {
             return "null";
         }
@@ -149,16 +75,13 @@ public class CardWeaver implements Weaver {
             history.get().add(object);
         }
 
+        CardWeavingMachine machine = new CardWeavingMachine();
+
         LinkedHashMap<String, String> wovenFields = new LinkedHashMap<>();
-        List<Field> fields;
-        if (config.isShowInheritedFields()) {
-            fields = FieldOperations.getAllFields(object.getClass());
-        } else {
-            fields = FieldOperations.getFields(object.getClass());
-        }
+        List<Field> fields = FieldOperations.getFields(object.getClass());
 
         fields = fields.stream()
-                .filter(config::isIncluded)
+                .filter(f -> !f.isAnnotationPresent(WeaveIgnore.class))
                 .toList();
 
         for (Field field : fields) {
@@ -187,14 +110,6 @@ public class CardWeaver implements Weaver {
                     fieldName = field.getAnnotation(WeaveName.class).value();
                 } else {
                     fieldName = field.getName();
-                }
-
-                if (config.isCapitalizeFields()) {
-                    fieldName = FieldOperations.capitalize(fieldName);
-                }
-
-                if (config.isShowDataTypes()) {
-                    fieldName = type.getSimpleName() + " " + fieldName;
                 }
 
                 wovenFields.put(fieldName, woven);
