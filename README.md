@@ -22,6 +22,7 @@ What happens automatically
 - Collections → limited to a safe number of elements
 - Circular or reciprocal references are detected
 - Sensitive fields (password, token, etc.) are automatically ignored
+- automatic redaction of sensitive data (passwords, secrets, etc.)
 
 No builder, no configuration, no thinking required.
 
@@ -42,13 +43,13 @@ Add JWeaver to your project:
 <dependency>
     <groupId>com.robinloom</groupId>
     <artifactId>jweaver</artifactId>
-    <version>2.0</version>
+    <version>3.0</version>
 </dependency>
 ```
 </details> <details> <summary><strong>Gradle</strong></summary>
 
 ```
-implementation 'com.robinloom:jweaver:2.0'
+implementation 'com.robinloom:jweaver:3.0'
 ```
 </details>
 

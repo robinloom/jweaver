@@ -18,8 +18,8 @@ package com.robinloom.jweaver.structure;
 
 import com.robinloom.jweaver.annotation.WeaveIgnore;
 import com.robinloom.jweaver.annotation.WeaveName;
-import com.robinloom.jweaver.annotation.WeaveRedact;
 import com.robinloom.jweaver.util.FieldOperations;
+import com.robinloom.jweaver.util.SensitivityDetection;
 import com.robinloom.jweaver.util.TypeDictionary;
 
 import java.lang.reflect.Array;
@@ -74,8 +74,8 @@ public class NestedStructureBuilder {
                 if (value == null) {
                     continue;
                 }
-                if (field.isAnnotationPresent(WeaveRedact.class)) {
-                    root.addChild(fieldName, field.getAnnotation(WeaveRedact.class).maskString());
+                if (SensitivityDetection.isSensitive(field)) {
+                    root.addChild(fieldName, "***");
                     continue;
                 }
 

@@ -19,9 +19,9 @@ package com.robinloom.jweaver.linear;
 import com.robinloom.jweaver.Mode;
 import com.robinloom.jweaver.annotation.WeaveIgnore;
 import com.robinloom.jweaver.annotation.WeaveName;
-import com.robinloom.jweaver.annotation.WeaveRedact;
 import com.robinloom.jweaver.commons.Weaver;
 import com.robinloom.jweaver.util.FieldOperations;
+import com.robinloom.jweaver.util.SensitivityDetection;
 import com.robinloom.jweaver.util.TypeDictionary;
 
 import java.lang.reflect.Field;
@@ -92,8 +92,8 @@ public class LinearWeaver implements Weaver {
             try {
                 field.setAccessible(true);
                 Object value = field.get(object);
-                if (field.isAnnotationPresent(WeaveRedact.class)) {
-                    value = field.getAnnotation(WeaveRedact.class).maskString();
+                if (SensitivityDetection.isSensitive(field)) {
+                    value = "***";
                 }
 
                 machine.appendDataType(field);

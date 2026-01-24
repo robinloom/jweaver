@@ -19,9 +19,9 @@ package com.robinloom.jweaver.card;
 import com.robinloom.jweaver.Mode;
 import com.robinloom.jweaver.annotation.WeaveIgnore;
 import com.robinloom.jweaver.annotation.WeaveName;
-import com.robinloom.jweaver.annotation.WeaveRedact;
 import com.robinloom.jweaver.commons.Weaver;
 import com.robinloom.jweaver.util.FieldOperations;
+import com.robinloom.jweaver.util.SensitivityDetection;
 import com.robinloom.jweaver.util.TypeDictionary;
 
 import java.lang.reflect.Field;
@@ -91,8 +91,8 @@ public class CardWeaver implements Weaver {
 
                 String woven;
                 Class<?> type = field.getType();
-                if (field.isAnnotationPresent(WeaveRedact.class)) {
-                    woven = field.getAnnotation(WeaveRedact.class).maskString();
+                if (SensitivityDetection.isSensitive(field)) {
+                    woven = "***";
                 } else if (TypeDictionary.isSimpleType(value.getClass())) {
                     woven = value.toString();
                 } else if (TypeDictionary.isCollection(type)) {

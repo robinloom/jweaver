@@ -37,12 +37,7 @@ public class TreeWeaverTest {
 
     @Test
     void testComplexField() {
-        record Person(String name, Person neighbor) {
-            @Override
-            public String toString() {
-                return JWeaver.weave(this, Mode.TREE);
-            }
-        }
+        record Person(String name, Person neighbor) {}
 
         Person person = new Person("John Doe", new Person("Peter", null));
         String expected = """
@@ -50,7 +45,7 @@ public class TreeWeaverTest {
                           |-- name=John Doe
                           `-- neighbor
                               `-- name=Peter""";
-        Assertions.assertEquals(expected, person.toString());
+        Assertions.assertEquals(expected, JWeaver.weave(person, Mode.TREE));
     }
 
     @Test
