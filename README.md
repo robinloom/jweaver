@@ -18,8 +18,7 @@ System.out.println(JWeaver.weave(person));
 ```
 
 What happens automatically
-- Small objects → compact one-line output
-- Large or nested objects → structured tree output
+- compact one-line output
 - Collections → limited to a safe number of elements
 - Circular or reciprocal references are detected
 - Sensitive fields (password, token, etc.) are automatically ignored
@@ -34,7 +33,7 @@ Person[name=John Doe, birthday=1990-01-01]
 
 ## Installation
 
-Add JWeaver to your Maven project:
+Add JWeaver to your project:
 
 <details>
   <summary><strong>Maven</strong></summary>
@@ -43,13 +42,13 @@ Add JWeaver to your Maven project:
 <dependency>
     <groupId>com.robinloom</groupId>
     <artifactId>jweaver</artifactId>
-    <version>1.1.0</version>
+    <version>2.0</version>
 </dependency>
 ```
 </details> <details> <summary><strong>Gradle</strong></summary>
 
 ```
-implementation 'com.robinloom:jweaver:1.1.0'
+implementation 'com.robinloom:jweaver:2.0'
 ```
 </details>
 
@@ -57,4 +56,3 @@ implementation 'com.robinloom:jweaver:1.1.0'
 - Removes boilerplate toString() implementations
 - Ensures consistent, readable, and safe output
 - Works out-of-the-box for simple usage
-- Allows advanced configuration for power users
