@@ -45,20 +45,20 @@ final class CardWeavingMachine extends WeavingMachine {
     }
 
     void appendClassname(String clazzName) {
-        delegate.append(boxChars.tl());
+        append(boxChars.tl());
         space();
-        delegate.append(clazzName);
+        append(clazzName);
         space();
-        delegate.append(boxChars.h(overallWidth-clazzName.length()-3));
+        append(boxChars.h(overallWidth-clazzName.length()-3));
 
-        delegate.append(boxChars.tr());
+        append(boxChars.tr());
     }
 
     void appendField(Map.Entry<String, String> field) {
         String sub = sub(field);
-        delegate.append(sub);
-        delegate.append(" ".repeat(overallWidth-sub.length()));
-        delegate.append(boxChars.v());
+        append(sub);
+        append(" ".repeat(overallWidth-sub.length()));
+        append(boxChars.v());
     }
 
     String sub(Map.Entry<String, String> field) {
@@ -74,9 +74,9 @@ final class CardWeavingMachine extends WeavingMachine {
 
     void appendFooter() {
         newline();
-        delegate.append(boxChars.bl());
-        delegate.append(boxChars.h(overallWidth-1));
-        delegate.append(boxChars.br());
+        append(boxChars.bl());
+        append(boxChars.h(overallWidth-1));
+        append(boxChars.br());
     }
 
 }

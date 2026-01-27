@@ -20,28 +20,30 @@ import com.robinloom.jweaver.commons.WeavingMachine;
 
 final class TreeWeavingMachine extends WeavingMachine {
 
-    void append(String string) {
-        delegate.append(string);
+    void appendln(String string) {
+        append(string);
         newline();
     }
 
     void indent() {
-        delegate.append(" ".repeat(4));
+        append(" ".repeat(4));
     }
 
     void indentWithCrossingBranch() {
-        delegate.append("|");
-        delegate.append(" ".repeat(3));
+        append("|");
+        append(" ".repeat(3));
     }
 
     void appendBranch() {
-        delegate.append("|");
-        delegate.append("-- ");
+        append("|");
+        append("--");
+        space();
     }
 
     void appendLastBranch() {
-        delegate.append("`");
-        delegate.append("-- ");
+        append("`");
+        append("--");
+        space();
     }
 
     public boolean globalLimitReached() {

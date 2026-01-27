@@ -78,7 +78,7 @@ public class TreeWeaver implements Weaver {
             return;
         }
         if (node.isRoot()) {
-           machine.append(node.getContent());
+           machine.appendln(node.getContent());
         } else {
             for (int i = 0; i < siblingsAtCurrentLevel.size() - 1; i++) {
                 if (siblingsAtCurrentLevel.get(i)) {
@@ -94,7 +94,7 @@ public class TreeWeaver implements Weaver {
                 machine.appendBranch();
             }
 
-            machine.append(node.getContent());
+            machine.appendln(node.getContent());
         }
 
         List<NestedNode> children = node.getChildren();
