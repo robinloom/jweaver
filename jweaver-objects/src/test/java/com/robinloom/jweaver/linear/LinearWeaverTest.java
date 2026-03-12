@@ -135,4 +135,17 @@ class LinearWeaverTest {
         Assertions.assertDoesNotThrow(third::toString);
     }
 
+    @Test
+    void testMultilineMode() {
+        record Person(String name, LocalDate birthday) {}
+
+        Person person = new Person("John Doe", LocalDate.of(1990, 1, 1));
+        String expected = """
+                          = Person =
+                          name: John Doe
+                          birthday: 1990-01-01""";
+
+        Assertions.assertEquals(expected, JWeaver.weave(person, Mode.MULTILINE));
+    }
+
 }

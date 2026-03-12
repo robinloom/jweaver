@@ -44,6 +44,7 @@ final class LinearWeavingMachine extends WeavingMachine {
             append(className);
             space();
             equals();
+            newline();
         }
     }
 
