@@ -148,4 +148,17 @@ class LinearWeaverTest {
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.MULTILINE));
     }
 
+    @Test
+    void testMultilineVerboseMode() {
+        record Person(String name, LocalDate birthday) {}
+
+        Person person = new Person("John Doe", LocalDate.of(1990, 1, 1));
+        String expected = """
+                          = Person =
+                          String Name: John Doe
+                          LocalDate Birthday: 1990-01-01""";
+
+        Assertions.assertEquals(expected, JWeaver.weave(person, Mode.MULTILINE_VERBOSE));
+    }
+
 }
