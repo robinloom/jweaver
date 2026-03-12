@@ -1,59 +1,102 @@
 # JWeaver
-![Build And Test](https://github.com/robinloom/jweaver/actions/workflows/build.yml/badge.svg)
-![Maven Central Version](https://img.shields.io/maven-central/v/com.robinloom/jweaver)
 
-JWeaver is a simple, zero-decision Java utility for generating human-readable,
-structured string representations of objects. It eliminates the need to write
-custom `toString()` methods while producing consistent, safe, and readable output.
+**JWeaver** is a zero-decision Java utility for generating **human-readable, structured string representations of objects**.
+
+It helps developers inspect objects in logs, debugging sessions, and tests without writing custom `toString()` methods.
 
 ---
 
-## Minimal Usage – Zero Decisions
-
-For most users, weaving an object is as easy as:
+## Quick Example
 
 ```java
-Person person = new Person("John Doe", "1990-01-01");
+Person person = new Person("John Doe", LocalDate.of(1990, 1, 1));
+
 System.out.println(JWeaver.weave(person));
 ```
 
-What happens automatically
-- compact one-line output
-- Collections → limited to a safe number of elements
-- Circular or reciprocal references are detected
-- Sensitive fields (password, token, etc.) are automatically ignored
-- automatic redaction of sensitive data (passwords, secrets, etc.)
+Output (INLINE mode):
 
-No builder, no configuration, no thinking required.
-
-Example output:
-
-```yaml
+```
 Person[name=John Doe, birthday=1990-01-01]
 ```
 
-## Installation
+---
 
-Add JWeaver to your project:
+## Rendering Modes
 
-<details>
-  <summary><strong>Maven</strong></summary>
+JWeaver supports multiple rendering styles depending on the context.
 
-```xml
-<dependency>
-    <groupId>com.robinloom</groupId>
-    <artifactId>jweaver</artifactId>
-    <version>3.0</version>
-</dependency>
-```
-</details> <details> <summary><strong>Gradle</strong></summary>
+### INLINE (default)
+
+Compact, record-style output ideal for logs.
 
 ```
-implementation 'com.robinloom:jweaver:3.0'
+Person[name=John Doe, birthday=1990-01-01]
 ```
-</details>
 
-## Why JWeaver?
-- Removes boilerplate toString() implementations
-- Ensures consistent, readable, and safe output
-- Works out-of-the-box for simple usage
+### TREE
+
+Structured representation for nested object graphs.
+
+```
+Person
+├─ name: John Doe
+└─ birthday: 1990-01-01
+```
+
+### CARD
+
+Readable object "cards" that highlight fields clearly.
+
+```
+╭ Person ───────────────╮
+│ name     : John Doe   │
+│ birthday : 1990-01-01 │
+╰───────────────────────╯
+```
+
+---
+
+## Features
+
+* Human-readable object rendering
+* Multiple rendering modes (INLINE, TREE, CARD)
+* Cycle detection
+* Depth limits
+* Sensitive field redaction
+* Annotation-based configuration
+
+---
+
+## Example: Redacting Sensitive Fields
+
+```java
+class User {
+    String username;
+
+    @WeaveRedact
+    String secret;
+}
+```
+
+Output:
+
+```
+User[username=john, secret=***]
+```
+
+---
+
+## Typical Use Cases
+
+* Logging processing results
+* Debugging complex DTOs
+* Inspecting nested object graphs
+* Snapshot-style test output
+* CLI debugging tools
+
+---
+
+## License
+
+Apache License 2.0
