@@ -247,4 +247,18 @@ public class TreeWeaverTest {
         Assertions.assertDoesNotThrow(second::toString);
         Assertions.assertDoesNotThrow(third::toString);
     }
+
+    @Test
+    void testGlobalLimitReached() {
+        record Person(String name, LocalDate birthday) {}
+
+        Person person = new Person("J".repeat(9984),
+                                   LocalDate.of(1990, 1, 1));
+        String expected = """
+                          Person
+                          |-- name=""";
+        expected += "J".repeat(9984);
+
+        Assertions.assertEquals(expected, JWeaver.weave(person, Mode.TREE));
+    }
 }
