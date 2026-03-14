@@ -25,6 +25,3 @@ jobs:
 
       - name: Build with Maven
         run: mvn -U clean verify
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
