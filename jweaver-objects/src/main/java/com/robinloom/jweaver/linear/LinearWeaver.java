@@ -67,6 +67,7 @@ public class LinearWeaver implements Weaver {
         }
 
         if (history.get().contains(object)) {
+            history.remove();
             return "";
         } else {
             history.get().add(object);

@@ -131,6 +131,10 @@ public class CardWeaver implements Weaver {
 
         machine.appendFooter();
 
+        if (history.get().size() == 1) {
+            history.remove();
+        }
+
         return machine.toString();
     }
 }

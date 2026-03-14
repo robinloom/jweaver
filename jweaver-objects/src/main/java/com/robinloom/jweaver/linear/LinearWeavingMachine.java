@@ -39,11 +39,7 @@ final class LinearWeavingMachine extends WeavingMachine {
             append(className);
             lbracket();
         } else if (mode.isMultiline()) {
-            equals();
-            space();
             append(className);
-            space();
-            equals();
             newline();
         }
     }
