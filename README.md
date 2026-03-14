@@ -2,7 +2,6 @@
 
 ![Build And Test](https://github.com/robinloom/jweaver/actions/workflows/build.yml/badge.svg)
 ![Maven Central Version](https://img.shields.io/maven-central/v/com.robinloom/jweaver)
-![Coverage](https://codecov.io/gh/robinloom/jweaver/branch/master/graph/badge.svg)
 
 **JWeaver** is a zero-decision Java utility for generating **human-readable, structured string representations of objects**.
 
