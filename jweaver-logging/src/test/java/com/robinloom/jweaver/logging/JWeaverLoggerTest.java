@@ -2,74 +2,63 @@ package com.robinloom.jweaver.logging;
 
 import com.robinloom.jweaver.Mode;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.logging.Level;
+
+import static org.mockito.Mockito.verify;
 
 public class JWeaverLoggerTest {
 
-    Logger LOGGER_BY_CLASS = LoggerFactory.getLogger(JWeaverLoggerTest.class);
-    Logger LOGGER_BY_CLASS_TREE = LoggerFactory.getLogger(JWeaverLoggerTest.class, Mode.TREE);
-    Logger LOGGER_BY_NAME = LoggerFactory.getLogger("Test");
-    Logger LOGGER_BY_NAME_BULLET = LoggerFactory.getLogger("Test", Mode.BULLET);
-
-    record Person(String name, int age) {}
-    record Car(String name, int year) {}
-    record Cat(String name, int age) {}
-
     @Test
-    public void testLoggerByClass() {
-        Person person = new Person("John", 18);
-        Car car = new Car("Volvo", 2012);
-        Cat cat = new Cat("Bob", 5);
+    void shouldDelegateAllLoggerMethods() throws Exception {
+        Logger delegate = Mockito.mock(Logger.class);
+        JWeaverLogger wrapper = new JWeaverLogger(delegate, Mode.INLINE);
 
-        LOGGER_BY_CLASS.trace("{}", person);
-        LOGGER_BY_CLASS.trace("{}, {}", person, car);
-        LOGGER_BY_CLASS.trace("{}, {}, {}", person, car, cat);
+        for (Method method : Logger.class.getMethods()) {
 
-        LOGGER_BY_CLASS.debug("{}", person);
-        LOGGER_BY_CLASS.debug("{}, {}", person, car);
-        LOGGER_BY_CLASS.debug("{}, {}, {}", person, car, cat);
+            // skip default / static methods
+            if (Modifier.isStatic(method.getModifiers())) continue;
+            if (method.getDeclaringClass() == Object.class) continue;
+            if (method.isDefault()) continue;
 
-        LOGGER_BY_CLASS.info("{}", person);
-        LOGGER_BY_CLASS.info("{}, {}", person, car);
-        LOGGER_BY_CLASS.info("{}, {}, {}", person, car, cat);
+            Object[] args = createArguments(method.getParameterTypes());
 
-        LOGGER_BY_CLASS.warn("{}", person);
-        LOGGER_BY_CLASS.warn("{}, {}", person, car);
-        LOGGER_BY_CLASS.warn("{}, {}, {}", person, car, cat);
+            // invoke on wrapper
+            method.invoke(wrapper, args);
 
-        LOGGER_BY_CLASS.error("{}", person);
-        LOGGER_BY_CLASS.error("{}, {}", person, car);
-        LOGGER_BY_CLASS.error("{}, {}, {}", person, car, cat);
+            // verify delegate call
+            method.invoke(verify(delegate), args);
+
+            // reset for next iteration
+            Mockito.reset(delegate);
+        }
     }
 
-    @Test
-    public void testCustomLoggerByClass() {
-        Person person = new Person("John", 18);
-        LOGGER_BY_CLASS_TREE.trace("\n{}", person);
-        LOGGER_BY_CLASS_TREE.debug("\n{}", person);
-        LOGGER_BY_CLASS_TREE.info("\n{}", person);
-        LOGGER_BY_CLASS_TREE.warn("\n{}", person);
-        LOGGER_BY_CLASS_TREE.error("\n{}", person);
+    private Object[] createArguments(Class<?>[] parameterTypes) {
+        return Arrays.stream(parameterTypes)
+                .map(this::dummy)
+                .toArray();
     }
 
-    @Test
-    public void testLoggerByName() {
-        Person person = new Person("John", 18);
-        LOGGER_BY_NAME.trace("{}", person);
-        LOGGER_BY_NAME.debug("{}", person);
-        LOGGER_BY_NAME.info("{}", person);
-        LOGGER_BY_NAME.warn("{}", person);
-        LOGGER_BY_NAME.error("{}", person);
-    }
+    private Object dummy(Class<?> type) {
+        if (type == String.class) return "test-message";
+        if (type == Object.class) return "arg";
+        if (type == Throwable.class) return new RuntimeException("test");
+        if (type == Level.class) return Level.INFO;
 
-    @Test
-    public void testCustomLoggerByName() {
-        Person person = new Person("John", 18);
-        LOGGER_BY_NAME_BULLET.trace("\n{}", person);
-        LOGGER_BY_NAME_BULLET.debug("\n{}", person);
-        LOGGER_BY_NAME_BULLET.info("\n{}", person);
-        LOGGER_BY_NAME_BULLET.warn("\n{}", person);
-        LOGGER_BY_NAME_BULLET.error("\n{}", person);
+        if (type.isArray()) {
+            return new Object[]{"a", "b"};
+        }
+
+        if (type == boolean.class || type == Boolean.class) return true;
+        if (type.isPrimitive()) return 0;
+
+        return null;
     }
 
 }
