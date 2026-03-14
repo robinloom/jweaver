@@ -95,15 +95,17 @@ public class LinearWeaver implements Weaver {
 
             try {
                 Object value = readField(field, object);
-                if (SensitivityDetection.isSensitive(field)) {
-                    value = "***";
-                }
 
                 machine.appendDataType(field);
                 if (field.isAnnotationPresent(WeaveName.class)) {
                     machine.appendFieldName(field.getAnnotation(WeaveName.class).value());
                 } else {
                     machine.appendFieldName(field.getName());
+                }
+
+                if (SensitivityDetection.isSensitive(field)) {
+                    machine.append("***");
+                    continue;
                 }
 
                 if (TypeDictionary.isArray(field.getType())) {

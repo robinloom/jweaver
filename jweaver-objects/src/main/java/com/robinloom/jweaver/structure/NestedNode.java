@@ -59,11 +59,7 @@ public class NestedNode {
     }
 
     public boolean isLastChild() {
-        if (isRoot()) {
-            return false;
-        } else {
-            return parent.getChildren().getLast().equals(this);
-        }
+        return parent.getChildren().getLast().equals(this);
     }
 
     public String getContent() {
