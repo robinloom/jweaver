@@ -24,7 +24,6 @@ import com.robinloom.jweaver.util.TypeDictionary;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.lang.reflect.InaccessibleObjectException;
 import java.util.*;
 
 public class NestedStructureBuilder {
@@ -58,7 +57,7 @@ public class NestedStructureBuilder {
 
         for (Field field : fields) {
             try {
-                field.setAccessible(true);
+                Object value = readField(field, object);
                 String dataType = "";
 
                 String fieldName;
@@ -70,7 +69,6 @@ public class NestedStructureBuilder {
 
                 fieldName = dataType + fieldName;
 
-                Object value = field.get(object);
                 if (value == null) {
                     continue;
                 }
@@ -89,10 +87,8 @@ public class NestedStructureBuilder {
                     NestedNode child = new NestedNode(fieldName);
                     root.addChild(build(child, value));
                 }
-            } catch (InaccessibleObjectException ioe) {
-                root.addChild("[?]");
             } catch (Exception e) {
-                root.addChild("[ERROR]");
+                root.addChild("[?]");
             }
         }
 
@@ -165,5 +161,10 @@ public class NestedStructureBuilder {
         }
         depth--;
         return root;
+    }
+
+    Object readField(Field field, Object target) throws ReflectiveOperationException {
+        field.setAccessible(true);
+        return field.get(target);
     }
 }

@@ -90,9 +90,11 @@ public class LinearWeaver implements Weaver {
             if (machine.globalLimitReached()) {
                 break;
             }
+
+            boolean isLast = fields.indexOf(field) == fields.size() - 1;
+
             try {
-                field.setAccessible(true);
-                Object value = field.get(object);
+                Object value = readField(field, object);
                 if (SensitivityDetection.isSensitive(field)) {
                     value = "***";
                 }
@@ -109,12 +111,10 @@ public class LinearWeaver implements Weaver {
                 } else if (TypeDictionary.isCollection(field.getType())) {
                     machine.appendCollectionFieldValue((Collection<?>) value);
                 } else {
-                    machine.appendFieldValue(value, fields.indexOf(field) == fields.size() - 1);
+                    machine.appendFieldValue(value, isLast);
                 }
-            } catch (ReflectiveOperationException e) {
-                machine.appendInaccessible();
             } catch (Exception e) {
-                machine.appendAfterException(e);
+                machine.appendInaccessible(isLast);
             }
         }
         machine.appendSuffix();
@@ -126,6 +126,11 @@ public class LinearWeaver implements Weaver {
         String result = machine.toString();
         machine.reset();
         return result;
+    }
+
+    Object readField(Field field, Object target) throws ReflectiveOperationException {
+        field.setAccessible(true);
+        return field.get(target);
     }
 
 }

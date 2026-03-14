@@ -114,25 +114,13 @@ final class LinearWeavingMachine extends WeavingMachine {
         rbracket();
      }
 
-    public void appendInaccessible() {
+    public void appendInaccessible(boolean isLast) {
         append("[?]");
-        newline();
         if (mode == Mode.INLINE) {
-            comma();
-            space();
-        } else if (mode.isMultiline()) {
-            newline();
-        }
-    }
-
-    public void appendAfterException(Exception e) {
-        append("[ERROR]");
-        space();
-        append(e.getClass().getSimpleName());
-        newline();
-        if (mode == Mode.INLINE) {
-            comma();
-            space();
+            if (!isLast) {
+                comma();
+                space();
+            }
         } else if (mode.isMultiline()) {
             newline();
         }
