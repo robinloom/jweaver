@@ -105,7 +105,7 @@ public class InlineWeaver implements Weaver {
 
                         return fieldName + fieldValueDelimiter + woven;
                     } catch (Exception ex) {
-                        return Chars.LBRACE + Chars.QUESTION_MARK + Chars.RBRACE;
+                        return "[?]";
                     }
                 }).append(closing());
 
