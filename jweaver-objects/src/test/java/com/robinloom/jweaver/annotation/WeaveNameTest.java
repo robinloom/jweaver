@@ -11,7 +11,7 @@ class WeaveNameTest {
     }
 
     @Test
-    void testLinearWeaver() {
+    void testInlineWeaver() {
         WeaveNameTest.Person person = new WeaveNameTest.Person("John", "Gina", "Martin");
         String expected = "Person[name=John, Mom=Gina, Dad=Martin]";
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.INLINE));

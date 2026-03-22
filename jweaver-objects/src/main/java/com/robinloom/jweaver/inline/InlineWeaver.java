@@ -14,16 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.robinloom.jweaver.linear;
+package com.robinloom.jweaver.inline;
 
-import com.robinloom.jweaver.Mode;
 import com.robinloom.jweaver.annotation.WeaveIgnore;
 import com.robinloom.jweaver.annotation.WeaveName;
 import com.robinloom.jweaver.commons.Weaver;
 import com.robinloom.jweaver.util.FieldOperations;
 import com.robinloom.jweaver.util.SensitivityDetection;
 import com.robinloom.jweaver.util.TypeDictionary;
+import com.robinloom.loom.Chars;
+import com.robinloom.loom.Loom;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -37,16 +39,12 @@ import java.util.*;
  * Person[name=John Doe, birthday=1990-01-01]
  * </pre>
  */
-public class LinearWeaver implements Weaver {
+public class InlineWeaver implements Weaver {
 
     protected static final ThreadLocal<Set<Object>> history
             = ThreadLocal.withInitial(() -> Collections.newSetFromMap(new IdentityHashMap<>()));
 
-    public LinearWeaver() {}
-
-    public String weave(Object object) {
-        return weave(object, Mode.INLINE);
-    }
+    public InlineWeaver() {}
 
     /**
      * Generates a string representation of the given object via reflections.
@@ -56,9 +54,7 @@ public class LinearWeaver implements Weaver {
      * @param object object to generate a string representation for
      * @return a well-structured, human-readable representation of that object
      */
-    public String weave(Object object, Mode mode) {
-        LinearWeavingMachine machine = new LinearWeavingMachine(mode);
-
+    public String weave(Object object) {
         if (object == null) {
             return "null";
         }
@@ -73,66 +69,84 @@ public class LinearWeaver implements Weaver {
             history.get().add(object);
         }
 
-        machine.appendClassName(object.getClass().getSimpleName());
-
-        List<Field> fields;
-        if (mode == Mode.MULTILINE_VERBOSE) {
-            fields = FieldOperations.getAllFields(object.getClass());
-        } else {
-            fields = FieldOperations.getFields(object.getClass());
-        }
+        List<Field> fields = FieldOperations.getFields(object.getClass());
 
         fields = fields.stream()
                        .filter(f -> !f.isAnnotationPresent(WeaveIgnore.class))
                        .toList();
 
-        for (Field field : fields) {
-            if (machine.globalLimitReached()) {
-                break;
-            }
+        String fieldDelimiter = fieldDelimiter();
+        String fieldValueDelimiter = fieldValueDelimiter();
 
-            boolean isLast = fields.indexOf(field) == fields.size() - 1;
+        Loom loom = Loom.create();
+        loom.append(object.getClass().getSimpleName())
+                .append(opening())
+                .join(fieldDelimiter, fields, field -> {
+                    try {
+                        Object value = readField(field, object);
 
-            try {
-                Object value = readField(field, object);
+                        String fieldName;
+                        if (field.isAnnotationPresent(WeaveName.class)) {
+                            fieldName = field.getAnnotation(WeaveName.class).value();
+                        } else {
+                            fieldName = field.getName();
+                        }
+                        String woven;
 
-                machine.appendDataType(field);
-                if (field.isAnnotationPresent(WeaveName.class)) {
-                    machine.appendFieldName(field.getAnnotation(WeaveName.class).value());
-                } else {
-                    machine.appendFieldName(field.getName());
-                }
+                        if (SensitivityDetection.isSensitive(field)) {
+                            woven = Chars.repeat(Chars.ASTERISK, 3);
+                        } else if (TypeDictionary.isCollection(field.getType())) {
+                            woven = weaveCollection((Collection<?>) value);
+                        } else if (TypeDictionary.isArray(field.getType())) {
+                            woven = weaveArray(value);
+                        } else  {
+                            woven = value.toString();
+                        }
 
-                if (SensitivityDetection.isSensitive(field)) {
-                    machine.append("***");
-                    continue;
-                }
-
-                if (TypeDictionary.isArray(field.getType())) {
-                    machine.appendArrayFieldValue(value);
-                } else if (TypeDictionary.isCollection(field.getType())) {
-                    machine.appendCollectionFieldValue((Collection<?>) value);
-                } else {
-                    machine.appendFieldValue(value, isLast);
-                }
-            } catch (Exception e) {
-                machine.appendInaccessible(isLast);
-            }
-        }
-        machine.appendSuffix();
+                        return fieldName + fieldValueDelimiter + woven;
+                    } catch (Exception ex) {
+                        return Chars.LBRACE + Chars.QUESTION_MARK + Chars.RBRACE;
+                    }
+                }).append(closing());
 
         if (history.get().size() == 1) {
             history.remove();
         }
 
-        String result = machine.toString();
-        machine.reset();
-        return result;
+        return loom.toString();
     }
 
     Object readField(Field field, Object target) throws ReflectiveOperationException {
         field.setAccessible(true);
         return field.get(target);
+    }
+
+    private String weaveArray(Object array) {
+        Loom loom = Loom.create();
+        loom.bracket(() -> loom.join(", ", Loom.range(0, Array.getLength(array)), i -> Array.get(array, i)));
+        return loom.toString();
+    }
+
+    private String weaveCollection(Collection<?> collection) {
+        Loom loom = Loom.create();
+        loom.bracket(() -> loom.join(", ", collection, e -> e));
+        return loom.toString();
+    }
+
+    protected String fieldDelimiter() {
+        return ", ";
+    }
+
+    protected String fieldValueDelimiter() {
+        return "=";
+    }
+
+    protected String opening() {
+        return "[";
+    }
+
+    protected String closing() {
+        return "]";
     }
 
 }

@@ -16,7 +16,6 @@
  */
 package com.robinloom.jweaver.card;
 
-import com.robinloom.jweaver.Mode;
 import com.robinloom.jweaver.annotation.WeaveIgnore;
 import com.robinloom.jweaver.annotation.WeaveName;
 import com.robinloom.jweaver.commons.Weaver;
@@ -48,10 +47,6 @@ public class CardWeaver implements Weaver {
     protected static final ThreadLocal<Set<Object>> history
             = ThreadLocal.withInitial(() -> Collections.newSetFromMap(new IdentityHashMap<>()));
 
-    public String weave(Object object) {
-        return weave(object, Mode.CARD);
-    }
-
     /**
      * Generates a string representation of the given object via reflections.
      * Prints the class name followed by every accessible field in an ordered structure
@@ -61,7 +56,7 @@ public class CardWeaver implements Weaver {
      * @param object object to generate a string representation for
      * @return a well-structured, human-readable representation of that object
      */
-    public String weave(Object object, Mode mode) {
+    public String weave(Object object) {
         if (object == null) {
             return "null";
         }

@@ -65,7 +65,7 @@ public final class JWeaver {
      */
     public static String weave(Object object, Mode mode) {
         Weaver weaver = Mode.getWeaverForMode(mode);
-        return weaver.weave(object, mode);
+        return weaver.weave(object);
     }
 
 }

@@ -16,7 +16,6 @@
  */
 package com.robinloom.jweaver.bullet;
 
-import com.robinloom.jweaver.Mode;
 import com.robinloom.jweaver.commons.Weaver;
 import com.robinloom.jweaver.structure.NestedNode;
 import com.robinloom.jweaver.structure.NestedStructureBuilder;
@@ -37,10 +36,6 @@ public class BulletWeaver implements Weaver {
 
     private final BulletWeavingMachine machine = new BulletWeavingMachine();
 
-    public String weave(Object object) {
-        return weave(object, Mode.BULLET);
-    }
-
     /**
      * Generates a string representation of the given object via reflections.
      * Prints the class name followed by every accessible field in a list structure.
@@ -49,7 +44,7 @@ public class BulletWeaver implements Weaver {
      * @param object object to generate a string representation for
      * @return a well-structured, human-readable representation of that object
      */
-    public String weave(Object object, Mode mode) {
+    public String weave(Object object) {
         if (object == null) {
             return "null";
         }

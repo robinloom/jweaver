@@ -16,11 +16,7 @@
  */
 package com.robinloom.jweaver.commons;
 
-import com.robinloom.jweaver.Mode;
-
 public interface Weaver {
 
     String weave(Object object);
-
-    String weave(Object object, Mode mode);
 }

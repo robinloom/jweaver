@@ -16,7 +16,6 @@
  */
 package com.robinloom.jweaver.tree;
 
-import com.robinloom.jweaver.Mode;
 import com.robinloom.jweaver.commons.Weaver;
 import com.robinloom.jweaver.structure.NestedNode;
 import com.robinloom.jweaver.structure.NestedStructureBuilder;
@@ -42,10 +41,6 @@ public class TreeWeaver implements Weaver {
     
     private final TreeWeavingMachine machine = new TreeWeavingMachine();
 
-    public String weave(Object object) {
-        return weave(object, Mode.TREE);
-    }
-
     /**
      * Generates a string representation of the given object via reflections.
      * Prints the class name followed by every accessible field in a tree structure.
@@ -54,7 +49,7 @@ public class TreeWeaver implements Weaver {
      * @param object object to generate a string representation for
      * @return a well-structured, human-readable representation of that object
      */
-    public String weave(Object object, Mode mode) {
+    public String weave(Object object) {
         if (object == null) {
             return "null";
         }

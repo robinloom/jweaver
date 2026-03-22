@@ -1,4 +1,4 @@
-package com.robinloom.jweaver.linear;
+package com.robinloom.jweaver.inline;
 
 import com.robinloom.jweaver.JWeaver;
 import com.robinloom.jweaver.Mode;
@@ -9,7 +9,7 @@ import org.mockito.Mockito;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 
-class LinearWeaverTest {
+class InlineWeaverTest {
 
     @Test
     public void testApiCallEqualsInternalCall() {
@@ -17,14 +17,14 @@ class LinearWeaverTest {
 
         Person person = new Person("Peter");
 
-        Assertions.assertEquals(JWeaver.weave(person, Mode.INLINE), new LinearWeaver().weave(person));
+        Assertions.assertEquals(JWeaver.weave(person, Mode.INLINE), new InlineWeaver().weave(person));
     }
 
     @Test
     void testInaccessibleField() throws Exception {
         record Person(String name) {}
 
-        LinearWeaver weaver = Mockito.spy(new LinearWeaver());
+        InlineWeaver weaver = Mockito.spy(new InlineWeaver());
 
         doThrow(new IllegalAccessException("boom"))
                 .when(weaver)
@@ -33,10 +33,5 @@ class LinearWeaverTest {
         Person person = new Person("Peter");
 
         Assertions.assertEquals("Person[[?]]", weaver.weave(person));
-        Assertions.assertEquals("""
-                                Person
-                                [?]
-                                """, weaver.weave(person, Mode.MULTILINE));
-
     }
 }

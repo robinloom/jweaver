@@ -19,7 +19,8 @@ package com.robinloom.jweaver;
 import com.robinloom.jweaver.bullet.BulletWeaver;
 import com.robinloom.jweaver.card.CardWeaver;
 import com.robinloom.jweaver.commons.Weaver;
-import com.robinloom.jweaver.linear.LinearWeaver;
+import com.robinloom.jweaver.inline.InlineWeaver;
+import com.robinloom.jweaver.multiline.MultilineWeaver;
 import com.robinloom.jweaver.tree.TreeWeaver;
 
 /**
@@ -49,13 +50,6 @@ public enum Mode {
     MULTILINE,
 
     /**
-     * Multi-line representation with increased level of detail.
-     * <p>
-     * Typically includes deeper object traversal or additional metadata.
-     */
-    MULTILINE_VERBOSE,
-
-    /**
      * Hierarchical tree-style representation.
      * <p>
      * Emphasizes object structure and relationships.
@@ -77,16 +71,6 @@ public enum Mode {
     CARD;
 
     /**
-     * Indicates whether this mode produces multi-line output.
-     *
-     * @return {@code true} if the mode uses a multi-line layout,
-     *         {@code false} otherwise
-     */
-    public boolean isMultiline() {
-        return this == MULTILINE || this == MULTILINE_VERBOSE;
-    }
-
-    /**
      * Returns a new {@link Weaver} instance suitable for the given mode.
      * <p>
      * The returned weaver is stateless and may be instantiated per call.
@@ -99,7 +83,8 @@ public enum Mode {
             case TREE -> new TreeWeaver();
             case BULLET -> new BulletWeaver();
             case CARD -> new CardWeaver();
-            case null, default -> new LinearWeaver();
+            case MULTILINE -> new MultilineWeaver();
+            case null, default -> new InlineWeaver();
         };
     }
 }
