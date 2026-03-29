@@ -22,6 +22,7 @@ import com.robinloom.jweaver.commons.Weaver;
 import com.robinloom.jweaver.util.FieldOperations;
 import com.robinloom.jweaver.util.SensitivityDetection;
 import com.robinloom.jweaver.util.TypeDictionary;
+import com.robinloom.loom.Loom;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InaccessibleObjectException;
@@ -47,6 +48,8 @@ public class CardWeaver implements Weaver {
     protected static final ThreadLocal<Set<Object>> history
             = ThreadLocal.withInitial(() -> Collections.newSetFromMap(new IdentityHashMap<>()));
 
+    private final BoxChars boxChars = BoxChars.UNICODE_LIGHT;
+
     /**
      * Generates a string representation of the given object via reflections.
      * Prints the class name followed by every accessible field in an ordered structure
@@ -69,8 +72,6 @@ public class CardWeaver implements Weaver {
         } else {
             history.get().add(object);
         }
-
-        CardWeavingMachine machine = new CardWeavingMachine();
 
         LinkedHashMap<String, String> wovenFields = new LinkedHashMap<>();
         List<Field> fields = FieldOperations.getFields(object.getClass());
@@ -115,21 +116,64 @@ public class CardWeaver implements Weaver {
 
         String clazzName = object.getClass().getSimpleName();
 
-        machine.determineLongestField(wovenFields);
-        machine.determineOverallWidth(wovenFields, clazzName);
-        machine.appendClassname(clazzName);
+        int longestField = determineLongestField(wovenFields);
+        int overallWidth = determineOverallWidth(wovenFields, clazzName, longestField);
+
+        Loom loom = Loom.create();
+
+        loom.append(boxChars.tl())
+            .space()
+            .append(clazzName)
+            .space()
+            .append(boxChars.h(overallWidth-clazzName.length()-3))
+            .append(boxChars.tr());
 
         for (Map.Entry<String, String> entry : wovenFields.entrySet()) {
-            machine.newline();
-            machine.appendField(entry);
+            loom.newline();
+
+            String sub = sub(entry, longestField);
+            loom.append(sub);
+            loom.spaces(overallWidth-sub.length());
+            loom.append(boxChars.v());
         }
 
-        machine.appendFooter();
+        loom.newline()
+            .append(boxChars.bl())
+            .append(boxChars.h(overallWidth-1))
+            .append(boxChars.br());
 
         if (history.get().size() == 1) {
             history.remove();
         }
 
-        return machine.toString();
+        return loom.toString();
+    }
+
+    private int determineLongestField(Map<String, String> wovenFields) {
+        int longest = -1;
+        for (String key : wovenFields.keySet()) {
+            longest = Math.max(longest, key.length());
+        }
+        return longest;
+    }
+
+    private int determineOverallWidth(Map<String, String> wovenFields, String clazzName, int longestField) {
+        int overallWidth = -1;
+        for (Map.Entry<String, String> entry : wovenFields.entrySet()) {
+            overallWidth = Math.max(overallWidth, sub(entry, longestField).length() + 1);
+        }
+        overallWidth = Math.max(overallWidth, clazzName.length() + 4);
+        return overallWidth;
+    }
+
+    private String sub(Map.Entry<String, String> field, int longestField) {
+        Loom loom = Loom.create();
+        loom.append(BoxChars.UNICODE_LIGHT.v());
+        loom.space();
+        loom.append(field.getKey());
+        loom.spaces(longestField-field.getKey().length()+1);
+        loom.colonSpace();
+        loom.append(field.getValue());
+        return loom.toString();
     }
 }

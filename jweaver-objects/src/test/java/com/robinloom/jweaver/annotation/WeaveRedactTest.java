@@ -32,8 +32,8 @@ class WeaveRedactTest {
         Account account = new Account("John0815", "password");
         String expected = """
                           Account
-                           - name=John0815
-                           - password=***""";
+                              - name=John0815
+                              - password=***""";
         Assertions.assertEquals(expected, JWeaver.weave(account, Mode.BULLET));
     }
 
