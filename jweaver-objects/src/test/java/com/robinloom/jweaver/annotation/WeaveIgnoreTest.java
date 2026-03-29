@@ -31,7 +31,7 @@ class WeaveIgnoreTest {
         WeaveIgnoreTest.Account account = new WeaveIgnoreTest.Account("John0815", "password");
         String expected = """
                           Account
-                           - name=John0815""";
+                              - name=John0815""";
         Assertions.assertEquals(expected, JWeaver.weave(account, Mode.BULLET));
     }
 
