@@ -20,6 +20,7 @@ import com.robinloom.jweaver.commons.Weaver;
 import com.robinloom.jweaver.structure.NestedNode;
 import com.robinloom.jweaver.structure.NestedStructureBuilder;
 import com.robinloom.jweaver.util.TypeDictionary;
+import com.robinloom.loom.Loom;
 
 /**
  * BulletWeaver generates a string representation for a given object by arranging
@@ -33,8 +34,6 @@ import com.robinloom.jweaver.util.TypeDictionary;
  * </pre>
  */
 public class BulletWeaver implements Weaver {
-
-    private final BulletWeavingMachine machine = new BulletWeavingMachine();
 
     /**
      * Generates a string representation of the given object via reflections.
@@ -53,29 +52,30 @@ public class BulletWeaver implements Weaver {
         }
 
         NestedNode structure = new NestedStructureBuilder().build(new NestedNode(object), object);
-        traverseDepthFirst(structure);
 
-        machine.removeLastNewline();
+        Loom loom = Loom.create();
+        traverseDepthFirst(structure, loom);
+        loom.removeLastNewline();
 
-        String result = machine.toString();
-        machine.reset();
-        return result;
+        return loom.toString();
     }
 
-    private void traverseDepthFirst(NestedNode node) {
-        if (machine.globalLimitReached()) {
-            return;
-        }
+    private void traverseDepthFirst(NestedNode node, Loom loom) {
         if (node.isRoot()) {
-            machine.append(node.getContent());
-
+            loom.append(node.getContent()).newline();
         } else {
-            machine.indent(node.getLevel());
-            machine.append(node.getContent());
+            for (int i = 0; i < node.getLevel(); i++) {
+                loom.indent();
+            }
+            loom.append("- ");
+            loom.append(node.getContent()).newline();
+            for (int i = 0; i < node.getLevel(); i++) {
+                loom.outdent();
+            }
         }
 
         for (NestedNode child : node.getChildren()) {
-            traverseDepthFirst(child);
+            traverseDepthFirst(child, loom);
         }
     }
 
