@@ -20,6 +20,9 @@ import com.robinloom.jweaver.commons.Weaver;
 import com.robinloom.jweaver.structure.NestedNode;
 import com.robinloom.jweaver.structure.NestedStructureBuilder;
 import com.robinloom.jweaver.util.TypeDictionary;
+import com.robinloom.loom.Chars;
+import com.robinloom.loom.Loom;
+import com.robinloom.loom.Symbols;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +42,7 @@ import java.util.List;
  */
 public class TreeWeaver implements Weaver {
     
-    private final TreeWeavingMachine machine = new TreeWeavingMachine();
+    private final Loom loom = Loom.create();
 
     /**
      * Generates a string representation of the given object via reflections.
@@ -61,35 +64,26 @@ public class TreeWeaver implements Weaver {
 
         List<Boolean> siblingsAtCurrentLevel = new ArrayList<>();
         traverseDepthFirst(tree, siblingsAtCurrentLevel);
-        machine.removeLastNewline();
+        loom.removeLastNewline();
 
-        String result = machine.toString();
-        machine.reset();
-        return result;
+        return loom.toString();
     }
 
     private void traverseDepthFirst(NestedNode node, List<Boolean> siblingsAtCurrentLevel) {
-        if (machine.globalLimitReached()) {
-            return;
-        }
         if (node.isRoot()) {
-           machine.appendln(node.getContent());
+           loom.line(node.getContent());
         } else {
             for (int i = 0; i < siblingsAtCurrentLevel.size() - 1; i++) {
                 if (siblingsAtCurrentLevel.get(i)) {
-                    machine.indentWithCrossingBranch();
+                    loom.append(Chars.PIPE).spaces(3);
                 } else {
-                    machine.indent();
+                    loom.spaces(4);
                 }
             }
 
-            if (node.isLastChild()) {
-                machine.appendLastBranch();
-            } else {
-                machine.appendBranch();
-            }
-
-            machine.appendln(node.getContent());
+            loom.when(node.isLastChild(), () -> loom.append(Symbols.LAST_TREE_BRANCH).space(),
+                                          () -> loom.append(Symbols.TREE_BRANCH).space())
+                .line(node.getContent());
         }
 
         List<NestedNode> children = node.getChildren();
