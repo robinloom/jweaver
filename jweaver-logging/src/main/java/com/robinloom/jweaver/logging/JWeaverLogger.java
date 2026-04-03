@@ -18,7 +18,6 @@ package com.robinloom.jweaver.logging;
 
 import com.robinloom.jweaver.JWeaver;
 import com.robinloom.jweaver.Mode;
-import com.robinloom.jweaver.commons.Weaver;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 
@@ -26,7 +25,7 @@ import java.util.Arrays;
 
 /**
  * A wrapper class for {@link Logger}.
- * When formatting Strings, it will use the provided {@link Weaver}
+ * When formatting Strings, it will use the provided {@link com.robinloom.jweaver.Weaver}
  * to transform given object arguments into a pretty String representation.
  */
 public class JWeaverLogger implements Logger {

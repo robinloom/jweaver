@@ -57,6 +57,11 @@
                 <version>${slf4j.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.jspecify</groupId>
+                <artifactId>jspecify</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
                 <version>${logback.version}</version>
@@ -81,15 +86,34 @@
             </dependency>
             <dependency>
                 <groupId>com.robinloom</groupId>
-                <artifactId>jweaver-objects</artifactId>
+                <artifactId>jweaver-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.robinloom</groupId>
+                <artifactId>jweaver-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.robinloom</groupId>
+                <artifactId>jweaver-dictionary</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.robinloom</groupId>
+                <artifactId>jweaver-reflections</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
     <modules>
-        <module>jweaver-objects</module>
+        <module>jweaver-reflections</module>
         <module>jweaver-logging</module>
+        <module>jweaver-core</module>
+        <module>jweaver-api</module>
+        <module>jweaver-dictionary</module>
     </modules>
 
     <build>
