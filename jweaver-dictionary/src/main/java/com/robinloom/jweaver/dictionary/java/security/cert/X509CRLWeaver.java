@@ -32,17 +32,17 @@ public class X509CRLWeaver implements TypeWeaver {
 
         String subject = formatSubject(crl.getIssuerX500Principal());
 
-        return Loom.create().append("X509CRL")
-                            .lbracket()
-                            .keyEqValue("issuer", subject)
-                            .commaSpace()
-                            .keyEqValue("version", crl.getVersion())
-                            .commaSpace()
-                            .keyEqValue("algorithm", crl.getSigAlgName())
-                            .commaSpace()
-                            .keyEqValue("entries", crl.getRevokedCertificates() != null ? crl.getRevokedCertificates().size() : 0)
-                            .rbracket()
-                            .toString();
+        return Loom.with("X509CRL")
+                   .lbracket()
+                   .keyEqValue("issuer", subject)
+                   .commaSpace()
+                   .keyEqValue("version", crl.getVersion())
+                   .commaSpace()
+                   .keyEqValue("algorithm", crl.getSigAlgName())
+                   .commaSpace()
+                   .keyEqValue("entries", crl.getRevokedCertificates() != null ? crl.getRevokedCertificates().size() : 0)
+                   .rbracket()
+                   .toString();
     }
 
     private String formatSubject(X500Principal principal) {

@@ -18,14 +18,13 @@ public class ArrayWeaver implements TypeWeaver {
     @Override
     public String weave(@Nullable Object object, WeavingContext context) {
         if (object == null) {
-            return "";
+            return "null";
         }
 
         int length = Array.getLength(object);
-        Loom loom = Loom.create();
+        Loom loom = Loom.with(object.getClass().getComponentType().getSimpleName());
 
-        loom.append(object.getClass().getComponentType().getSimpleName())
-            .bracket(() -> loom.append(length))
+        loom.bracket(() -> loom.append(length))
             .space()
             .bracket(() -> {
                 loom.join(", ", Loom.range(0, length), i -> {

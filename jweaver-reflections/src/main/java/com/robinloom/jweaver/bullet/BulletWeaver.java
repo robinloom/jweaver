@@ -53,7 +53,7 @@ public class BulletWeaver implements Weaver {
 
         NestedNode structure = new NestedStructureBuilder().build(new NestedNode(object), object);
 
-        Loom loom = Loom.create();
+        Loom loom = Loom.empty();
         traverseDepthFirst(structure, loom);
         loom.removeLastNewline();
 

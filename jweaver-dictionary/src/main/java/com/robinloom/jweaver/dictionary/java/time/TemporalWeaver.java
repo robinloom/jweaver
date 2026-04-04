@@ -3,6 +3,7 @@ package com.robinloom.jweaver.dictionary.java.time;
 import com.robinloom.jweaver.dictionary.TypeWeaver;
 import com.robinloom.jweaver.dictionary.WeavingContext;
 import com.robinloom.jweaver.util.Classes;
+import com.robinloom.loom.Loom;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -20,19 +21,38 @@ public class TemporalWeaver implements TypeWeaver {
     @Override
     public String weave(Object object, WeavingContext context) {
         if (object instanceof LocalDate d) {
-            return "LocalDate[" + d + "]";
+            return Loom.with(LocalDate.class.getSimpleName())
+                       .lbracket()
+                       .append(d)
+                       .rbracket()
+                       .toString();
         }
 
         if (object instanceof LocalDateTime dt) {
-            return "LocalDateTime[" + dt + "]";
+            return Loom.with(LocalDateTime.class.getSimpleName())
+                       .lbracket()
+                       .append(dt)
+                       .rbracket()
+                       .toString();
         }
 
         if (object instanceof ZonedDateTime zdt) {
-            return "ZonedDateTime[" + zdt.toLocalDateTime() + zdt.getOffset() + " " + zdt.getZone() + "]";
+            return Loom.with(ZonedDateTime.class.getSimpleName())
+                       .lbracket()
+                       .append(zdt.toLocalDateTime())
+                       .append(zdt.getOffset())
+                       .space()
+                       .append(zdt.getZone())
+                       .rbracket()
+                       .toString();
         }
 
         if (object instanceof Instant i) {
-            return "Instant[" + i + "]";
+            return Loom.with(Instant.class.getSimpleName())
+                       .lbracket()
+                       .append(i)
+                       .rbracket()
+                       .toString();
         }
 
         return object.toString();

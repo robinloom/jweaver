@@ -3,6 +3,7 @@ package com.robinloom.jweaver.dictionary.java.security;
 import com.robinloom.jweaver.dictionary.TypeWeaver;
 import com.robinloom.jweaver.dictionary.WeavingContext;
 import com.robinloom.jweaver.util.Classes;
+import com.robinloom.loom.Loom;
 
 import java.security.*;
 import java.security.interfaces.*;
@@ -22,22 +23,21 @@ public class KeyWeaver implements TypeWeaver {
         String type = typeOf(key);
         String algorithm = safe(key.getAlgorithm());
 
-        StringBuilder sb = new StringBuilder();
-        sb.append(type).append("[").append(algorithm);
+        Loom loom = Loom.with(type, "[", algorithm);
 
         switch (key) {
-            case ECKey ecKey -> sb.append(", ").append(tryGetCurveName(ecKey));
-            case RSAKey rsaKey -> sb.append(", ").append(rsaBits(rsaKey));
-            case DSAKey dsaKey -> sb.append(", ").append(dsaBits(dsaKey));
+            case ECKey ecKey -> loom.commaSpace().append(tryGetCurveName(ecKey));
+            case RSAKey rsaKey -> loom.commaSpace().append(rsaBits(rsaKey));
+            case DSAKey dsaKey -> loom.commaSpace().append(dsaBits(dsaKey));
             default -> {
             }
         }
 
-        sb.append(", ").append(fingerprint(key));
+        loom.commaSpace()
+            .append(fingerprint(key))
+            .rbracket();
 
-        sb.append("]");
-
-        return sb.toString();
+        return loom.toString();
     }
 
     private String typeOf(Key key) {

@@ -119,7 +119,7 @@ public class CardWeaver implements Weaver {
         int longestField = determineLongestField(wovenFields);
         int overallWidth = determineOverallWidth(wovenFields, clazzName, longestField);
 
-        Loom loom = Loom.create();
+        Loom loom = Loom.empty();
 
         loom.append(boxChars.tl())
             .space()
@@ -167,7 +167,7 @@ public class CardWeaver implements Weaver {
     }
 
     private String sub(Map.Entry<String, String> field, int longestField) {
-        Loom loom = Loom.create();
+        Loom loom = Loom.empty();
         loom.append(BoxChars.UNICODE_LIGHT.v());
         loom.space();
         loom.append(field.getKey());

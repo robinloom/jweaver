@@ -25,9 +25,8 @@ public class CollectionWeaver implements TypeWeaver {
 
         Collection<?> collection = (Collection<?>) object;
 
-        Loom loom = Loom.create();
-        loom.append(object.getClass().getSimpleName())
-            .paren(() -> loom.append(collection.size()))
+        Loom loom = Loom.with(object.getClass().getSimpleName());
+        loom.paren(() -> loom.append(collection.size()))
             .space()
             .bracket(() -> {
                     AtomicInteger i = new AtomicInteger();

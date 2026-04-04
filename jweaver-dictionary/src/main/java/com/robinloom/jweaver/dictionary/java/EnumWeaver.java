@@ -14,7 +14,7 @@ public class EnumWeaver implements TypeWeaver {
     @Override
     public String weave(@Nullable Object object, WeavingContext context) {
         if (object == null) {
-            return "";
+            return "null";
         }
 
         Enum<?> enumObject = (Enum<?>) object;

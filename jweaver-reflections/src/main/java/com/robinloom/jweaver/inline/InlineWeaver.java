@@ -78,36 +78,36 @@ public class InlineWeaver implements Weaver {
         String fieldDelimiter = fieldDelimiter();
         String fieldValueDelimiter = fieldValueDelimiter();
 
-        Loom loom = Loom.create();
+        Loom loom = Loom.empty();
         loom.append(object.getClass().getSimpleName())
-                .append(opening())
-                .join(fieldDelimiter, fields, field -> {
-                    try {
-                        Object value = readField(field, object);
+            .append(opening())
+            .join(fieldDelimiter, fields, field -> {
+                try {
+                    Object value = readField(field, object);
 
-                        String fieldName;
-                        if (field.isAnnotationPresent(WeaveName.class)) {
-                            fieldName = field.getAnnotation(WeaveName.class).value();
-                        } else {
-                            fieldName = field.getName();
-                        }
-                        String woven;
-
-                        if (SensitivityDetection.isSensitive(field)) {
-                            woven = Chars.repeat(Chars.ASTERISK, 3);
-                        } else if (Types.isCollection(field.getType())) {
-                            woven = weaveCollection((Collection<?>) value);
-                        } else if (Types.isArray(field.getType())) {
-                            woven = weaveArray(value);
-                        } else  {
-                            woven = value.toString();
-                        }
-
-                        return fieldName + fieldValueDelimiter + woven;
-                    } catch (Exception ex) {
-                        return "[?]";
+                    String fieldName;
+                    if (field.isAnnotationPresent(WeaveName.class)) {
+                        fieldName = field.getAnnotation(WeaveName.class).value();
+                    } else {
+                        fieldName = field.getName();
                     }
-                }).append(closing());
+                    String woven;
+
+                    if (SensitivityDetection.isSensitive(field)) {
+                        woven = Chars.repeat(Chars.ASTERISK, 3);
+                    } else if (Types.isCollection(field.getType())) {
+                        woven = weaveCollection((Collection<?>) value);
+                    } else if (Types.isArray(field.getType())) {
+                        woven = weaveArray(value);
+                    } else  {
+                        woven = value.toString();
+                    }
+
+                    return fieldName + fieldValueDelimiter + woven;
+                } catch (Exception ex) {
+                    return "[?]";
+                }
+            }).append(closing());
 
         if (history.get().size() == 1) {
             history.remove();
@@ -122,13 +122,13 @@ public class InlineWeaver implements Weaver {
     }
 
     private String weaveArray(Object array) {
-        Loom loom = Loom.create();
+        Loom loom = Loom.empty();
         loom.bracket(() -> loom.join(", ", Loom.range(0, Array.getLength(array)), i -> Array.get(array, i)));
         return loom.toString();
     }
 
     private String weaveCollection(Collection<?> collection) {
-        Loom loom = Loom.create();
+        Loom loom = Loom.empty();
         loom.bracket(() -> loom.join(", ", collection, e -> e));
         return loom.toString();
     }

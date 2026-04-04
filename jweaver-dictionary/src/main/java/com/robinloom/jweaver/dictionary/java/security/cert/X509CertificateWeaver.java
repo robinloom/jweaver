@@ -28,15 +28,15 @@ public class X509CertificateWeaver implements TypeWeaver {
         String notBefore = formatDate(cert.getNotBefore());
         String notAfter = formatDate(cert.getNotAfter());
 
-        Loom loom = Loom.create();
-        loom.append("X509Certificate").bracket(() -> {
-            loom.keyEqValue("subject", subject);
-            loom.commaSpace();
-            loom.keyEqValue("issuer", issuer);
-            loom.commaSpace();
-            loom.append("validity");
-            loom.eq();
-            loom.append(notBefore).space().append("-").space().append(notAfter);
+        Loom loom = Loom.with("X509Certificate");
+        loom.bracket(() -> {
+                loom.keyEqValue("subject", subject);
+                loom.commaSpace();
+                loom.keyEqValue("issuer", issuer);
+                loom.commaSpace();
+                loom.append("validity");
+                loom.eq();
+                loom.append(notBefore).space().append("-").space().append(notAfter);
         });
 
         return loom.toString();

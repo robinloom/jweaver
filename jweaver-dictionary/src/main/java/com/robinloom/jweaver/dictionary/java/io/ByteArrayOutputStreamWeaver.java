@@ -3,6 +3,7 @@ package com.robinloom.jweaver.dictionary.java.io;
 import com.robinloom.jweaver.dictionary.TypeWeaver;
 import com.robinloom.jweaver.dictionary.WeavingContext;
 import com.robinloom.jweaver.util.Classes;
+import com.robinloom.loom.Loom;
 import org.jspecify.annotations.Nullable;
 
 import java.io.ByteArrayOutputStream;
@@ -21,6 +22,6 @@ public class ByteArrayOutputStreamWeaver implements TypeWeaver {
         }
 
         ByteArrayOutputStream out = (ByteArrayOutputStream) object;
-        return "ByteArrayOutputStream[size=" + out.size() + "]";
+        return Loom.with("ByteArrayOutputStream[size=", out.size(), "]").toString();
     }
 }

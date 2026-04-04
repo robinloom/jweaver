@@ -42,7 +42,7 @@ import java.util.List;
  */
 public class TreeWeaver implements Weaver {
     
-    private final Loom loom = Loom.create();
+    private final Loom loom = Loom.empty();
 
     /**
      * Generates a string representation of the given object via reflections.
