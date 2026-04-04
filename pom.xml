@@ -37,7 +37,7 @@
         <maven.compiler.source>25</maven.compiler.source>
         <maven.compiler.target>25</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <loom.version>0.1</loom.version>
+        <loom.version>0.2</loom.version>
         <slf4j.version>2.0.17</slf4j.version>
         <logback.version>1.5.25</logback.version>
         <junit.version>6.0.2</junit.version>
