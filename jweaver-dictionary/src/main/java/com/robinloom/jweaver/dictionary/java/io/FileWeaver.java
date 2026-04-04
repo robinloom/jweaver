@@ -17,7 +17,7 @@ public class FileWeaver implements TypeWeaver {
     @Override
     public String weave(Object object, WeavingContext context) {
         if (object == null) {
-            return "";
+            return "null";
         }
 
         File file = (File) object;

@@ -14,12 +14,6 @@ class BulletModeTest {
     }
 
     @Test
-    void testJdkClassesToString() {
-        Assertions.assertEquals("Test", JWeaver.weave("Test", Mode.BULLET));
-        Assertions.assertEquals("[]", JWeaver.weave(List.of(), Mode.BULLET));
-    }
-
-    @Test
     void testSimpleWeaving() {
         record Person(String name, LocalDate birthday) {}
 

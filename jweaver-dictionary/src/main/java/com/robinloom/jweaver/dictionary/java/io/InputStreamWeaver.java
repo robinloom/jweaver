@@ -17,6 +17,10 @@ public class InputStreamWeaver implements TypeWeaver {
 
     @Override
     public String weave(Object object, WeavingContext context) {
+        if (object == null) {
+            return "null";
+        }
+
         InputStream in = (InputStream) object;
         String className = in.getClass().getSimpleName();
         try {

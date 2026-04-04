@@ -14,12 +14,6 @@ public class TreeModeTest {
     }
 
     @Test
-    void testJdkClassesToString() {
-        Assertions.assertEquals("Test", JWeaver.weave("Test", Mode.TREE));
-        Assertions.assertEquals("[]", JWeaver.weave(List.of(), Mode.TREE));
-    }
-
-    @Test
     void testSimpleWeaving() {
         record Person(String name, LocalDate birthday) {}
 

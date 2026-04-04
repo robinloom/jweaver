@@ -3,7 +3,6 @@ package com.robinloom.jweaver;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import javax.crypto.IllegalBlockSizeException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -12,13 +11,6 @@ public class InlineModeTest {
     @Test
     void testNullSafety() {
         Assertions.assertEquals("null", JWeaver.weave(null, Mode.INLINE));
-    }
-
-    @Test
-    void testJdkClassesToString() {
-        Assertions.assertEquals("Test", JWeaver.weave("Test", Mode.INLINE));
-        Assertions.assertEquals("[]", JWeaver.weave(List.of(), Mode.INLINE));
-        Assertions.assertEquals("javax.crypto.IllegalBlockSizeException", JWeaver.weave(new IllegalBlockSizeException(), Mode.INLINE));
     }
 
     @Test

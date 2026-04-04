@@ -1,4 +1,4 @@
-package com.robinloom.jweaver.dictionary.java.io;
+package com.robinloom.jweaver.dictionary.java.lang;
 
 import com.robinloom.jweaver.dictionary.TypeWeaver;
 import com.robinloom.jweaver.dictionary.WeavingContext;
@@ -6,13 +6,12 @@ import com.robinloom.jweaver.util.Classes;
 import com.robinloom.loom.Loom;
 import org.jspecify.annotations.Nullable;
 
-import java.io.ByteArrayOutputStream;
-
-public class ByteArrayOutputStreamWeaver implements TypeWeaver {
+public class CharacterWeaver implements TypeWeaver {
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return Classes.is(clazz).subclassOf(ByteArrayOutputStream.class);
+        return Classes.is(clazz).exactly(char.class)
+               || Classes.is(clazz).subclassOf(Character.class);
     }
 
     @Override
@@ -21,7 +20,7 @@ public class ByteArrayOutputStreamWeaver implements TypeWeaver {
             return "null";
         }
 
-        ByteArrayOutputStream out = (ByteArrayOutputStream) object;
-        return Loom.with("ByteArrayOutputStream[size=", out.size(), "]").toString();
+        Character character = (Character) object;
+        return Loom.with("'").append(character).append("'").toString();
     }
 }

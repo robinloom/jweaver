@@ -14,12 +14,6 @@ public class MultilineModeTest {
     }
 
     @Test
-    void testJdkClassesToString() {
-        Assertions.assertEquals("Test", JWeaver.weave("Test", Mode.MULTILINE));
-        Assertions.assertEquals("[]", JWeaver.weave(List.of(), Mode.MULTILINE));
-    }
-
-    @Test
     void testRecordWeaving() {
         record Person(String name, LocalDate birthday) {}
 

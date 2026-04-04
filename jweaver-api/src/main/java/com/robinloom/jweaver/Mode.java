@@ -18,7 +18,6 @@ package com.robinloom.jweaver;
 
 import com.robinloom.jweaver.bullet.BulletWeaver;
 import com.robinloom.jweaver.card.CardWeaver;
-import com.robinloom.jweaver.dictionary.DictionaryWeaver;
 import com.robinloom.jweaver.inline.InlineWeaver;
 import com.robinloom.jweaver.multiline.MultilineWeaver;
 import com.robinloom.jweaver.tree.TreeWeaver;
@@ -37,7 +36,6 @@ import com.robinloom.jweaver.tree.TreeWeaver;
  */
 public enum Mode {
 
-    DICTIONARY,
     /**
      * Compact, single-line representation.
      * <p>
@@ -81,7 +79,6 @@ public enum Mode {
      */
     public static Weaver getWeaverForMode(Mode mode) {
         return switch (mode) {
-            case DICTIONARY ->  new DictionaryWeaver(new InlineWeaver());
             case TREE -> new TreeWeaver();
             case BULLET -> new BulletWeaver();
             case CARD -> new CardWeaver();

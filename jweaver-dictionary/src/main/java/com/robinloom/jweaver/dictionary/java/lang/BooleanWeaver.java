@@ -1,14 +1,15 @@
-package com.robinloom.jweaver.dictionary.java;
+package com.robinloom.jweaver.dictionary.java.lang;
 
 import com.robinloom.jweaver.dictionary.TypeWeaver;
 import com.robinloom.jweaver.dictionary.WeavingContext;
+import com.robinloom.jweaver.util.Classes;
 import org.jspecify.annotations.Nullable;
 
-public class EnumWeaver implements TypeWeaver {
+public class BooleanWeaver implements TypeWeaver {
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return clazz.isEnum();
+        return Classes.is(clazz).exactly(Boolean.class);
     }
 
     @Override
@@ -17,7 +18,7 @@ public class EnumWeaver implements TypeWeaver {
             return "null";
         }
 
-        Enum<?> enumObject = (Enum<?>) object;
-        return object.getClass().getSimpleName() + "." + enumObject.name();
+        Boolean b = (Boolean) object;
+        return b ? "TRUE" : "FALSE";
     }
 }

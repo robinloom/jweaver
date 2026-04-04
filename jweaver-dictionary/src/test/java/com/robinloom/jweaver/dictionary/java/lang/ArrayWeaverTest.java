@@ -1,5 +1,6 @@
-package com.robinloom.jweaver.dictionary.java;
+package com.robinloom.jweaver.dictionary.java.lang;
 
+import com.robinloom.jweaver.dictionary.java.TypeWeaverTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
