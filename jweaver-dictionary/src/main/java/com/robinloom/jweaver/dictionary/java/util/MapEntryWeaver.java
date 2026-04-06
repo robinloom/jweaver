@@ -1,5 +1,6 @@
 package com.robinloom.jweaver.dictionary.java.util;
 
+import com.robinloom.jweaver.dictionary.DictionaryRegistry;
 import com.robinloom.jweaver.dictionary.TypeWeaver;
 import com.robinloom.jweaver.dictionary.WeavingContext;
 import com.robinloom.jweaver.util.Classes;
@@ -20,9 +21,15 @@ public class MapEntryWeaver implements TypeWeaver {
         }
 
         Map.Entry<?, ?> entry = (Map.Entry<?, ?>) object;
-        Object key = entry.getKey();
-        Object value = entry.getValue();
 
-        return context.delegateWeave(key) + " = " + context.delegateWeave(value);
+        TypeWeaver keyDelegate = DictionaryRegistry.find(entry.getKey().getClass());
+        String key = keyDelegate != null ? keyDelegate.weave(entry.getKey(), context)
+                                         : context.reflectionWeave(entry.getKey());
+
+        TypeWeaver valueDelegate = DictionaryRegistry.find(entry.getValue().getClass());
+        String value = valueDelegate != null ? valueDelegate.weave(entry.getValue(), context)
+                                             : context.reflectionWeave(entry.getValue());
+
+        return key + " = " + value;
     }
 }

@@ -1,8 +1,10 @@
 package com.robinloom.jweaver.dictionary.java.util;
 
+import com.robinloom.jweaver.dictionary.DictionaryRegistry;
 import com.robinloom.jweaver.dictionary.TypeWeaver;
 import com.robinloom.jweaver.dictionary.WeavingContext;
 import com.robinloom.jweaver.util.Classes;
+import com.robinloom.loom.Loom;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Optional;
@@ -21,6 +23,22 @@ public class OptionalWeaver implements TypeWeaver {
         }
 
         Optional<?> optional = (Optional<?>) object;
-        return optional.map(o -> "Optional(" + context.delegateWeave(o) + ")").orElse("Optional()");
+
+        return optional.map(o -> {
+            TypeWeaver delegate = DictionaryRegistry.find(o.getClass());
+            if (delegate != null) {
+                return Loom.with("Optional")
+                           .lparen()
+                           .append(delegate.weave(o, context))
+                           .rparen()
+                           .toString();
+            } else {
+                return Loom.with("Optional")
+                        .lparen()
+                        .append(context.reflectionWeave(o))
+                        .rparen()
+                        .toString();
+            }
+        }).orElse("Optional()");
     }
 }

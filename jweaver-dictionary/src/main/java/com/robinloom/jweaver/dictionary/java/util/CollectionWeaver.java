@@ -1,5 +1,6 @@
 package com.robinloom.jweaver.dictionary.java.util;
 
+import com.robinloom.jweaver.dictionary.DictionaryRegistry;
 import com.robinloom.jweaver.dictionary.TypeWeaver;
 import com.robinloom.jweaver.dictionary.WeavingContext;
 import com.robinloom.jweaver.util.Classes;
@@ -40,10 +41,11 @@ public class CollectionWeaver implements TypeWeaver {
 
                         i.getAndIncrement();
 
-                        if (Collection.class.isAssignableFrom(item.getClass())) {
+                        TypeWeaver delegate = DictionaryRegistry.find(item.getClass());
+                        if (delegate != null) {
                             return weave(item, context);
                         } else {
-                            return context.delegateWeave(item);
+                            return context.reflectionWeave(item);
                         }
                     });
             });

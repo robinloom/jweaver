@@ -10,7 +10,7 @@ public final class WeavingContext {
         this.weaver = weaver;
     }
 
-    public String delegateWeave(Object object) {
+    public String reflectionWeave(Object object) {
         return weaver.weave(object);
     }
 }

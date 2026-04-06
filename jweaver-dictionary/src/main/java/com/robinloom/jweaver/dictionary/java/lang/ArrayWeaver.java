@@ -1,5 +1,6 @@
 package com.robinloom.jweaver.dictionary.java.lang;
 
+import com.robinloom.jweaver.dictionary.DictionaryRegistry;
 import com.robinloom.jweaver.dictionary.TypeWeaver;
 import com.robinloom.jweaver.dictionary.WeavingContext;
 import com.robinloom.jweaver.util.Classes;
@@ -37,10 +38,12 @@ public class ArrayWeaver implements TypeWeaver {
                         return null;
                     }
 
-                    if (component.getClass().isArray()) {
-                        return weave(component, context);
+                    TypeWeaver delegate = DictionaryRegistry.find(component.getClass());
+
+                    if (delegate != null) {
+                        return delegate.weave(component, context);
                     } else {
-                        return context.delegateWeave(component);
+                        return context.reflectionWeave(component);
                     }
                 });
             });
