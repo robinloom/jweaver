@@ -4,7 +4,7 @@ import org.jspecify.annotations.Nullable;
 
 public interface TypeWeaver {
 
-    boolean supports(Class<?> clazz);
+    Class<?> targetType();
 
     String weave(@Nullable Object object, WeavingContext context);
 }

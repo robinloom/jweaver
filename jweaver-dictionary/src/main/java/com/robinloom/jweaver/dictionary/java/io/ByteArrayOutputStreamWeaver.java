@@ -2,7 +2,6 @@ package com.robinloom.jweaver.dictionary.java.io;
 
 import com.robinloom.jweaver.dictionary.TypeWeaver;
 import com.robinloom.jweaver.dictionary.WeavingContext;
-import com.robinloom.jweaver.util.Classes;
 import com.robinloom.loom.Loom;
 import org.jspecify.annotations.Nullable;
 
@@ -11,8 +10,8 @@ import java.io.ByteArrayOutputStream;
 public class ByteArrayOutputStreamWeaver implements TypeWeaver {
 
     @Override
-    public boolean supports(Class<?> clazz) {
-        return Classes.is(clazz).subclassOf(ByteArrayOutputStream.class);
+    public Class<?> targetType() {
+        return ByteArrayOutputStream.class;
     }
 
     @Override

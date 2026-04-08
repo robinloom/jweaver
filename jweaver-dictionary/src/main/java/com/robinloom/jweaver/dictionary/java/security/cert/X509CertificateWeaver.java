@@ -2,7 +2,6 @@ package com.robinloom.jweaver.dictionary.java.security.cert;
 
 import com.robinloom.jweaver.dictionary.TypeWeaver;
 import com.robinloom.jweaver.dictionary.WeavingContext;
-import com.robinloom.jweaver.util.Classes;
 import com.robinloom.loom.Loom;
 
 import javax.naming.ldap.LdapName;
@@ -14,8 +13,8 @@ import java.util.*;
 public class X509CertificateWeaver implements TypeWeaver {
 
     @Override
-    public boolean supports(Class<?> clazz) {
-        return Classes.is(clazz).subclassOf(X509Certificate.class);
+    public Class<?> targetType() {
+        return X509Certificate.class;
     }
 
     @Override

@@ -2,7 +2,6 @@ package com.robinloom.jweaver.dictionary.java.io;
 
 import com.robinloom.jweaver.dictionary.TypeWeaver;
 import com.robinloom.jweaver.dictionary.WeavingContext;
-import com.robinloom.jweaver.util.Classes;
 import com.robinloom.loom.Loom;
 
 import java.io.File;
@@ -10,8 +9,8 @@ import java.io.File;
 public class FileWeaver implements TypeWeaver {
 
     @Override
-    public boolean supports(Class<?> clazz) {
-        return Classes.is(clazz).exactly(java.io.File.class);
+    public Class<?> targetType() {
+        return java.io.File.class;
     }
 
     @Override

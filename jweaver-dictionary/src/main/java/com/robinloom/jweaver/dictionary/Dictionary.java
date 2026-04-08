@@ -18,10 +18,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DictionaryRegistry {
+public class Dictionary {
 
     private static final List<TypeWeaver> RENDERERS = new ArrayList<>();
     private static final Map<Class<?>, TypeWeaver> CACHE = new ConcurrentHashMap<>();
+    private static final ArrayWeaver ARRAY_WEAVER = new ArrayWeaver();
 
     static {
         // java.io
@@ -29,7 +30,6 @@ public class DictionaryRegistry {
         register(new FileWeaver());
         register(new InputStreamWeaver());
         // java.lang
-        register(new ArrayWeaver());
         register(new BooleanWeaver());
         register(new ByteArrayWeaver());
         register(new CharacterWeaver());
@@ -60,15 +60,39 @@ public class DictionaryRegistry {
     }
 
     public static TypeWeaver find(Class<?> clazz) {
-        return CACHE.computeIfAbsent(clazz, DictionaryRegistry::resolve);
+        return CACHE.computeIfAbsent(clazz, Dictionary::resolve);
     }
 
     private static TypeWeaver resolve(Class<?> clazz) {
+        TypeWeaver best = findBest(clazz);
+        if (best != null) {
+            return best;
+        }
+
+        if (clazz.isArray()) {
+            return ARRAY_WEAVER;
+        }
+
+        return null;
+    }
+
+    private static TypeWeaver findBest(Class<?> clazz) {
+        TypeWeaver best = null;
+
         for (TypeWeaver weaver : RENDERERS) {
-            if (weaver.supports(clazz)) {
-                return weaver;
+            Class<?> target = weaver.targetType();
+
+            if (target.isAssignableFrom(clazz)) {
+                if (best == null || isMoreSpecific(target, best.targetType())) {
+                    best = weaver;
+                }
             }
         }
-        return null;
+
+        return best;
+    }
+
+    private static boolean isMoreSpecific(Class<?> a, Class<?> b) {
+        return b.isAssignableFrom(a);
     }
 }

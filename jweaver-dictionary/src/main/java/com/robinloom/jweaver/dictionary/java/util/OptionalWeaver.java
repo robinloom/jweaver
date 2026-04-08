@@ -1,9 +1,8 @@
 package com.robinloom.jweaver.dictionary.java.util;
 
-import com.robinloom.jweaver.dictionary.DictionaryRegistry;
+import com.robinloom.jweaver.dictionary.Dictionary;
 import com.robinloom.jweaver.dictionary.TypeWeaver;
 import com.robinloom.jweaver.dictionary.WeavingContext;
-import com.robinloom.jweaver.util.Classes;
 import com.robinloom.loom.Loom;
 import org.jspecify.annotations.Nullable;
 
@@ -12,8 +11,8 @@ import java.util.Optional;
 public class OptionalWeaver implements TypeWeaver {
 
     @Override
-    public boolean supports(Class<?> clazz) {
-        return Classes.is(clazz).subclassOf(Optional.class);
+    public Class<?> targetType() {
+        return Optional.class;
     }
 
     @Override
@@ -25,7 +24,7 @@ public class OptionalWeaver implements TypeWeaver {
         Optional<?> optional = (Optional<?>) object;
 
         return optional.map(o -> {
-            TypeWeaver delegate = DictionaryRegistry.find(o.getClass());
+            TypeWeaver delegate = Dictionary.find(o.getClass());
             if (delegate != null) {
                 return Loom.with("Optional")
                            .lparen()

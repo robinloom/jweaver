@@ -1,9 +1,8 @@
 package com.robinloom.jweaver.dictionary.java.util;
 
-import com.robinloom.jweaver.dictionary.DictionaryRegistry;
+import com.robinloom.jweaver.dictionary.Dictionary;
 import com.robinloom.jweaver.dictionary.TypeWeaver;
 import com.robinloom.jweaver.dictionary.WeavingContext;
-import com.robinloom.jweaver.util.Classes;
 import com.robinloom.jweaver.util.Sequences;
 import com.robinloom.loom.Loom;
 import org.jspecify.annotations.Nullable;
@@ -14,8 +13,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class CollectionWeaver implements TypeWeaver {
 
     @Override
-    public boolean supports(Class<?> clazz) {
-        return Classes.is(clazz).subclassOf(Collection.class);
+    public Class<?> targetType() {
+        return Collection.class;
     }
 
     @Override
@@ -41,7 +40,7 @@ public class CollectionWeaver implements TypeWeaver {
 
                         i.getAndIncrement();
 
-                        TypeWeaver delegate = DictionaryRegistry.find(item.getClass());
+                        TypeWeaver delegate = Dictionary.find(item.getClass());
                         if (delegate != null) {
                             return weave(item, context);
                         } else {

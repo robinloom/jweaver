@@ -16,7 +16,7 @@
  */
 package com.robinloom.jweaver;
 
-import com.robinloom.jweaver.dictionary.DictionaryRegistry;
+import com.robinloom.jweaver.dictionary.Dictionary;
 import com.robinloom.jweaver.dictionary.TypeWeaver;
 import com.robinloom.jweaver.dictionary.WeavingContext;
 import com.robinloom.jweaver.inline.InlineWeaver;
@@ -71,7 +71,7 @@ public final class JWeaver {
             return "null";
         }
 
-        TypeWeaver typeWeaver = DictionaryRegistry.find(object.getClass());
+        TypeWeaver typeWeaver = Dictionary.find(object.getClass());
         if (typeWeaver != null) {
             return typeWeaver.weave(object, new WeavingContext(new InlineWeaver()));
         }

@@ -2,7 +2,6 @@ package com.robinloom.jweaver.dictionary.java.time;
 
 import com.robinloom.jweaver.dictionary.TypeWeaver;
 import com.robinloom.jweaver.dictionary.WeavingContext;
-import com.robinloom.jweaver.util.Classes;
 import com.robinloom.loom.Loom;
 import org.jspecify.annotations.Nullable;
 
@@ -11,8 +10,8 @@ import java.time.Period;
 public class PeriodWeaver implements TypeWeaver {
 
     @Override
-    public boolean supports(Class<?> clazz) {
-        return Classes.is(clazz).exactly(Period.class);
+    public Class<?> targetType() {
+        return Period.class;
     }
 
     @Override

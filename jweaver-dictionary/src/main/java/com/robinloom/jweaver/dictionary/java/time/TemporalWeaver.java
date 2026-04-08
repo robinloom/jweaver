@@ -2,7 +2,6 @@ package com.robinloom.jweaver.dictionary.java.time;
 
 import com.robinloom.jweaver.dictionary.TypeWeaver;
 import com.robinloom.jweaver.dictionary.WeavingContext;
-import com.robinloom.jweaver.util.Classes;
 import com.robinloom.loom.Loom;
 
 import java.time.Instant;
@@ -14,8 +13,8 @@ import java.time.temporal.Temporal;
 public class TemporalWeaver implements TypeWeaver {
 
     @Override
-    public boolean supports(Class<?> clazz) {
-        return Classes.is(clazz).subclassOf(Temporal.class);
+    public Class<?> targetType() {
+        return Temporal.class;
     }
 
     @Override

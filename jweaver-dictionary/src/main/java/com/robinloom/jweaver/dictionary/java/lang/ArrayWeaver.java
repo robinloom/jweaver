@@ -1,9 +1,8 @@
 package com.robinloom.jweaver.dictionary.java.lang;
 
-import com.robinloom.jweaver.dictionary.DictionaryRegistry;
+import com.robinloom.jweaver.dictionary.Dictionary;
 import com.robinloom.jweaver.dictionary.TypeWeaver;
 import com.robinloom.jweaver.dictionary.WeavingContext;
-import com.robinloom.jweaver.util.Classes;
 import com.robinloom.jweaver.util.Sequences;
 import com.robinloom.loom.Loom;
 import org.jspecify.annotations.Nullable;
@@ -13,8 +12,8 @@ import java.lang.reflect.Array;
 public class ArrayWeaver implements TypeWeaver {
 
     @Override
-    public boolean supports(Class<?> clazz) {
-        return clazz.isArray() && !Classes.is(clazz).exactly(byte[].class);
+    public Class<?> targetType() {
+        return Object[].class;
     }
 
     @Override
@@ -38,7 +37,7 @@ public class ArrayWeaver implements TypeWeaver {
                         return null;
                     }
 
-                    TypeWeaver delegate = DictionaryRegistry.find(component.getClass());
+                    TypeWeaver delegate = Dictionary.find(component.getClass());
 
                     if (delegate != null) {
                         return delegate.weave(component, context);

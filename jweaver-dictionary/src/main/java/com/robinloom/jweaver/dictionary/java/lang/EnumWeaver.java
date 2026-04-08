@@ -8,8 +8,8 @@ import org.jspecify.annotations.Nullable;
 public class EnumWeaver implements TypeWeaver {
 
     @Override
-    public boolean supports(Class<?> clazz) {
-        return clazz.isEnum();
+    public Class<?> targetType() {
+        return Enum.class;
     }
 
     @Override

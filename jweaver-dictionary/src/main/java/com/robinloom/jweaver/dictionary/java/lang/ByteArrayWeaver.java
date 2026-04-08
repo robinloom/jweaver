@@ -2,7 +2,6 @@ package com.robinloom.jweaver.dictionary.java.lang;
 
 import com.robinloom.jweaver.dictionary.TypeWeaver;
 import com.robinloom.jweaver.dictionary.WeavingContext;
-import com.robinloom.jweaver.util.Classes;
 import com.robinloom.loom.Chars;
 import com.robinloom.loom.Loom;
 import org.jspecify.annotations.Nullable;
@@ -10,8 +9,8 @@ import org.jspecify.annotations.Nullable;
 public class ByteArrayWeaver implements TypeWeaver {
 
     @Override
-    public boolean supports(Class<?> clazz) {
-        return Classes.is(clazz).exactly(byte[].class);
+    public Class<?> targetType() {
+        return byte[].class;
     }
 
     @Override

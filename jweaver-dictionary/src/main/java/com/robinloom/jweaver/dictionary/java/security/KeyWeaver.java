@@ -2,18 +2,19 @@ package com.robinloom.jweaver.dictionary.java.security;
 
 import com.robinloom.jweaver.dictionary.TypeWeaver;
 import com.robinloom.jweaver.dictionary.WeavingContext;
-import com.robinloom.jweaver.util.Classes;
 import com.robinloom.loom.Loom;
 
 import java.security.*;
-import java.security.interfaces.*;
+import java.security.interfaces.DSAKey;
+import java.security.interfaces.ECKey;
+import java.security.interfaces.RSAKey;
 import java.security.spec.ECGenParameterSpec;
 
 public class KeyWeaver implements TypeWeaver {
 
     @Override
-    public boolean supports(Class<?> clazz) {
-        return Classes.is(clazz).subclassOf(Key.class) && Classes.is(clazz).noSubclassOf(javax.crypto.SecretKey.class);
+    public Class<?> targetType() {
+        return Key.class;
     }
 
     @Override
