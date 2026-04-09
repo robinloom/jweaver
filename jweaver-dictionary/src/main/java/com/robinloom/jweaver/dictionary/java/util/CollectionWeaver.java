@@ -1,16 +1,14 @@
 package com.robinloom.jweaver.dictionary.java.util;
 
-import com.robinloom.jweaver.dictionary.Dictionary;
-import com.robinloom.jweaver.dictionary.TypeWeaver;
-import com.robinloom.jweaver.dictionary.WeavingContext;
-import com.robinloom.jweaver.util.Sequences;
+import com.robinloom.jweaver.TypeWeaver;
+import com.robinloom.jweaver.WeavingContext;
 import com.robinloom.loom.Loom;
-import org.jspecify.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class CollectionWeaver implements TypeWeaver {
+public class CollectionWeaver extends TypeWeaver {
 
     @Override
     public Class<?> targetType() {
@@ -18,11 +16,7 @@ public class CollectionWeaver implements TypeWeaver {
     }
 
     @Override
-    public String weave(@Nullable Object object, WeavingContext context) {
-        if (object == null) {
-            return "null";
-        }
-
+    public String weave(@NonNull Object object, WeavingContext ctx) {
         Collection<?> collection = (Collection<?>) object;
 
         Loom loom = Loom.with(object.getClass().getSimpleName());
@@ -31,21 +25,16 @@ public class CollectionWeaver implements TypeWeaver {
             .bracket(() -> {
                     AtomicInteger i = new AtomicInteger();
                     loom.join(", ", collection, item -> {
-                        if (i.get() == Sequences.SEQUENCE_LIMIT) {
+                        if (i.get() == 10) {
                             return (".. " + (collection.size() - i.getAndIncrement()) + " more");
-                        } else if (i.get() > Sequences.SEQUENCE_LIMIT) {
+                        } else if (i.get() > 10) {
                             i.getAndIncrement();
                             return null;
                         }
 
                         i.getAndIncrement();
 
-                        TypeWeaver delegate = Dictionary.find(item.getClass());
-                        if (delegate != null) {
-                            return weave(item, context);
-                        } else {
-                            return context.reflectionWeave(item);
-                        }
+                        return ctx.weave(item);
                     });
             });
 

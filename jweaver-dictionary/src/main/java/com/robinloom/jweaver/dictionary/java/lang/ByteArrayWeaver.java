@@ -1,12 +1,12 @@
 package com.robinloom.jweaver.dictionary.java.lang;
 
-import com.robinloom.jweaver.dictionary.TypeWeaver;
-import com.robinloom.jweaver.dictionary.WeavingContext;
+import com.robinloom.jweaver.TypeWeaver;
+import com.robinloom.jweaver.WeavingContext;
 import com.robinloom.loom.Chars;
 import com.robinloom.loom.Loom;
-import org.jspecify.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
-public class ByteArrayWeaver implements TypeWeaver {
+public class ByteArrayWeaver extends TypeWeaver {
 
     @Override
     public Class<?> targetType() {
@@ -14,11 +14,7 @@ public class ByteArrayWeaver implements TypeWeaver {
     }
 
     @Override
-    public String weave(@Nullable Object object, WeavingContext context) {
-        if (object == null) {
-            return "null";
-        }
-
+    public String weave(@NonNull Object object, WeavingContext ctx) {
         byte[] bytes = (byte[]) object;
 
         if (bytes.length == 0) {

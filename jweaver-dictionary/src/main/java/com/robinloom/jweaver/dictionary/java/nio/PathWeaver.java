@@ -1,13 +1,13 @@
 package com.robinloom.jweaver.dictionary.java.nio;
 
-import com.robinloom.jweaver.dictionary.TypeWeaver;
-import com.robinloom.jweaver.dictionary.WeavingContext;
+import com.robinloom.jweaver.TypeWeaver;
+import com.robinloom.jweaver.WeavingContext;
 import com.robinloom.loom.Loom;
-import org.jspecify.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.nio.file.Path;
 
-public class PathWeaver implements TypeWeaver {
+public class PathWeaver extends TypeWeaver {
 
     @Override
     public Class<?> targetType() {
@@ -15,11 +15,7 @@ public class PathWeaver implements TypeWeaver {
     }
 
     @Override
-    public String weave(@Nullable Object object, WeavingContext context) {
-        if (object == null) {
-            return "";
-        }
-
+    public String weave(@NonNull Object object, WeavingContext ctx) {
         Path path = (Path) object;
         return Loom.with(Path.class.getSimpleName())
                    .lbracket()

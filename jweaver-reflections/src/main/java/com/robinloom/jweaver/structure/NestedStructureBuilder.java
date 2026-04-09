@@ -16,6 +16,7 @@
  */
 package com.robinloom.jweaver.structure;
 
+import com.robinloom.jweaver.WeavingContext;
 import com.robinloom.jweaver.annotation.WeaveIgnore;
 import com.robinloom.jweaver.annotation.WeaveName;
 import com.robinloom.jweaver.util.FieldOperations;
@@ -36,7 +37,7 @@ public class NestedStructureBuilder {
 
     private int depth = 0;
 
-    public NestedNode build(NestedNode root, Object object) {
+    public NestedNode build(NestedNode root, Object object, WeavingContext ctx) {
         if (history.get().contains(object)) {
             return root;
         } else {
@@ -78,14 +79,14 @@ public class NestedStructureBuilder {
                 }
 
                 if (Types.isSimpleType(field.getType())) {
-                    root.addChild(fieldName, value.toString());
+                    root.addChild(fieldName, ctx.weave(value));
                 } else if (Types.isCollection(field.getType())) {
-                    root.addChild(collection(fieldName, (Collection<?>) value));
+                    root.addChild(collection(fieldName, (Collection<?>) value, ctx));
                 } else if (Types.isArray(field.getType())) {
-                    root.addChild(array(fieldName, value));
+                    root.addChild(array(fieldName, value, ctx));
                 } else {
                     NestedNode child = new NestedNode(fieldName);
-                    root.addChild(build(child, value));
+                    root.addChild(build(child, value, ctx));
                 }
             } catch (Exception e) {
                 root.addChild("[?]");
@@ -98,7 +99,7 @@ public class NestedStructureBuilder {
         return root;
     }
 
-    private NestedNode collection(String fieldName, Collection<?> collection) {
+    private NestedNode collection(String fieldName, Collection<?> collection, WeavingContext ctx) {
         NestedNode root = new NestedNode(fieldName);
 
         depth++;
@@ -115,14 +116,14 @@ public class NestedStructureBuilder {
                 root.addChild((collection.size()-i) + " more");
                 break;
             } else if (Types.isSimpleType(item.getClass())) {
-                root.addChild(prefix + item);
+                root.addChild(prefix + ctx.weave(item));
             } else if (Types.isCollection(item.getClass())) {
-                root.addChild(collection(prefix.trim(), (Collection<?>) item));
+                root.addChild(collection(prefix.trim(), (Collection<?>) item, ctx));
             } else if (Types.isArray(item.getClass())) {
-                root.addChild(array(prefix.trim(), item));
+                root.addChild(array(prefix.trim(), item, ctx));
             } else {
                 NestedNode child = new NestedNode(prefix + item.getClass().getSimpleName());
-                root.addChild(build(child, item));
+                root.addChild(build(child, item, ctx));
             }
             i++;
         }
@@ -131,7 +132,7 @@ public class NestedStructureBuilder {
         return root;
     }
 
-    private NestedNode array(String fieldName, Object array) {
+    private NestedNode array(String fieldName, Object array, WeavingContext ctx) {
         NestedNode root = new NestedNode(fieldName);
 
         depth++;
@@ -149,14 +150,14 @@ public class NestedStructureBuilder {
                 root.addChild((arrayLength-i) + " more");
                 break;
             } else if (Types.isSimpleType(item.getClass())) {
-                root.addChild(prefix + item);
+                root.addChild(prefix + ctx.weave(item));
             } else if (Types.isCollection(item.getClass())) {
-                root.addChild(collection(prefix.trim(), (Collection<?>) item));
+                root.addChild(collection(prefix.trim(), (Collection<?>) item, ctx));
             } else if (Types.isArray(item.getClass())) {
-                root.addChild(array(prefix.trim(), item));
+                root.addChild(array(prefix.trim(), item, ctx));
             } else {
                 NestedNode child = new NestedNode(prefix + item.getClass().getSimpleName());
-                root.addChild(build(child, item));
+                root.addChild(build(child, item, ctx));
             }
         }
         depth--;

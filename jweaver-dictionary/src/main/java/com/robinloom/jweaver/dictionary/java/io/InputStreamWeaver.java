@@ -1,13 +1,14 @@
 package com.robinloom.jweaver.dictionary.java.io;
 
-import com.robinloom.jweaver.dictionary.TypeWeaver;
-import com.robinloom.jweaver.dictionary.WeavingContext;
+import com.robinloom.jweaver.TypeWeaver;
+import com.robinloom.jweaver.WeavingContext;
 import com.robinloom.loom.Loom;
+import org.jspecify.annotations.NonNull;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-public class InputStreamWeaver implements TypeWeaver {
+public class InputStreamWeaver extends TypeWeaver {
 
     @Override
     public Class<?> targetType() {
@@ -15,11 +16,7 @@ public class InputStreamWeaver implements TypeWeaver {
     }
 
     @Override
-    public String weave(Object object, WeavingContext context) {
-        if (object == null) {
-            return "null";
-        }
-
+    public String weave(@NonNull Object object, WeavingContext ctx) {
         InputStream in = (InputStream) object;
         String className = in.getClass().getSimpleName();
         try {

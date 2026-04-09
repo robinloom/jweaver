@@ -1,12 +1,13 @@
 package com.robinloom.jweaver.dictionary.java.util;
 
-import com.robinloom.jweaver.dictionary.TypeWeaver;
-import com.robinloom.jweaver.dictionary.WeavingContext;
+import com.robinloom.jweaver.TypeWeaver;
+import com.robinloom.jweaver.WeavingContext;
 import com.robinloom.loom.Loom;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Date;
 
-public class DateWeaver implements TypeWeaver {
+public class DateWeaver extends TypeWeaver {
 
     @Override
     public Class<?> targetType() {
@@ -14,11 +15,7 @@ public class DateWeaver implements TypeWeaver {
     }
 
     @Override
-    public String weave(Object object, WeavingContext context) {
-        if (object == null) {
-            return "null";
-        }
-
+    public String weave(@NonNull Object object, WeavingContext ctx) {
         Date date = (Date) object;
 
         return Loom.with(Date.class.getSimpleName())

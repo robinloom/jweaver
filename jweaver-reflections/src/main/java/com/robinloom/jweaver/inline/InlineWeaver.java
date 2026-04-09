@@ -17,6 +17,7 @@
 package com.robinloom.jweaver.inline;
 
 import com.robinloom.jweaver.Weaver;
+import com.robinloom.jweaver.WeavingContext;
 import com.robinloom.jweaver.annotation.WeaveIgnore;
 import com.robinloom.jweaver.annotation.WeaveName;
 import com.robinloom.jweaver.util.FieldOperations;
@@ -24,10 +25,13 @@ import com.robinloom.jweaver.util.SensitivityDetection;
 import com.robinloom.jweaver.util.Types;
 import com.robinloom.loom.Chars;
 import com.robinloom.loom.Loom;
+import org.jspecify.annotations.NonNull;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Collections;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Set;
 
 /**
  * LinearWeaver generates a string representation for a given object by combining
@@ -54,10 +58,7 @@ public class InlineWeaver implements Weaver {
      * @param object object to generate a string representation for
      * @return a well-structured, human-readable representation of that object
      */
-    public String weave(Object object) {
-        if (object == null) {
-            return "null";
-        }
+    public String weave(@NonNull Object object, WeavingContext ctx) {
         if (Types.isJdkType(object.getClass())) {
             return object.toString();
         }
@@ -95,12 +96,8 @@ public class InlineWeaver implements Weaver {
 
                     if (SensitivityDetection.isSensitive(field)) {
                         woven = Chars.repeat(Chars.ASTERISK, 3);
-                    } else if (Types.isCollection(field.getType())) {
-                        woven = weaveCollection((Collection<?>) value);
-                    } else if (Types.isArray(field.getType())) {
-                        woven = weaveArray(value);
                     } else  {
-                        woven = value.toString();
+                        woven = weaveValue(value, ctx);
                     }
 
                     return fieldName + fieldValueDelimiter + woven;
@@ -121,18 +118,6 @@ public class InlineWeaver implements Weaver {
         return field.get(target);
     }
 
-    private String weaveArray(Object array) {
-        Loom loom = Loom.empty();
-        loom.bracket(() -> loom.join(", ", Loom.range(0, Array.getLength(array)), i -> Array.get(array, i)));
-        return loom.toString();
-    }
-
-    private String weaveCollection(Collection<?> collection) {
-        Loom loom = Loom.empty();
-        loom.bracket(() -> loom.join(", ", collection, e -> e));
-        return loom.toString();
-    }
-
     protected String fieldDelimiter() {
         return ", ";
     }
@@ -147,6 +132,10 @@ public class InlineWeaver implements Weaver {
 
     protected String closing() {
         return "]";
+    }
+
+    protected String weaveValue(Object value, WeavingContext ctx) {
+        return ctx.weave(value);
     }
 
 }

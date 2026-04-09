@@ -4,28 +4,13 @@ import com.robinloom.jweaver.dictionary.java.TypeWeaverTest;
 import org.junit.jupiter.api.Test;
 
 import java.time.*;
-import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TemporalWeaverTest extends TypeWeaverTest {
 
     private final TemporalWeaver weaver = new TemporalWeaver();
-
-    @Test
-    void supports_temporal_types() {
-        assertTrue(weaver.supports(LocalDate.class));
-        assertTrue(weaver.supports(LocalDateTime.class));
-        assertTrue(weaver.supports(ZonedDateTime.class));
-        assertTrue(weaver.supports(Instant.class));
-    }
-
-    @Test
-    void does_not_support_non_temporal_types() {
-        assertFalse(weaver.supports(String.class));
-        assertFalse(weaver.supports(Object.class));
-        assertFalse(weaver.supports(Map.class));
-    }
 
     @Test
     void weave_local_date() {

@@ -1,12 +1,13 @@
 package com.robinloom.jweaver.dictionary.java.io;
 
-import com.robinloom.jweaver.dictionary.TypeWeaver;
-import com.robinloom.jweaver.dictionary.WeavingContext;
+import com.robinloom.jweaver.TypeWeaver;
+import com.robinloom.jweaver.WeavingContext;
 import com.robinloom.loom.Loom;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 
-public class FileWeaver implements TypeWeaver {
+public class FileWeaver extends TypeWeaver {
 
     @Override
     public Class<?> targetType() {
@@ -14,11 +15,7 @@ public class FileWeaver implements TypeWeaver {
     }
 
     @Override
-    public String weave(Object object, WeavingContext context) {
-        if (object == null) {
-            return "null";
-        }
-
+    public String weave(@NonNull Object object, WeavingContext ctx) {
         File file = (File) object;
 
         return Loom.with("File[", file.getAbsolutePath())

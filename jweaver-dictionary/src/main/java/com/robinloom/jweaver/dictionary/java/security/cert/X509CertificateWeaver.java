@@ -1,8 +1,9 @@
 package com.robinloom.jweaver.dictionary.java.security.cert;
 
-import com.robinloom.jweaver.dictionary.TypeWeaver;
-import com.robinloom.jweaver.dictionary.WeavingContext;
+import com.robinloom.jweaver.TypeWeaver;
+import com.robinloom.jweaver.WeavingContext;
 import com.robinloom.loom.Loom;
+import org.jspecify.annotations.NonNull;
 
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
@@ -10,7 +11,7 @@ import javax.security.auth.x500.X500Principal;
 import java.security.cert.X509Certificate;
 import java.util.*;
 
-public class X509CertificateWeaver implements TypeWeaver {
+public class X509CertificateWeaver extends TypeWeaver {
 
     @Override
     public Class<?> targetType() {
@@ -18,7 +19,7 @@ public class X509CertificateWeaver implements TypeWeaver {
     }
 
     @Override
-    public String weave(Object object, WeavingContext context) {
+    public String weave(@NonNull Object object, WeavingContext context) {
         X509Certificate cert = (X509Certificate) object;
 
         String subject = formatSubject(cert.getSubjectX500Principal());

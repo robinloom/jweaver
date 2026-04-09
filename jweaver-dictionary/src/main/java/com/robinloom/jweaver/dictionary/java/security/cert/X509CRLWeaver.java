@@ -1,9 +1,9 @@
 package com.robinloom.jweaver.dictionary.java.security.cert;
 
-import com.robinloom.jweaver.dictionary.TypeWeaver;
-import com.robinloom.jweaver.dictionary.WeavingContext;
+import com.robinloom.jweaver.TypeWeaver;
+import com.robinloom.jweaver.WeavingContext;
 import com.robinloom.loom.Loom;
-import org.jspecify.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
@@ -14,7 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class X509CRLWeaver implements TypeWeaver {
+public class X509CRLWeaver extends TypeWeaver {
 
     @Override
     public Class<?> targetType() {
@@ -22,11 +22,7 @@ public class X509CRLWeaver implements TypeWeaver {
     }
 
     @Override
-    public String weave(@Nullable Object object, WeavingContext context) {
-        if (object == null) {
-            return "";
-        }
-
+    public String weave(@NonNull Object object, WeavingContext context) {
         X509CRL crl = (X509CRL) object;
 
         String subject = formatSubject(crl.getIssuerX500Principal());

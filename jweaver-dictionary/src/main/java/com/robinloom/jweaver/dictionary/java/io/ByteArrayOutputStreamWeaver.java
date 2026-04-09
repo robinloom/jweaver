@@ -1,13 +1,13 @@
 package com.robinloom.jweaver.dictionary.java.io;
 
-import com.robinloom.jweaver.dictionary.TypeWeaver;
-import com.robinloom.jweaver.dictionary.WeavingContext;
+import com.robinloom.jweaver.TypeWeaver;
+import com.robinloom.jweaver.WeavingContext;
 import com.robinloom.loom.Loom;
-import org.jspecify.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.io.ByteArrayOutputStream;
 
-public class ByteArrayOutputStreamWeaver implements TypeWeaver {
+public class ByteArrayOutputStreamWeaver extends TypeWeaver {
 
     @Override
     public Class<?> targetType() {
@@ -15,11 +15,7 @@ public class ByteArrayOutputStreamWeaver implements TypeWeaver {
     }
 
     @Override
-    public String weave(@Nullable Object object, WeavingContext context) {
-        if (object == null) {
-            return "null";
-        }
-
+    public String weave(@NonNull Object object, WeavingContext context) {
         ByteArrayOutputStream out = (ByteArrayOutputStream) object;
         return Loom.with("ByteArrayOutputStream[size=", out.size(), "]").toString();
     }

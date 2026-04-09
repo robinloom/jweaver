@@ -17,9 +17,6 @@
 package com.robinloom.jweaver;
 
 import com.robinloom.jweaver.dictionary.Dictionary;
-import com.robinloom.jweaver.dictionary.TypeWeaver;
-import com.robinloom.jweaver.dictionary.WeavingContext;
-import com.robinloom.jweaver.inline.InlineWeaver;
 
 /**
  * Central entry point of the JWeaver API.
@@ -67,17 +64,8 @@ public final class JWeaver {
      * @return a human-readable string representation of the given object
      */
     public static String weave(Object object, Mode mode) {
-        if (object == null) {
-            return "null";
-        }
-
-        TypeWeaver typeWeaver = Dictionary.find(object.getClass());
-        if (typeWeaver != null) {
-            return typeWeaver.weave(object, new WeavingContext(new InlineWeaver()));
-        }
-
-        Weaver weaver = Mode.getWeaverForMode(mode);
-        return weaver.weave(object);
+        WeavingContext ctx = new WeavingContext(mode, Dictionary.getInstance(), ModeDispatcher.getInstance());
+        return ctx.weave(object);
     }
 
 }

@@ -16,12 +16,6 @@
  */
 package com.robinloom.jweaver;
 
-import com.robinloom.jweaver.bullet.BulletWeaver;
-import com.robinloom.jweaver.card.CardWeaver;
-import com.robinloom.jweaver.inline.InlineWeaver;
-import com.robinloom.jweaver.multiline.MultilineWeaver;
-import com.robinloom.jweaver.tree.TreeWeaver;
-
 /**
  * Defines the available output modes for JWeaver.
  * <p>
@@ -44,11 +38,6 @@ public enum Mode {
     INLINE,
 
     /**
-     * Flat, multi-line representation with improved readability.
-     */
-    MULTILINE,
-
-    /**
      * Hierarchical tree-style representation.
      * <p>
      * Emphasizes object structure and relationships.
@@ -67,23 +56,5 @@ public enum Mode {
      * <p>
      * Presents objects in a structured, sectioned layout.
      */
-    CARD;
-
-    /**
-     * Returns a new {@link Weaver} instance suitable for the given mode.
-     * <p>
-     * The returned weaver is stateless and may be instantiated per call.
-     *
-     * @param mode the mode to resolve a weaver for
-     * @return a corresponding {@link Weaver} implementation
-     */
-    public static Weaver getWeaverForMode(Mode mode) {
-        return switch (mode) {
-            case TREE -> new TreeWeaver();
-            case BULLET -> new BulletWeaver();
-            case CARD -> new CardWeaver();
-            case MULTILINE -> new MultilineWeaver();
-            case null, default -> new InlineWeaver();
-        };
-    }
+    CARD
 }

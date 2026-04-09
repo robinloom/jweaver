@@ -17,12 +17,14 @@
 package com.robinloom.jweaver.tree;
 
 import com.robinloom.jweaver.Weaver;
+import com.robinloom.jweaver.WeavingContext;
 import com.robinloom.jweaver.structure.NestedNode;
 import com.robinloom.jweaver.structure.NestedStructureBuilder;
 import com.robinloom.jweaver.util.Types;
 import com.robinloom.loom.Chars;
 import com.robinloom.loom.Loom;
 import com.robinloom.loom.Symbols;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,15 +54,12 @@ public class TreeWeaver implements Weaver {
      * @param object object to generate a string representation for
      * @return a well-structured, human-readable representation of that object
      */
-    public String weave(Object object) {
-        if (object == null) {
-            return "null";
-        }
+    public String weave(@NonNull Object object, WeavingContext ctx) {
         if (Types.isJdkType(object.getClass())) {
             return object.toString();
         }
 
-        NestedNode tree = new NestedStructureBuilder().build(new NestedNode(object), object);
+        NestedNode tree = new NestedStructureBuilder().build(new NestedNode(object), object, ctx);
 
         List<Boolean> siblingsAtCurrentLevel = new ArrayList<>();
         traverseDepthFirst(tree, siblingsAtCurrentLevel);

@@ -17,10 +17,12 @@
 package com.robinloom.jweaver.bullet;
 
 import com.robinloom.jweaver.Weaver;
+import com.robinloom.jweaver.WeavingContext;
 import com.robinloom.jweaver.structure.NestedNode;
 import com.robinloom.jweaver.structure.NestedStructureBuilder;
 import com.robinloom.jweaver.util.Types;
 import com.robinloom.loom.Loom;
+import org.jspecify.annotations.NonNull;
 
 /**
  * BulletWeaver generates a string representation for a given object by arranging
@@ -43,15 +45,12 @@ public class BulletWeaver implements Weaver {
      * @param object object to generate a string representation for
      * @return a well-structured, human-readable representation of that object
      */
-    public String weave(Object object) {
-        if (object == null) {
-            return "null";
-        }
+    public String weave(@NonNull Object object, WeavingContext ctx) {
         if (Types.isJdkType(object.getClass())) {
             return object.toString();
         }
 
-        NestedNode structure = new NestedStructureBuilder().build(new NestedNode(object), object);
+        NestedNode structure = new NestedStructureBuilder().build(new NestedNode(object), object, ctx);
 
         Loom loom = Loom.empty();
         traverseDepthFirst(structure, loom);

@@ -1,10 +1,10 @@
 package com.robinloom.jweaver.dictionary.java.lang;
 
-import com.robinloom.jweaver.dictionary.TypeWeaver;
-import com.robinloom.jweaver.dictionary.WeavingContext;
-import org.jspecify.annotations.Nullable;
+import com.robinloom.jweaver.TypeWeaver;
+import com.robinloom.jweaver.WeavingContext;
+import org.jspecify.annotations.NonNull;
 
-public class BooleanWeaver implements TypeWeaver {
+public class BooleanWeaver extends TypeWeaver {
 
     @Override
     public Class<?> targetType() {
@@ -12,11 +12,7 @@ public class BooleanWeaver implements TypeWeaver {
     }
 
     @Override
-    public String weave(@Nullable Object object, WeavingContext context) {
-        if (object == null) {
-            return "null";
-        }
-
+    public String weave(@NonNull Object object, WeavingContext ctx) {
         Boolean b = (Boolean) object;
         return b ? "TRUE" : "FALSE";
     }

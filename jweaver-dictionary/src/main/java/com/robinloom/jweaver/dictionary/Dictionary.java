@@ -1,5 +1,7 @@
 package com.robinloom.jweaver.dictionary;
 
+import com.robinloom.jweaver.TypeWeaver;
+import com.robinloom.jweaver.TypeWeaverResolver;
 import com.robinloom.jweaver.dictionary.java.io.ByteArrayOutputStreamWeaver;
 import com.robinloom.jweaver.dictionary.java.io.FileWeaver;
 import com.robinloom.jweaver.dictionary.java.io.InputStreamWeaver;
@@ -18,7 +20,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Dictionary {
+public class Dictionary implements TypeWeaverResolver {
+
+    private static class Holder {
+        private static final Dictionary INSTANCE = new Dictionary();
+    }
+
+    public static Dictionary getInstance() {
+        return Holder.INSTANCE;
+    }
 
     private static final List<TypeWeaver> RENDERERS = new ArrayList<>();
     private static final Map<Class<?>, TypeWeaver> CACHE = new ConcurrentHashMap<>();
@@ -59,11 +69,13 @@ public class Dictionary {
         CACHE.clear();
     }
 
-    public static TypeWeaver find(Class<?> clazz) {
-        return CACHE.computeIfAbsent(clazz, Dictionary::resolve);
+    private Dictionary() {}
+
+    public TypeWeaver resolve(Class<?> clazz) {
+        return CACHE.computeIfAbsent(clazz, this::find);
     }
 
-    private static TypeWeaver resolve(Class<?> clazz) {
+    private TypeWeaver find(Class<?> clazz) {
         TypeWeaver best = findBest(clazz);
         if (best != null) {
             return best;
@@ -76,7 +88,7 @@ public class Dictionary {
         return null;
     }
 
-    private static TypeWeaver findBest(Class<?> clazz) {
+    private TypeWeaver findBest(Class<?> clazz) {
         TypeWeaver best = null;
 
         for (TypeWeaver weaver : RENDERERS) {
@@ -92,7 +104,7 @@ public class Dictionary {
         return best;
     }
 
-    private static boolean isMoreSpecific(Class<?> a, Class<?> b) {
+    private boolean isMoreSpecific(Class<?> a, Class<?> b) {
         return b.isAssignableFrom(a);
     }
 }

@@ -16,7 +16,9 @@
  */
 package com.robinloom.jweaver;
 
+import org.jspecify.annotations.NonNull;
+
 public interface Weaver {
 
-    String weave(Object object);
+    String weave(@NonNull Object object, WeavingContext ctx);
 }

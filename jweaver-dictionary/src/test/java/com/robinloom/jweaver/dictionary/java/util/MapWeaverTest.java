@@ -19,7 +19,7 @@ public class MapWeaverTest extends TypeWeaverTest {
         people.put(new Person("John"), new Person("Frieda"));
         people.put(new Person("Margot"), new Person("Jim"));
 
-        String expected = "HashMap(2) {Person[name=John] = Person[name=Frieda], Person[name=Margot] = Person[name=Jim]}";
+        String expected = "HashMap(2) {Person[name=John]=Person[name=Frieda], Person[name=Margot]=Person[name=Jim]}";
 
         Assertions.assertEquals(expected, weaver.weave(people, context));
     }

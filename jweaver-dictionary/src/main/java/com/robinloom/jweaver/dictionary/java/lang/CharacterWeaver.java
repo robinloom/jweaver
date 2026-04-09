@@ -1,11 +1,11 @@
 package com.robinloom.jweaver.dictionary.java.lang;
 
-import com.robinloom.jweaver.dictionary.TypeWeaver;
-import com.robinloom.jweaver.dictionary.WeavingContext;
+import com.robinloom.jweaver.TypeWeaver;
+import com.robinloom.jweaver.WeavingContext;
 import com.robinloom.loom.Loom;
-import org.jspecify.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
-public class CharacterWeaver implements TypeWeaver {
+public class CharacterWeaver extends TypeWeaver {
 
     @Override
     public Class<?> targetType() {
@@ -13,11 +13,7 @@ public class CharacterWeaver implements TypeWeaver {
     }
 
     @Override
-    public String weave(@Nullable Object object, WeavingContext context) {
-        if (object == null) {
-            return "null";
-        }
-
+    public String weave(@NonNull Object object, WeavingContext ctx) {
         Character character = (Character) object;
         return Loom.with("'").append(character).append("'").toString();
     }

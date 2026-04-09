@@ -15,12 +15,6 @@ class X509CertificateWeaverTest extends TypeWeaverTest {
     private final X509CertificateWeaver weaver = new X509CertificateWeaver();
 
     @Test
-    void supports_x509_certificate() {
-        assertTrue(weaver.supports(X509Certificate.class));
-        assertFalse(weaver.supports(Object.class));
-    }
-
-    @Test
     void weave_basic_certificate() throws Exception {
         X509Certificate cert = testCert();
 

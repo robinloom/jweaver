@@ -1,12 +1,12 @@
 package com.robinloom.jweaver.dictionary.java.util;
 
-import com.robinloom.jweaver.dictionary.Dictionary;
-import com.robinloom.jweaver.dictionary.TypeWeaver;
-import com.robinloom.jweaver.dictionary.WeavingContext;
+import com.robinloom.jweaver.TypeWeaver;
+import com.robinloom.jweaver.WeavingContext;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Map;
 
-public class MapEntryWeaver implements TypeWeaver {
+public class MapEntryWeaver extends TypeWeaver {
 
     @Override
     public Class<?> targetType() {
@@ -14,20 +14,11 @@ public class MapEntryWeaver implements TypeWeaver {
     }
 
     @Override
-    public String weave(Object object, WeavingContext context) {
-        if (object == null) {
-            return "null";
-        }
-
+    public String weave(@NonNull Object object, WeavingContext ctx) {
         Map.Entry<?, ?> entry = (Map.Entry<?, ?>) object;
 
-        TypeWeaver keyDelegate = Dictionary.find(entry.getKey().getClass());
-        String key = keyDelegate != null ? keyDelegate.weave(entry.getKey(), context)
-                                         : context.reflectionWeave(entry.getKey());
-
-        TypeWeaver valueDelegate = Dictionary.find(entry.getValue().getClass());
-        String value = valueDelegate != null ? valueDelegate.weave(entry.getValue(), context)
-                                             : context.reflectionWeave(entry.getValue());
+        String key = ctx.weave(entry.getKey());
+        String value = ctx.weave(entry.getValue());
 
         return key + " = " + value;
     }

@@ -1,8 +1,9 @@
 package com.robinloom.jweaver.dictionary.java.security;
 
-import com.robinloom.jweaver.dictionary.TypeWeaver;
-import com.robinloom.jweaver.dictionary.WeavingContext;
+import com.robinloom.jweaver.TypeWeaver;
+import com.robinloom.jweaver.WeavingContext;
 import com.robinloom.loom.Loom;
+import org.jspecify.annotations.NonNull;
 
 import java.security.*;
 import java.security.interfaces.DSAKey;
@@ -10,7 +11,7 @@ import java.security.interfaces.ECKey;
 import java.security.interfaces.RSAKey;
 import java.security.spec.ECGenParameterSpec;
 
-public class KeyWeaver implements TypeWeaver {
+public class KeyWeaver extends TypeWeaver {
 
     @Override
     public Class<?> targetType() {
@@ -18,7 +19,7 @@ public class KeyWeaver implements TypeWeaver {
     }
 
     @Override
-    public String weave(Object object, WeavingContext context) {
+    public String weave(@NonNull Object object, WeavingContext ctx) {
         Key key = (Key) object;
 
         String type = typeOf(key);

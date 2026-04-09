@@ -21,7 +21,7 @@ public class TreeModeTest {
         String expected = """
                           Person
                           |-- name=John Doe
-                          `-- birthday=1990-01-01""";
+                          `-- birthday=LocalDate[1990-01-01]""";
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.TREE));
     }

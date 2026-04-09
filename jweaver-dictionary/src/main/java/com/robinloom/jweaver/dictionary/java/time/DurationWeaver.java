@@ -1,13 +1,13 @@
 package com.robinloom.jweaver.dictionary.java.time;
 
-import com.robinloom.jweaver.dictionary.TypeWeaver;
-import com.robinloom.jweaver.dictionary.WeavingContext;
+import com.robinloom.jweaver.TypeWeaver;
+import com.robinloom.jweaver.WeavingContext;
 import com.robinloom.loom.Loom;
-import org.jspecify.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.time.Duration;
 
-public class DurationWeaver implements TypeWeaver {
+public class DurationWeaver extends TypeWeaver {
 
     @Override
     public Class<?> targetType() {
@@ -15,11 +15,7 @@ public class DurationWeaver implements TypeWeaver {
     }
 
     @Override
-    public String weave(@Nullable Object object, WeavingContext context) {
-        if (object == null) {
-            return "null";
-        }
-
+    public String weave(@NonNull Object object, WeavingContext ctx) {
         Duration duration = (Duration) object;
         long seconds = duration.getSeconds();
 

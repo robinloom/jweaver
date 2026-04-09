@@ -18,7 +18,7 @@ public class InlineModeTest {
         record Person(String name, LocalDate birthday) {}
 
         Person person = new Person("John Doe", LocalDate.of(1990, 1, 1));
-        String expected = "Person[name=John Doe, birthday=1990-01-01]";
+        String expected = "Person[name=John Doe, birthday=LocalDate[1990-01-01]]";
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.INLINE));
     }
@@ -51,7 +51,7 @@ public class InlineModeTest {
         record Person(String name, Car car) {}
 
         Person person = new Person("Jane", new Car("Black"));
-        String expected = "Person[name=Jane, car=com.robinloom.jweaver.InlineModeTest$1Car@1]";
+        String expected = "Person[name=Jane, car=Car[color=Black]]";
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.INLINE));
     }
@@ -61,7 +61,7 @@ public class InlineModeTest {
         record Person(String name, List<String> childrenNames) {}
 
         Person person = new Person("Jane", List.of("Peter", "Judy"));
-        String expected = "Person[name=Jane, childrenNames=[Peter, Judy]]";
+        String expected = "Person[name=Jane, childrenNames=List12(2) [Peter, Judy]]";
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.INLINE));
     }
@@ -71,7 +71,7 @@ public class InlineModeTest {
         record Person(String name, List<Person> neighbors) {}
 
         Person person = new Person("Jane", List.of(new Person("Peter", List.of())));
-        String expected = "Person[name=Jane, neighbors=[Person[name=Peter, neighbors=[]]]]";
+        String expected = "Person[name=Jane, neighbors=List12(1) [Person[name=Peter, neighbors=ListN(0) []]]]";
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.INLINE));
     }
@@ -81,7 +81,7 @@ public class InlineModeTest {
         record Person(int[] numbers) {}
 
         Person person = new Person(new int[]{0,1,2});
-        String expected = "Person[numbers=[0, 1, 2]]";
+        String expected = "Person[numbers=int[3] [0, 1, 2]]";
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.INLINE));
     }
@@ -91,7 +91,7 @@ public class InlineModeTest {
         record Person(String[] names) {}
 
         Person person = new Person(new String[]{"Anna", "Maria", "Quinn"});
-        String expected = "Person[names=[Anna, Maria, Quinn]]";
+        String expected = "Person[names=String[3] [Anna, Maria, Quinn]]";
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.INLINE));
     }
@@ -101,7 +101,7 @@ public class InlineModeTest {
         record Person(Person[] neighbors) {}
 
         Person person = new Person(new Person[]{new Person(null)});
-        String expected = "Person[neighbors=[Person[neighbors=null]]]";
+        String expected = "Person[neighbors=Person[1] [Person[neighbors=null]]]";
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.INLINE));
     }

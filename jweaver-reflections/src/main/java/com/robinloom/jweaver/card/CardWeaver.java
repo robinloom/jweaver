@@ -17,12 +17,14 @@
 package com.robinloom.jweaver.card;
 
 import com.robinloom.jweaver.Weaver;
+import com.robinloom.jweaver.WeavingContext;
 import com.robinloom.jweaver.annotation.WeaveIgnore;
 import com.robinloom.jweaver.annotation.WeaveName;
 import com.robinloom.jweaver.util.FieldOperations;
 import com.robinloom.jweaver.util.SensitivityDetection;
 import com.robinloom.jweaver.util.Types;
 import com.robinloom.loom.Loom;
+import org.jspecify.annotations.NonNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InaccessibleObjectException;
@@ -59,10 +61,7 @@ public class CardWeaver implements Weaver {
      * @param object object to generate a string representation for
      * @return a well-structured, human-readable representation of that object
      */
-    public String weave(Object object) {
-        if (object == null) {
-            return "null";
-        }
+    public String weave(@NonNull Object object, WeavingContext ctx) {
         if (Types.isJdkType(object.getClass())) {
             return object.toString();
         }
