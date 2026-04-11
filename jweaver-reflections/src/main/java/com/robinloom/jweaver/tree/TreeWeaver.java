@@ -82,8 +82,10 @@ public class TreeWeaver implements Weaver {
 
             loom.when(node.isLastChild(), () -> loom.append(Symbols.LAST_TREE_BRANCH).space(),
                                           () -> loom.append(Symbols.TREE_BRANCH).space())
-                    .when(node.getFieldName() != null, () -> loom.append(node.getFieldName()).eq())
-                    .append(node.getValue()).newline();
+                    .when(node.getFieldName() != null, () -> loom.append(node.getFieldName()))
+                    .when(node.getFieldName() != null && node.getValue() != null, loom::eq)
+                    .when(node.getValue() != null, () -> loom.append(node.getValue()))
+                    .newline();
         }
 
         List<ClassFieldNode> children = node.getChildren();

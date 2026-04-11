@@ -18,16 +18,12 @@ package com.robinloom.jweaver.card;
 
 import com.robinloom.jweaver.Weaver;
 import com.robinloom.jweaver.WeavingContext;
-import com.robinloom.jweaver.annotation.WeaveIgnore;
-import com.robinloom.jweaver.annotation.WeaveName;
-import com.robinloom.jweaver.util.FieldOperations;
-import com.robinloom.jweaver.util.SensitivityDetection;
+import com.robinloom.jweaver.structure.ClassFieldASTBuilder;
+import com.robinloom.jweaver.structure.ClassFieldNode;
 import com.robinloom.jweaver.util.Types;
 import com.robinloom.loom.Loom;
 import org.jspecify.annotations.NonNull;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InaccessibleObjectException;
 import java.util.*;
 
 /**
@@ -61,91 +57,73 @@ public class CardWeaver implements Weaver {
      * @param object object to generate a string representation for
      * @return a well-structured, human-readable representation of that object
      */
+    @Override
     public String weave(@NonNull Object object, WeavingContext ctx) {
         if (Types.isJdkType(object.getClass())) {
             return object.toString();
         }
 
-        if (history.get().contains(object)) {
-            return "";
-        } else {
-            history.get().add(object);
-        }
+        ClassFieldNode root = new ClassFieldASTBuilder().build(ClassFieldNode.root(object), object, ctx);
 
         LinkedHashMap<String, String> wovenFields = new LinkedHashMap<>();
-        List<Field> fields = FieldOperations.getFields(object.getClass());
 
-        fields = fields.stream()
-                .filter(f -> !f.isAnnotationPresent(WeaveIgnore.class))
-                .toList();
+        for (ClassFieldNode child : root.getChildren()) {
+            String key = child.getFieldName();
+            String value = mapValue(child);
 
-        for (Field field : fields) {
-            try {
-                field.setAccessible(true);
-                Object value = field.get(object);
-
-                String woven;
-                Class<?> type = field.getType();
-                if (SensitivityDetection.isSensitive(field)) {
-                    woven = "***";
-                } else if (Types.isSimpleType(value.getClass())) {
-                    woven = value.toString();
-                } else if (Types.isCollection(type)) {
-                    int size = FieldOperations.getCollectionSize((Collection<?>) value);
-                    woven = "@"  + type.getSimpleName() + "(" + size + ")";
-                } else if (Types.isArray(type)) {
-                    int size = FieldOperations.getArraySize(value);
-                    woven = type.getComponentType().getSimpleName() + "[" + size + "]";
-                } else {
-                    woven = FieldOperations.getObjectToString(value);
-                }
-
-                String fieldName;
-                if (field.isAnnotationPresent(WeaveName.class)) {
-                    fieldName = field.getAnnotation(WeaveName.class).value();
-                } else {
-                    fieldName = field.getName();
-                }
-
-                wovenFields.put(fieldName, woven);
-            } catch (InaccessibleObjectException | IllegalAccessException e) {
-                wovenFields.put(field.getName(), "[?]");
+            if (key != null) {
+                wovenFields.put(key, value);
             }
         }
 
-        String clazzName = object.getClass().getSimpleName();
+        String clazzName = root.getClazzName();
 
         int longestField = determineLongestField(wovenFields);
         int overallWidth = determineOverallWidth(wovenFields, clazzName, longestField);
 
         Loom loom = Loom.empty();
 
+        // Top border
         loom.append(boxChars.tl())
-            .space()
-            .append(clazzName)
-            .space()
-            .append(boxChars.h(overallWidth-clazzName.length()-3))
-            .append(boxChars.tr());
+                .space()
+                .append(clazzName)
+                .space()
+                .append(boxChars.h(overallWidth - clazzName.length() - 3))
+                .append(boxChars.tr());
 
+        // Body
         for (Map.Entry<String, String> entry : wovenFields.entrySet()) {
             loom.newline();
 
             String sub = sub(entry, longestField);
             loom.append(sub);
-            loom.spaces(overallWidth-sub.length());
+            loom.spaces(overallWidth - sub.length());
             loom.append(boxChars.v());
         }
 
+        // Bottom border
         loom.newline()
-            .append(boxChars.bl())
-            .append(boxChars.h(overallWidth-1))
-            .append(boxChars.br());
-
-        if (history.get().size() == 1) {
-            history.remove();
-        }
+                .append(boxChars.bl())
+                .append(boxChars.h(overallWidth - 1))
+                .append(boxChars.br());
 
         return loom.toString();
+    }
+
+    /**
+     * Maps a node to a displayable string value for CARD mode.
+     */
+    private String mapValue(ClassFieldNode node) {
+        // Leaf node → direct value
+        if (node.getChildren().isEmpty()) {
+            return node.getValue();
+        }
+
+        // Non-leaf → summarized representation
+        String type = node.getClazzName();
+        int size = node.getChildren().size();
+
+        return "@" + type + "(" + size + ")";
     }
 
     private int determineLongestField(Map<String, String> wovenFields) {
@@ -170,7 +148,7 @@ public class CardWeaver implements Weaver {
         loom.append(BoxChars.UNICODE_LIGHT.v());
         loom.space();
         loom.append(field.getKey());
-        loom.spaces(longestField-field.getKey().length()+1);
+        loom.spaces(longestField - field.getKey().length() + 1);
         loom.colonSpace();
         loom.append(field.getValue());
         return loom.toString();

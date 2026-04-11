@@ -61,14 +61,16 @@ public class BulletWeaver implements Weaver {
 
     private void traverseDepthFirst(ClassFieldNode node, Loom loom) {
         if (node.isRoot()) {
-            loom.append(node.getFieldName()).eq().append(node.getValue()).newline();
+            loom.append(node.getClazzName()).newline();
         } else {
             for (int i = 0; i < node.getLevel(); i++) {
                 loom.indent();
             }
-            loom.append("- ");
-            loom.when(node.getFieldName() != null, () -> loom.append(node.getFieldName()).eq());
-            loom.append(node.getValue()).newline();
+            loom.append("- ")
+                .when(node.getFieldName() != null, () -> loom.append(node.getFieldName()))
+                .when(node.getFieldName() != null && node.getValue() != null, loom::eq)
+                .when(node.getValue() != null, () -> loom.append(node.getValue()))
+                .newline();
             for (int i = 0; i < node.getLevel(); i++) {
                 loom.outdent();
             }

@@ -37,12 +37,13 @@ public class ClassFieldNode {
         return new ClassFieldNode(fieldName, value);
     }
 
-    public static ClassFieldNode innerNode(String value) {
-        return new ClassFieldNode(value);
+    public static ClassFieldNode innerNode(String value, Object object) {
+        return new ClassFieldNode(value, object);
     }
 
-    private ClassFieldNode(String value) {
-        this.value = value;
+    private ClassFieldNode(String fieldName, Object value) {
+        this.fieldName = fieldName;
+        this.clazz = value.getClass();
     }
 
     private ClassFieldNode(Object object) {

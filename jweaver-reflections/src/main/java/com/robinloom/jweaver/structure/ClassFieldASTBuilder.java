@@ -85,7 +85,7 @@ public class ClassFieldASTBuilder {
                 } else if (Types.isArray(field.getType())) {
                     root.addChild(array(fieldName, value, ctx));
                 } else {
-                    ClassFieldNode child = ClassFieldNode.innerNode(fieldName);
+                    ClassFieldNode child = ClassFieldNode.innerNode(fieldName, value);
                     root.addChild(build(child, value, ctx));
                 }
             } catch (Exception e) {
@@ -100,7 +100,7 @@ public class ClassFieldASTBuilder {
     }
 
     private ClassFieldNode collection(String fieldName, Collection<?> collection, WeavingContext ctx) {
-        ClassFieldNode root = ClassFieldNode.innerNode(fieldName);
+        ClassFieldNode root = ClassFieldNode.innerNode(fieldName, collection);
 
         depth++;
         if (depth == MAX_DEPTH) {
@@ -122,7 +122,7 @@ public class ClassFieldASTBuilder {
             } else if (Types.isArray(item.getClass())) {
                 root.addChild(array(prefix.trim(), item, ctx));
             } else {
-                ClassFieldNode child = ClassFieldNode.innerNode(prefix + item.getClass().getSimpleName());
+                ClassFieldNode child = ClassFieldNode.innerNode(prefix + item.getClass().getSimpleName(), item);
                 root.addChild(build(child, item, ctx));
             }
             i++;
@@ -133,7 +133,7 @@ public class ClassFieldASTBuilder {
     }
 
     private ClassFieldNode array(String fieldName, Object array, WeavingContext ctx) {
-        ClassFieldNode root = ClassFieldNode.innerNode(fieldName);
+        ClassFieldNode root = ClassFieldNode.innerNode(fieldName, array);
 
         depth++;
         if (depth == MAX_DEPTH) {
@@ -156,7 +156,7 @@ public class ClassFieldASTBuilder {
             } else if (Types.isArray(item.getClass())) {
                 root.addChild(array(prefix.trim(), item, ctx));
             } else {
-                ClassFieldNode child = ClassFieldNode.innerNode(prefix + item.getClass().getSimpleName());
+                ClassFieldNode child = ClassFieldNode.innerNode(prefix + item.getClass().getSimpleName(), item);
                 root.addChild(build(child, item, ctx));
             }
         }
