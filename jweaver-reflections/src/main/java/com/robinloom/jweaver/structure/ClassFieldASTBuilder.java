@@ -27,7 +27,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.*;
 
-public class NestedStructureBuilder {
+public class ClassFieldASTBuilder {
 
     protected static final ThreadLocal<Set<Object>> history
             = ThreadLocal.withInitial(() -> Collections.newSetFromMap(new IdentityHashMap<>()));
@@ -37,7 +37,7 @@ public class NestedStructureBuilder {
 
     private int depth = 0;
 
-    public NestedNode build(NestedNode root, Object object, WeavingContext ctx) {
+    public ClassFieldNode build(ClassFieldNode root, Object object, WeavingContext ctx) {
         if (history.get().contains(object)) {
             return root;
         } else {
@@ -85,7 +85,7 @@ public class NestedStructureBuilder {
                 } else if (Types.isArray(field.getType())) {
                     root.addChild(array(fieldName, value, ctx));
                 } else {
-                    NestedNode child = new NestedNode(fieldName);
+                    ClassFieldNode child = ClassFieldNode.innerNode(fieldName);
                     root.addChild(build(child, value, ctx));
                 }
             } catch (Exception e) {
@@ -99,8 +99,8 @@ public class NestedStructureBuilder {
         return root;
     }
 
-    private NestedNode collection(String fieldName, Collection<?> collection, WeavingContext ctx) {
-        NestedNode root = new NestedNode(fieldName);
+    private ClassFieldNode collection(String fieldName, Collection<?> collection, WeavingContext ctx) {
+        ClassFieldNode root = ClassFieldNode.innerNode(fieldName);
 
         depth++;
         if (depth == MAX_DEPTH) {
@@ -122,7 +122,7 @@ public class NestedStructureBuilder {
             } else if (Types.isArray(item.getClass())) {
                 root.addChild(array(prefix.trim(), item, ctx));
             } else {
-                NestedNode child = new NestedNode(prefix + item.getClass().getSimpleName());
+                ClassFieldNode child = ClassFieldNode.innerNode(prefix + item.getClass().getSimpleName());
                 root.addChild(build(child, item, ctx));
             }
             i++;
@@ -132,8 +132,8 @@ public class NestedStructureBuilder {
         return root;
     }
 
-    private NestedNode array(String fieldName, Object array, WeavingContext ctx) {
-        NestedNode root = new NestedNode(fieldName);
+    private ClassFieldNode array(String fieldName, Object array, WeavingContext ctx) {
+        ClassFieldNode root = ClassFieldNode.innerNode(fieldName);
 
         depth++;
         if (depth == MAX_DEPTH) {
@@ -156,7 +156,7 @@ public class NestedStructureBuilder {
             } else if (Types.isArray(item.getClass())) {
                 root.addChild(array(prefix.trim(), item, ctx));
             } else {
-                NestedNode child = new NestedNode(prefix + item.getClass().getSimpleName());
+                ClassFieldNode child = ClassFieldNode.innerNode(prefix + item.getClass().getSimpleName());
                 root.addChild(build(child, item, ctx));
             }
         }

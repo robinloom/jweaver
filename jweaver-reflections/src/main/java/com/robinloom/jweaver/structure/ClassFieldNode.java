@@ -19,22 +19,37 @@ package com.robinloom.jweaver.structure;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NestedNode {
+public class ClassFieldNode {
+
+    private Class<?> clazz;
 
     private String fieldName;
-    private NestedNode parent;
-    private final String value;
-    private final List<NestedNode> children = new ArrayList<>();
+    private String value;
 
-    public NestedNode(Object object) {
-        this.value = object.getClass().getSimpleName();
+    private ClassFieldNode parent;
+    private final List<ClassFieldNode> children = new ArrayList<>();
+
+    public static ClassFieldNode root(Object object) {
+        return new ClassFieldNode(object);
     }
 
-    NestedNode(String value) {
+    public static ClassFieldNode leaf(String fieldName, String value) {
+        return new ClassFieldNode(fieldName, value);
+    }
+
+    public static ClassFieldNode innerNode(String value) {
+        return new ClassFieldNode(value);
+    }
+
+    private ClassFieldNode(String value) {
         this.value = value;
     }
 
-    NestedNode(String fieldName, String value) {
+    private ClassFieldNode(Object object) {
+        this.clazz = object.getClass();
+    }
+
+    private ClassFieldNode(String fieldName, String value) {
         this.fieldName = fieldName;
         this.value = value;
     }
@@ -44,12 +59,12 @@ public class NestedNode {
     }
 
     void addChild(String fieldName, String value) {
-        NestedNode child = new NestedNode(fieldName, value);
+        ClassFieldNode child = new ClassFieldNode(fieldName, value);
         child.parent = this;
         children.add(child);
     }
 
-    void addChild(NestedNode child) {
+    void addChild(ClassFieldNode child) {
         child.parent = this;
         children.add(child);
     }
@@ -62,15 +77,19 @@ public class NestedNode {
         return parent.getChildren().getLast().equals(this);
     }
 
-    public String getContent() {
-        if (fieldName == null) {
-            return value;
-        } else {
-            return fieldName + "=" + value;
-        }
+    public String getClazzName() {
+        return clazz.getSimpleName();
     }
 
-    public List<NestedNode> getChildren() {
+    public String getFieldName() {
+        return fieldName;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public List<ClassFieldNode> getChildren() {
         return children;
     }
 

@@ -18,8 +18,8 @@ package com.robinloom.jweaver.tree;
 
 import com.robinloom.jweaver.Weaver;
 import com.robinloom.jweaver.WeavingContext;
-import com.robinloom.jweaver.structure.NestedNode;
-import com.robinloom.jweaver.structure.NestedStructureBuilder;
+import com.robinloom.jweaver.structure.ClassFieldNode;
+import com.robinloom.jweaver.structure.ClassFieldASTBuilder;
 import com.robinloom.jweaver.util.Types;
 import com.robinloom.loom.Chars;
 import com.robinloom.loom.Loom;
@@ -59,7 +59,7 @@ public class TreeWeaver implements Weaver {
             return object.toString();
         }
 
-        NestedNode tree = new NestedStructureBuilder().build(new NestedNode(object), object, ctx);
+        ClassFieldNode tree = new ClassFieldASTBuilder().build(ClassFieldNode.root(object), object, ctx);
 
         List<Boolean> siblingsAtCurrentLevel = new ArrayList<>();
         traverseDepthFirst(tree, siblingsAtCurrentLevel);
@@ -68,9 +68,9 @@ public class TreeWeaver implements Weaver {
         return loom.toString();
     }
 
-    private void traverseDepthFirst(NestedNode node, List<Boolean> siblingsAtCurrentLevel) {
+    private void traverseDepthFirst(ClassFieldNode node, List<Boolean> siblingsAtCurrentLevel) {
         if (node.isRoot()) {
-           loom.line(node.getContent());
+           loom.line(node.getClazzName());
         } else {
             for (int i = 0; i < siblingsAtCurrentLevel.size() - 1; i++) {
                 if (siblingsAtCurrentLevel.get(i)) {
@@ -82,13 +82,14 @@ public class TreeWeaver implements Weaver {
 
             loom.when(node.isLastChild(), () -> loom.append(Symbols.LAST_TREE_BRANCH).space(),
                                           () -> loom.append(Symbols.TREE_BRANCH).space())
-                .line(node.getContent());
+                    .when(node.getFieldName() != null, () -> loom.append(node.getFieldName()).eq())
+                    .append(node.getValue()).newline();
         }
 
-        List<NestedNode> children = node.getChildren();
+        List<ClassFieldNode> children = node.getChildren();
 
         for (int i = 0; i < children.size(); i++) {
-            NestedNode child = children.get(i);
+            ClassFieldNode child = children.get(i);
 
             List<Boolean> siblingsAtNextLevel = new ArrayList<>(siblingsAtCurrentLevel);
 

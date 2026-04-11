@@ -18,8 +18,8 @@ package com.robinloom.jweaver.bullet;
 
 import com.robinloom.jweaver.Weaver;
 import com.robinloom.jweaver.WeavingContext;
-import com.robinloom.jweaver.structure.NestedNode;
-import com.robinloom.jweaver.structure.NestedStructureBuilder;
+import com.robinloom.jweaver.structure.ClassFieldNode;
+import com.robinloom.jweaver.structure.ClassFieldASTBuilder;
 import com.robinloom.jweaver.util.Types;
 import com.robinloom.loom.Loom;
 import org.jspecify.annotations.NonNull;
@@ -50,7 +50,7 @@ public class BulletWeaver implements Weaver {
             return object.toString();
         }
 
-        NestedNode structure = new NestedStructureBuilder().build(new NestedNode(object), object, ctx);
+        ClassFieldNode structure = new ClassFieldASTBuilder().build(ClassFieldNode.root(object), object, ctx);
 
         Loom loom = Loom.empty();
         traverseDepthFirst(structure, loom);
@@ -59,21 +59,22 @@ public class BulletWeaver implements Weaver {
         return loom.toString();
     }
 
-    private void traverseDepthFirst(NestedNode node, Loom loom) {
+    private void traverseDepthFirst(ClassFieldNode node, Loom loom) {
         if (node.isRoot()) {
-            loom.append(node.getContent()).newline();
+            loom.append(node.getFieldName()).eq().append(node.getValue()).newline();
         } else {
             for (int i = 0; i < node.getLevel(); i++) {
                 loom.indent();
             }
             loom.append("- ");
-            loom.append(node.getContent()).newline();
+            loom.when(node.getFieldName() != null, () -> loom.append(node.getFieldName()).eq());
+            loom.append(node.getValue()).newline();
             for (int i = 0; i < node.getLevel(); i++) {
                 loom.outdent();
             }
         }
 
-        for (NestedNode child : node.getChildren()) {
+        for (ClassFieldNode child : node.getChildren()) {
             traverseDepthFirst(child, loom);
         }
     }
