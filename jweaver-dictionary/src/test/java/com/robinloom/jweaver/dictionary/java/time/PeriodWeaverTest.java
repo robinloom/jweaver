@@ -15,7 +15,7 @@ class PeriodWeaverTest extends TypeWeaverTest {
     void weave_period() {
         Period p = Period.of(2, 3, 5);
 
-        String result = weaver.weave(p, context);
+        String result = weaver.weave(p, ctx);
 
         assertEquals("Period[2y 3m 5d]", result);
     }

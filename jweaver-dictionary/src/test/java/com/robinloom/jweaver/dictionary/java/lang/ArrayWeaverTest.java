@@ -16,7 +16,7 @@ public class ArrayWeaverTest extends TypeWeaverTest {
 
         String expected = "Person[2] [Person[name=John], Person[name=Jane]]";
 
-        Assertions.assertEquals(expected, weaver.weave(people, context));
+        Assertions.assertEquals(expected, weaver.weave(people, ctx));
     }
 
     @Test
@@ -27,7 +27,7 @@ public class ArrayWeaverTest extends TypeWeaverTest {
 
         String expected = "Person[0] []";
 
-        Assertions.assertEquals(expected, weaver.weave(people, context));
+        Assertions.assertEquals(expected, weaver.weave(people, ctx));
     }
 
     @Test
@@ -38,7 +38,7 @@ public class ArrayWeaverTest extends TypeWeaverTest {
 
         String expected = "Person[][1] [Person[2] [Person[name=John], Person[name=Jane]]]";
 
-        Assertions.assertEquals(expected, weaver.weave(people, context));
+        Assertions.assertEquals(expected, weaver.weave(people, ctx));
     }
 
     @Test
@@ -49,7 +49,7 @@ public class ArrayWeaverTest extends TypeWeaverTest {
 
         String expected = "Person[][][1] [Person[][2] [Person[1] [Person[name=John]], Person[1] [Person[name=Jane]]]]";
 
-        Assertions.assertEquals(expected, weaver.weave(people, context));
+        Assertions.assertEquals(expected, weaver.weave(people, ctx));
     }
 
     @Test
@@ -60,6 +60,24 @@ public class ArrayWeaverTest extends TypeWeaverTest {
 
         String expected = "int[12] [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, .. 2 more]";
 
-        Assertions.assertEquals(expected, weaver.weave(i, context));
+        Assertions.assertEquals(expected, weaver.weave(i, ctx));
+    }
+
+    @Test
+    void testMultilineConsidered() {
+        ArrayWeaver weaver = new ArrayWeaver();
+
+        Person[] people = new Person[]{new Person("John"), new Person("Jane")};
+
+        String expected = """
+                            Person[2]
+                            
+                            [0]
+                            dummy
+                            
+                            [1]
+                            dummy""";
+
+        Assertions.assertEquals(expected, weaver.weave(people, multilineCtx));
     }
 }

@@ -11,6 +11,6 @@ class ClassWeaverTest extends TypeWeaverTest {
     @Test
     public void testWeaver() {
         Assertions.assertEquals("com.robinloom.jweaver.dictionary.java.lang.ClassWeaverTest",
-                                weaver.weave(this.getClass(), context));
+                                weaver.weave(this.getClass(), ctx));
     }
 }

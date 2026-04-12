@@ -2,11 +2,14 @@ package com.robinloom.jweaver;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Stream;
 
-public class InlineModeTest {
+public class InlineTest {
 
     @Test
     void testNullSafety() {
@@ -165,5 +168,15 @@ public class InlineModeTest {
         Person person = new Person(new byte[]{0x01, 0x02, 0x03});
 
         Assertions.assertEquals("Person[parts=***]", JWeaver.weave(person, Mode.INLINE));
+    }
+
+    @ParameterizedTest
+    @MethodSource("forSmokeTest")
+    void overallSmokeTest(Object input) {
+        System.out.println(JWeaver.weave(input, Mode.INLINE));
+    }
+
+    static Stream<Object> forSmokeTest() {
+        return Stream.of("Hello, world", 'C', 1, 2.0, new Exception());
     }
 }

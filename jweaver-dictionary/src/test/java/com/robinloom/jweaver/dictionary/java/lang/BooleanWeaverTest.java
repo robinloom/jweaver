@@ -10,7 +10,7 @@ class BooleanWeaverTest extends TypeWeaverTest {
 
     @Test
     public void testWeaver() {
-        Assertions.assertEquals("TRUE", weaver.weave(Boolean.TRUE,  context));
-        Assertions.assertEquals("FALSE", weaver.weave(Boolean.FALSE,  context));
+        Assertions.assertEquals("TRUE", weaver.weave(Boolean.TRUE, ctx));
+        Assertions.assertEquals("FALSE", weaver.weave(Boolean.FALSE, ctx));
     }
 }

@@ -15,6 +15,6 @@ class ByteArrayOutputStreamWeaverTest extends TypeWeaverTest {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         baos.writeBytes("ABC".getBytes());
 
-        Assertions.assertEquals("ByteArrayOutputStream[size=3]", weaver.weave(baos, context));
+        Assertions.assertEquals("ByteArrayOutputStream[size=3]", weaver.weave(baos, ctx));
     }
 }

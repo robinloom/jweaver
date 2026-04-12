@@ -21,7 +21,7 @@ public class MapWeaverTest extends TypeWeaverTest {
 
         String expected = "HashMap(2) {Person[name=John]=Person[name=Frieda], Person[name=Margot]=Person[name=Jim]}";
 
-        Assertions.assertEquals(expected, weaver.weave(people, context));
+        Assertions.assertEquals(expected, weaver.weave(people, ctx));
     }
 
     @Test
@@ -32,6 +32,6 @@ public class MapWeaverTest extends TypeWeaverTest {
 
         String expected = "HashMap(0) {}";
 
-        Assertions.assertEquals(expected, weaver.weave(people, context));
+        Assertions.assertEquals(expected, weaver.weave(people, ctx));
     }
 }

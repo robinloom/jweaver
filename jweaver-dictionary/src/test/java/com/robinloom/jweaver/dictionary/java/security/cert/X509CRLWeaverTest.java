@@ -19,6 +19,6 @@ class X509CRLWeaverTest extends TypeWeaverTest {
         Mockito.when(crl.getSigAlgName()).thenReturn("SHA256withRSA");
 
         Assertions.assertEquals("X509CRL[issuer=Dummy (Dummy), version=0, algorithm=SHA256withRSA, entries=0]",
-                                weaver.weave(crl, context));
+                                weaver.weave(crl, ctx));
     }
 }

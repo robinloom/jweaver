@@ -15,7 +15,7 @@ class EnumWeaverTest extends TypeWeaverTest {
 
     @Test
     public void testEnumWeaver() {
-        Assertions.assertEquals("Status.OPEN", weaver.weave(Status.OPEN, context));
-        Assertions.assertEquals("Status.CLOSED", weaver.weave(Status.CLOSED, context));
+        Assertions.assertEquals("Status.OPEN", weaver.weave(Status.OPEN, ctx));
+        Assertions.assertEquals("Status.CLOSED", weaver.weave(Status.CLOSED, ctx));
     }
 }

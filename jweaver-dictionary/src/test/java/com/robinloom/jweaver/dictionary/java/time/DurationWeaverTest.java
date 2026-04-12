@@ -15,7 +15,7 @@ class DurationWeaverTest extends TypeWeaverTest {
     void weave_duration() {
         Duration d = Duration.ofHours(1).plusMinutes(23).plusSeconds(10);
 
-        String result = weaver.weave(d, context);
+        String result = weaver.weave(d, ctx);
 
         assertEquals("Duration[1h 23m 10s]", result);
     }

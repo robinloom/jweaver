@@ -18,11 +18,11 @@ class KeyWeaverTest extends TypeWeaverTest {
 
         KeyPair keyPair = gen.generateKeyPair();
 
-        String publicKeyResult = weaver.weave(keyPair.getPublic(), context);
+        String publicKeyResult = weaver.weave(keyPair.getPublic(), ctx);
 
         Assertions.assertEquals("PublicKey[RSA, 4096 bits, ", publicKeyResult.substring(0, publicKeyResult.lastIndexOf(",")+2));
 
-        String privateKeyResult = weaver.weave(keyPair.getPrivate(), context);
+        String privateKeyResult = weaver.weave(keyPair.getPrivate(), ctx);
 
         Assertions.assertEquals("PrivateKey[RSA, 4096 bits, ", privateKeyResult.substring(0, privateKeyResult.lastIndexOf(",")+2));
     }
@@ -34,11 +34,11 @@ class KeyWeaverTest extends TypeWeaverTest {
 
         KeyPair keyPair = gen.generateKeyPair();
 
-        String publicKeyResult = weaver.weave(keyPair.getPublic(), context);
+        String publicKeyResult = weaver.weave(keyPair.getPublic(), ctx);
 
         Assertions.assertEquals("PublicKey[EC, secp521r1, ", publicKeyResult.substring(0, publicKeyResult.lastIndexOf(",")+2));
 
-        String privateKeyResult = weaver.weave(keyPair.getPrivate(), context);
+        String privateKeyResult = weaver.weave(keyPair.getPrivate(), ctx);
 
         Assertions.assertEquals("PrivateKey[EC, secp521r1, ", privateKeyResult.substring(0, privateKeyResult.lastIndexOf(",")+2));
     }
@@ -50,11 +50,11 @@ class KeyWeaverTest extends TypeWeaverTest {
 
         KeyPair keyPair = gen.generateKeyPair();
 
-        String publicKeyResult = weaver.weave(keyPair.getPublic(), context);
+        String publicKeyResult = weaver.weave(keyPair.getPublic(), ctx);
 
         Assertions.assertEquals("PublicKey[DSA, 1024 bits, ", publicKeyResult.substring(0, publicKeyResult.lastIndexOf(",")+2));
 
-        String privateKeyResult = weaver.weave(keyPair.getPrivate(), context);
+        String privateKeyResult = weaver.weave(keyPair.getPrivate(), ctx);
 
         Assertions.assertEquals("PrivateKey[DSA, 1024 bits, ", privateKeyResult.substring(0, privateKeyResult.lastIndexOf(",")+2));
     }

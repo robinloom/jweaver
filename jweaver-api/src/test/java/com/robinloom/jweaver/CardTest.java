@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
-public class CardModeTest {
+public class CardTest {
 
     @Test
     void testNullSafety() {

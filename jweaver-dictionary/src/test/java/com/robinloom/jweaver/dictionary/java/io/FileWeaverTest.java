@@ -14,7 +14,7 @@ class FileWeaverTest extends TypeWeaverTest {
     void weave_existing_file() throws Exception {
         File file = File.createTempFile("test", ".txt");
 
-        String result = weaver.weave(file, context);
+        String result = weaver.weave(file, ctx);
 
         Assertions.assertTrue(result.contains("File["));
         Assertions.assertTrue(result.contains("exists"));

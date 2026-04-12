@@ -16,7 +16,7 @@ class TemporalWeaverTest extends TypeWeaverTest {
     void weave_local_date() {
         LocalDate date = LocalDate.of(2026, 4, 2);
 
-        String result = weaver.weave(date, context);
+        String result = weaver.weave(date, ctx);
 
         assertEquals("LocalDate[2026-04-02]", result);
     }
@@ -25,7 +25,7 @@ class TemporalWeaverTest extends TypeWeaverTest {
     void weave_local_date_time() {
         LocalDateTime dt = LocalDateTime.of(2026, 4, 2, 14, 23, 10);
 
-        String result = weaver.weave(dt, context);
+        String result = weaver.weave(dt, ctx);
 
         assertEquals("LocalDateTime[2026-04-02T14:23:10]", result);
     }
@@ -34,7 +34,7 @@ class TemporalWeaverTest extends TypeWeaverTest {
     void weave_instant() {
         Instant instant = Instant.parse("2026-04-02T12:23:10Z");
 
-        String result = weaver.weave(instant, context);
+        String result = weaver.weave(instant, ctx);
 
         assertEquals("Instant[2026-04-02T12:23:10Z]", result);
     }
@@ -46,7 +46,7 @@ class TemporalWeaverTest extends TypeWeaverTest {
                 ZoneId.of("Europe/Berlin")
         );
 
-        String result = weaver.weave(zdt, context);
+        String result = weaver.weave(zdt, ctx);
 
         assertTrue(result.contains("ZonedDateTime["));
         assertTrue(result.contains("2026-04-02T14:23:10"));

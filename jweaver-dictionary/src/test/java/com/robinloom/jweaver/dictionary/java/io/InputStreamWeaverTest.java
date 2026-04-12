@@ -14,6 +14,6 @@ class InputStreamWeaverTest extends TypeWeaverTest {
     public void testWeave() {
         ByteArrayInputStream bais = new ByteArrayInputStream("ABC".getBytes());
 
-        Assertions.assertEquals("ByteArrayInputStream[remaining=3]", weaver.weave(bais, context));
+        Assertions.assertEquals("ByteArrayInputStream[remaining=3]", weaver.weave(bais, ctx));
     }
 }

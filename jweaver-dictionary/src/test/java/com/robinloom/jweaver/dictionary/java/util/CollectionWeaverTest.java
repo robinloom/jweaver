@@ -23,7 +23,7 @@ public class CollectionWeaverTest extends TypeWeaverTest {
 
         String expected = "ArrayList(2) [Person[name=John], Person[name=Jane]]";
 
-        Assertions.assertEquals(expected, weaver.weave(people, context));
+        Assertions.assertEquals(expected, weaver.weave(people, ctx));
     }
 
     @Test
@@ -34,7 +34,7 @@ public class CollectionWeaverTest extends TypeWeaverTest {
 
         String expected = "ArrayList(0) []";
 
-        Assertions.assertEquals(expected, weaver.weave(people, context));
+        Assertions.assertEquals(expected, weaver.weave(people, ctx));
     }
 
     @Test
@@ -45,7 +45,7 @@ public class CollectionWeaverTest extends TypeWeaverTest {
 
         String expected = "List12(2) [Person[name=John], Person[name=Jane]]";
 
-        Assertions.assertEquals(expected, weaver.weave(people, context));
+        Assertions.assertEquals(expected, weaver.weave(people, ctx));
     }
 
     @Test
@@ -58,7 +58,7 @@ public class CollectionWeaverTest extends TypeWeaverTest {
 
         String expected = "HashSet(2) [Person[name=John], Person[name=Jane]]";
 
-        Assertions.assertEquals(expected, weaver.weave(people, context));
+        Assertions.assertEquals(expected, weaver.weave(people, ctx));
     }
 
     @Test
@@ -69,7 +69,7 @@ public class CollectionWeaverTest extends TypeWeaverTest {
 
         String expected = "List12(2) [List12(1) [Person[name=John]], List12(1) [Person[name=Jane]]]";
 
-        Assertions.assertEquals(expected, weaver.weave(people, context));
+        Assertions.assertEquals(expected, weaver.weave(people, ctx));
     }
 
     @Test
@@ -92,6 +92,6 @@ public class CollectionWeaverTest extends TypeWeaverTest {
 
         String expected = "ArrayList(12) [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, .. 2 more]";
 
-        Assertions.assertEquals(expected, weaver.weave(i, context));
+        Assertions.assertEquals(expected, weaver.weave(i, ctx));
     }
 }

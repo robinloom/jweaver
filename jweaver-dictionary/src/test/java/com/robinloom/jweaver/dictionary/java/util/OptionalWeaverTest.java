@@ -18,7 +18,7 @@ public class OptionalWeaverTest extends TypeWeaverTest {
 
         String expected = "Optional(Person[name=John])";
 
-        Assertions.assertEquals(expected, weaver.weave(person, context));
+        Assertions.assertEquals(expected, weaver.weave(person, ctx));
     }
 
     @Test
@@ -27,7 +27,7 @@ public class OptionalWeaverTest extends TypeWeaverTest {
 
         String expected = "Optional()";
 
-        Assertions.assertEquals(expected, weaver.weave(Optional.empty(), context));
+        Assertions.assertEquals(expected, weaver.weave(Optional.empty(), ctx));
     }
 }
 

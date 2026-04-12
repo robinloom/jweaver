@@ -27,4 +27,8 @@ public final class WeavingContext {
         Weaver weaver = reflectionWeaverResolver.resolve(mode);
         return weaver.weave(value, this);
     }
+
+    public Mode getMode() {
+        return mode;
+    }
 }

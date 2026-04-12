@@ -11,6 +11,6 @@ public class ByteArrayWeaverTest extends TypeWeaverTest {
     @Test
     public void testWeaver() {
         Assertions.assertEquals("byte[13]: 48 65 6C 6C 6F 2C 20 77 ..",
-                                weaver.weave("Hello, world!".getBytes(),  context));
+                                weaver.weave("Hello, world!".getBytes(), ctx));
     }
 }

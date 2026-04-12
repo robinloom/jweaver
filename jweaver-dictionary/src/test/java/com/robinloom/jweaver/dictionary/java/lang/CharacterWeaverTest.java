@@ -10,6 +10,6 @@ public class CharacterWeaverTest extends TypeWeaverTest {
 
     @Test
     public void testWeaver() {
-        Assertions.assertEquals("'@'", weaver.weave('@', context));
+        Assertions.assertEquals("'@'", weaver.weave('@', ctx));
     }
 }

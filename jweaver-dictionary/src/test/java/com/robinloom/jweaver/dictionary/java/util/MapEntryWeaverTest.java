@@ -24,6 +24,6 @@ class MapEntryWeaverTest extends TypeWeaverTest {
 
         String expected = "Person[name=John] = Car[color=red]";
 
-        Assertions.assertEquals(expected, weaver.weave(entry, context));
+        Assertions.assertEquals(expected, weaver.weave(entry, ctx));
     }
 }

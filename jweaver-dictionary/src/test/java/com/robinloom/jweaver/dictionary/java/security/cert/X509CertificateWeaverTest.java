@@ -18,7 +18,7 @@ class X509CertificateWeaverTest extends TypeWeaverTest {
     void weave_basic_certificate() throws Exception {
         X509Certificate cert = testCert();
 
-        String result = weaver.weave(cert, context);
+        String result = weaver.weave(cert, ctx);
 
         assertEquals("X509Certificate[subject=Dummy (Dummy, DE), issuer=Dummy (Dummy, DE), validity=2026-04-02T19:46:18Z - 2027-04-02T19:46:18Z]", result);
     }
