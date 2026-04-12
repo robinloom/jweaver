@@ -48,8 +48,8 @@ public class ReflectiveNode {
         return new ReflectiveNode(Type.ROOT, null, object.getClass(), null);
     }
 
-    public static ReflectiveNode objectNode(String fieldName, Object value) {
-        return new ReflectiveNode(Type.OBJECT, fieldName, value.getClass(), null);
+    public static ReflectiveNode objectNode(String fieldName, Class<?> clazz) {
+        return new ReflectiveNode(Type.OBJECT, fieldName, clazz, null);
     }
 
     public static ReflectiveNode property(String fieldName, String value) {

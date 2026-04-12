@@ -26,14 +26,13 @@ import com.robinloom.jweaver.util.Types;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.function.Function;
 
 public class ReflectiveAST {
 
     protected static final ThreadLocal<Set<Object>> history
             = ThreadLocal.withInitial(() -> Collections.newSetFromMap(new IdentityHashMap<>()));
 
-    private final int SEQUENCE_LIMIT = 10;
-    private final int MAX_DEPTH = 4;
     private final ASTOptions options;
 
     private int depth = 0;
@@ -50,7 +49,7 @@ public class ReflectiveAST {
         }
 
         depth++;
-        if (depth == MAX_DEPTH) {
+        if (depth == options.getMaxDepth()) {
             depth--;
             return root;
         }
@@ -100,7 +99,7 @@ public class ReflectiveAST {
                     }
 
                 } else {
-                    ReflectiveNode child = ReflectiveNode.objectNode(fieldName, value);
+                    ReflectiveNode child = ReflectiveNode.objectNode(fieldName, value.getClass());
                     root.addChild(build(child, value, ctx));
                 }
             } catch (Exception e) {
@@ -115,31 +114,40 @@ public class ReflectiveAST {
     }
 
     private ReflectiveNode collection(String fieldName, Collection<?> collection, WeavingContext ctx) {
-        ReflectiveNode root = ReflectiveNode.objectNode(fieldName, collection);
+        return sequence(fieldName, collection, collection.size(), collection.getClass(), i -> "(" + i + ") ", ctx);
+    }
 
+    private ReflectiveNode array(String fieldName, Object array, WeavingContext ctx) {
+        int length = Array.getLength(array);
+
+        List<Object> listView = new ArrayList<>(length);
+        for (int i = 0; i < length; i++) {
+            listView.add(Array.get(array, i));
+        }
+
+        return sequence(fieldName, listView, length, array.getClass(), i -> "[" + i + "] ", ctx);
+    }
+
+    private ReflectiveNode sequence(String fieldName, Iterable<?> iterable, int size, Class<?> displayType,
+                                    Function<Integer, String> indexFormatter, WeavingContext ctx) {
+
+        ReflectiveNode root = ReflectiveNode.objectNode(fieldName, displayType);
         depth++;
-        if (depth == MAX_DEPTH) {
+        if (depth == options.getMaxDepth()) {
             depth--;
             return root;
         }
 
         int i = 0;
-        for (Object item : collection) {
-            String prefix = "(" + i + ") ";
+        for (Object item : iterable) {
+            String prefix = indexFormatter.apply(i);
 
-            if (i >= SEQUENCE_LIMIT) {
-                root.addChild(ReflectiveNode.sequenceItem((collection.size()-i) + " more"));
+            if (i >= options.getMaxSequenceLength()) {
+                root.addChild(ReflectiveNode.sequenceItem((size - i) + " more"));
                 break;
-            } else if (Types.isSimpleType(item.getClass())) {
-                root.addChild(ReflectiveNode.sequenceItem((prefix + ctx.weave(item))));
-            } else if (Types.isCollection(item.getClass())) {
-                root.addChild(collection(prefix.trim(), (Collection<?>) item, ctx));
-            } else if (Types.isArray(item.getClass())) {
-                root.addChild(array(prefix.trim(), item, ctx));
-            } else {
-                ReflectiveNode child = ReflectiveNode.objectNode(prefix + item.getClass().getSimpleName(), item);
-                root.addChild(build(child, item, ctx));
             }
+
+            handleSequenceItem(root, item, prefix, ctx);
             i++;
         }
 
@@ -147,36 +155,23 @@ public class ReflectiveAST {
         return root;
     }
 
-    private ReflectiveNode array(String fieldName, Object array, WeavingContext ctx) {
-        ReflectiveNode root = ReflectiveNode.objectNode(fieldName, array);
-
-        depth++;
-        if (depth == MAX_DEPTH) {
-            depth--;
-            return root;
+    private void handleSequenceItem(ReflectiveNode root, Object item, String prefix, WeavingContext ctx) {
+        if (item == null) {
+            root.addChild(ReflectiveNode.sequenceItem(prefix + "null"));
+            return;
         }
 
-        int arrayLength = Array.getLength(array);
-        for (int i = 0; i < arrayLength; i++) {
-            Object item = Array.get(array, i);
-            String prefix = "[" + i + "] ";
-
-            if (i >= SEQUENCE_LIMIT) {
-                root.addChild(ReflectiveNode.sequenceItem((arrayLength - i) + " more"));
-                break;
-            } else if (Types.isSimpleType(item.getClass())) {
-                root.addChild(ReflectiveNode.sequenceItem(prefix + ctx.weave(item)));
-            } else if (Types.isCollection(item.getClass())) {
-                root.addChild(collection(prefix.trim(), (Collection<?>) item, ctx));
-            } else if (Types.isArray(item.getClass())) {
-                root.addChild(array(prefix.trim(), item, ctx));
-            } else {
-                ReflectiveNode child = ReflectiveNode.objectNode(prefix + item.getClass().getSimpleName(), item);
-                root.addChild(build(child, item, ctx));
-            }
+        if (Types.isSimpleType(item.getClass())) {
+            root.addChild(ReflectiveNode.sequenceItem(prefix + ctx.weave(item)));
+        } else if (Types.isCollection(item.getClass())) {
+            root.addChild(sequence(prefix.trim(), (Collection<?>) item, ((Collection<?>) item).size(),
+                                   item.getClass(), i -> "(" + i + ") ", ctx));
+        } else if (Types.isArray(item.getClass())) {
+            root.addChild(array(prefix.trim(), item, ctx));
+        } else {
+            ReflectiveNode child = ReflectiveNode.objectNode(prefix + item.getClass().getSimpleName(), item.getClass());
+            root.addChild(build(child, item, ctx));
         }
-        depth--;
-        return root;
     }
 
     Object readField(Field field, Object target) throws ReflectiveOperationException {
