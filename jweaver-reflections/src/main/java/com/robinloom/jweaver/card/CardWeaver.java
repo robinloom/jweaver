@@ -18,6 +18,7 @@ package com.robinloom.jweaver.card;
 
 import com.robinloom.jweaver.Weaver;
 import com.robinloom.jweaver.WeavingContext;
+import com.robinloom.jweaver.ast.ASTOptions;
 import com.robinloom.jweaver.ast.ReflectiveAST;
 import com.robinloom.jweaver.ast.ReflectiveNode;
 import com.robinloom.jweaver.util.Types;
@@ -43,8 +44,7 @@ import java.util.*;
  */
 public class CardWeaver implements Weaver {
 
-    protected static final ThreadLocal<Set<Object>> history
-            = ThreadLocal.withInitial(() -> Collections.newSetFromMap(new IdentityHashMap<>()));
+    private final ReflectiveAST ast = new ReflectiveAST(ASTOptions.expanded());
 
     private final BoxChars boxChars = BoxChars.UNICODE_LIGHT;
 
@@ -63,7 +63,7 @@ public class CardWeaver implements Weaver {
             return object.toString();
         }
 
-        ReflectiveNode root = new ReflectiveAST().build(ReflectiveNode.root(object), object, ctx);
+        ReflectiveNode root = ast.build(ReflectiveNode.root(object), object, ctx);
 
         LinkedHashMap<String, String> wovenFields = new LinkedHashMap<>();
 
@@ -114,16 +114,14 @@ public class CardWeaver implements Weaver {
      * Maps a node to a displayable string value for CARD mode.
      */
     private String mapValue(ReflectiveNode node) {
-        // Leaf node → direct value
-        if (node.getChildren().isEmpty()) {
+        if (node.isProperty()) {
             return node.getValue();
         }
 
-        // Non-leaf → summarized representation
         String type = node.getClazzName();
         int size = node.getChildren().size();
 
-        return "@" + type + "(" + size + ")";
+        return type + "(" + size + ")";
     }
 
     private int determineLongestField(Map<String, String> wovenFields) {

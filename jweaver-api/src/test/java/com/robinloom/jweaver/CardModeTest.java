@@ -39,10 +39,10 @@ public class CardModeTest {
 
         Person person = new Person("Jane", new Person("Peter", null));
         String expected = """
-                ╭ Person ───────────────╮
-                │ name     : Jane       │
-                │ neighbor : @Person(1) │
-                ╰───────────────────────╯""";
+                ╭ Person ──────────────╮
+                │ name     : Jane      │
+                │ neighbor : Person(2) │
+                ╰──────────────────────╯""";
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.CARD));
     }
@@ -53,10 +53,10 @@ public class CardModeTest {
 
         Person person = new Person("Jane", List.of("Peter", "Judy"));
         String expected = """
-                          ╭ Person ────────────────────╮
-                          │ name          : Jane       │
-                          │ childrenNames : @List12(2) │
-                          ╰────────────────────────────╯""";
+                        ╭ Person ───────────────────╮
+                        │ name          : Jane      │
+                        │ childrenNames : List12(2) │
+                        ╰───────────────────────────╯""";
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.CARD));
     }
@@ -67,10 +67,10 @@ public class CardModeTest {
 
         Person person = new Person("Jane", List.of(new Person("Peter", List.of())));
         String expected = """
-                          ╭ Person ────────────────╮
-                          │ name      : Jane       │
-                          │ neighbors : @List12(1) │
-                          ╰────────────────────────╯""";
+                          ╭ Person ───────────────╮
+                          │ name      : Jane      │
+                          │ neighbors : List12(1) │
+                          ╰───────────────────────╯""";
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.CARD));
     }
 
@@ -81,9 +81,9 @@ public class CardModeTest {
         int[] arr = new  int[] {0,1,2};
         Person person = new Person(arr);
         String expected = """
-                          ╭ Person ─────────────╮
-                          │ numbers : @int[](3) │
-                          ╰─────────────────────╯""";
+                          ╭ Person ────────────╮
+                          │ numbers : int[](3) │
+                          ╰────────────────────╯""";
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.CARD));
     }
@@ -94,9 +94,9 @@ public class CardModeTest {
 
         Person person = new Person(new String[]{"Anna", "Maria", "Quinn"});
         String expected = """
-                         ╭ Person ──────────────╮
-                         │ names : @String[](3) │
-                         ╰──────────────────────╯""";
+                        ╭ Person ─────────────╮
+                        │ names : String[](3) │
+                        ╰─────────────────────╯""";
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.CARD));
     }
@@ -107,9 +107,9 @@ public class CardModeTest {
 
         Person person = new Person(new Person[]{new Person(null)});
         String expected = """
-                          ╭ Person ──────────────────╮
-                          │ neighbors : @Person[](1) │
-                          ╰──────────────────────────╯""";
+                          ╭ Person ─────────────────╮
+                          │ neighbors : Person[](1) │
+                          ╰─────────────────────────╯""";
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.CARD));
     }

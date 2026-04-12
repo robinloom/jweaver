@@ -35,7 +35,8 @@ class BulletModeTest {
                           Person
                               - name=John Doe
                               - neighbor
-                                  - name=Peter""";
+                                  - name=Peter
+                                  - neighbor=null""";
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.BULLET));
     }
 
@@ -163,13 +164,15 @@ class BulletModeTest {
         Person person = new Person(40, new Person[]{new Person(15, null),
                 new Person(12, null)});
         String expected = """
-                          Person
-                              - age=40
-                              - neighbors
-                                  - [0] Person
-                                      - age=15
-                                  - [1] Person
-                                      - age=12""";
+                            Person
+                                - age=40
+                                - neighbors
+                                    - [0] Person
+                                        - age=15
+                                        - neighbors=null
+                                    - [1] Person
+                                        - age=12
+                                        - neighbors=null""";
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.BULLET));
     }

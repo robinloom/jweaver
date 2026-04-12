@@ -18,6 +18,7 @@ package com.robinloom.jweaver.bullet;
 
 import com.robinloom.jweaver.Weaver;
 import com.robinloom.jweaver.WeavingContext;
+import com.robinloom.jweaver.ast.ASTOptions;
 import com.robinloom.jweaver.ast.ReflectiveNode;
 import com.robinloom.jweaver.ast.ReflectiveAST;
 import com.robinloom.jweaver.util.Types;
@@ -37,6 +38,8 @@ import org.jspecify.annotations.NonNull;
  */
 public class BulletWeaver implements Weaver {
 
+    private final ReflectiveAST ast = new ReflectiveAST(ASTOptions.expanded());
+
     /**
      * Generates a string representation of the given object via reflections.
      * Prints the class name followed by every accessible field in a list structure.
@@ -50,7 +53,7 @@ public class BulletWeaver implements Weaver {
             return object.toString();
         }
 
-        ReflectiveNode structure = new ReflectiveAST().build(ReflectiveNode.root(object), object, ctx);
+        ReflectiveNode structure = ast.build(ReflectiveNode.root(object), object, ctx);
 
         Loom loom = Loom.empty();
         traverseDepthFirst(structure, loom);

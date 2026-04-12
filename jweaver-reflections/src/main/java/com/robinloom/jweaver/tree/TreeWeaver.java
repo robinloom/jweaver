@@ -18,6 +18,7 @@ package com.robinloom.jweaver.tree;
 
 import com.robinloom.jweaver.Weaver;
 import com.robinloom.jweaver.WeavingContext;
+import com.robinloom.jweaver.ast.ASTOptions;
 import com.robinloom.jweaver.ast.ReflectiveNode;
 import com.robinloom.jweaver.ast.ReflectiveAST;
 import com.robinloom.jweaver.util.Types;
@@ -43,7 +44,8 @@ import java.util.List;
  * </pre>
  */
 public class TreeWeaver implements Weaver {
-    
+
+    private final ReflectiveAST ast = new ReflectiveAST(ASTOptions.expanded());
     private final Loom loom = Loom.empty();
 
     /**
@@ -59,7 +61,7 @@ public class TreeWeaver implements Weaver {
             return object.toString();
         }
 
-        ReflectiveNode tree = new ReflectiveAST().build(ReflectiveNode.root(object), object, ctx);
+        ReflectiveNode tree = ast.build(ReflectiveNode.root(object), object, ctx);
 
         List<Boolean> siblingsAtCurrentLevel = new ArrayList<>();
         traverseDepthFirst(tree, siblingsAtCurrentLevel);

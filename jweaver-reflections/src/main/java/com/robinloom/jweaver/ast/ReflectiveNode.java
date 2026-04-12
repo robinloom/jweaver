@@ -24,10 +24,11 @@ public class ReflectiveNode {
     public enum Type {
         ROOT,
         OBJECT,
-        VALUE
+        PROPERTY,
+        SEQUENCE
     }
 
-    private Type type;
+    private final Type type;
 
     private final Class<?> clazz;
     private final String fieldName;
@@ -51,12 +52,12 @@ public class ReflectiveNode {
         return new ReflectiveNode(Type.OBJECT, fieldName, value.getClass(), null);
     }
 
-    public static ReflectiveNode valueNode(String fieldName, String value) {
-        return new ReflectiveNode(Type.VALUE, fieldName, null, value);
+    public static ReflectiveNode property(String fieldName, String value) {
+        return new ReflectiveNode(Type.PROPERTY, fieldName, null, value);
     }
 
-    public static ReflectiveNode valueNode(String value) {
-        return new ReflectiveNode(Type.VALUE, null, null, value);
+    public static ReflectiveNode sequenceItem(String value) {
+        return new ReflectiveNode(Type.SEQUENCE, null, null, value);
     }
 
     public void addChild(ReflectiveNode child) {
@@ -65,7 +66,19 @@ public class ReflectiveNode {
     }
 
     public boolean isRoot() {
-        return parent == null;
+        return type == Type.ROOT;
+    }
+
+    public boolean isObject() {
+        return type == Type.OBJECT;
+    }
+
+    public boolean isProperty() {
+        return type == Type.PROPERTY;
+    }
+
+    public boolean isSequenceItem() {
+        return type == Type.SEQUENCE;
     }
 
     public boolean isLastChild() {
