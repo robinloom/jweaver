@@ -18,8 +18,8 @@ package com.robinloom.jweaver.card;
 
 import com.robinloom.jweaver.Weaver;
 import com.robinloom.jweaver.WeavingContext;
-import com.robinloom.jweaver.structure.ClassFieldASTBuilder;
-import com.robinloom.jweaver.structure.ClassFieldNode;
+import com.robinloom.jweaver.ast.ReflectiveAST;
+import com.robinloom.jweaver.ast.ReflectiveNode;
 import com.robinloom.jweaver.util.Types;
 import com.robinloom.loom.Loom;
 import org.jspecify.annotations.NonNull;
@@ -63,11 +63,11 @@ public class CardWeaver implements Weaver {
             return object.toString();
         }
 
-        ClassFieldNode root = new ClassFieldASTBuilder().build(ClassFieldNode.root(object), object, ctx);
+        ReflectiveNode root = new ReflectiveAST().build(ReflectiveNode.root(object), object, ctx);
 
         LinkedHashMap<String, String> wovenFields = new LinkedHashMap<>();
 
-        for (ClassFieldNode child : root.getChildren()) {
+        for (ReflectiveNode child : root.getChildren()) {
             String key = child.getFieldName();
             String value = mapValue(child);
 
@@ -113,7 +113,7 @@ public class CardWeaver implements Weaver {
     /**
      * Maps a node to a displayable string value for CARD mode.
      */
-    private String mapValue(ClassFieldNode node) {
+    private String mapValue(ReflectiveNode node) {
         // Leaf node → direct value
         if (node.getChildren().isEmpty()) {
             return node.getValue();

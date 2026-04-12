@@ -70,11 +70,9 @@ public class InlineWeaver implements Weaver {
             history.get().add(object);
         }
 
-        List<Field> fields = FieldOperations.getFields(object.getClass());
-
-        fields = fields.stream()
-                       .filter(f -> !f.isAnnotationPresent(WeaveIgnore.class))
-                       .toList();
+        List<Field> fields = FieldOperations.getFields(object.getClass()).stream()
+                                            .filter(f -> !f.isAnnotationPresent(WeaveIgnore.class))
+                                            .toList();
 
         String fieldDelimiter = fieldDelimiter();
         String fieldValueDelimiter = fieldValueDelimiter();

@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.robinloom.jweaver.structure;
+package com.robinloom.jweaver.ast;
 
 import com.robinloom.jweaver.WeavingContext;
 import com.robinloom.jweaver.annotation.WeaveIgnore;
@@ -27,7 +27,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.*;
 
-public class ClassFieldASTBuilder {
+public class ReflectiveAST {
 
     protected static final ThreadLocal<Set<Object>> history
             = ThreadLocal.withInitial(() -> Collections.newSetFromMap(new IdentityHashMap<>()));
@@ -37,7 +37,7 @@ public class ClassFieldASTBuilder {
 
     private int depth = 0;
 
-    public ClassFieldNode build(ClassFieldNode root, Object object, WeavingContext ctx) {
+    public ReflectiveNode build(ReflectiveNode root, Object object, WeavingContext ctx) {
         if (history.get().contains(object)) {
             return root;
         } else {
@@ -50,16 +50,14 @@ public class ClassFieldASTBuilder {
             return root;
         }
 
-        List<Field> fields = FieldOperations.getFields(object.getClass());
-
-        fields = fields.stream()
-                .filter(f -> !f.isAnnotationPresent(WeaveIgnore.class))
-                .toList();
+        List<Field> fields = FieldOperations.getFields(object.getClass())
+                                            .stream()
+                                            .filter(f -> !f.isAnnotationPresent(WeaveIgnore.class))
+                                            .toList();
 
         for (Field field : fields) {
             try {
                 Object value = readField(field, object);
-                String dataType = "";
 
                 String fieldName;
                 if (field.isAnnotationPresent(WeaveName.class)) {
@@ -68,28 +66,26 @@ public class ClassFieldASTBuilder {
                     fieldName = field.getName();
                 }
 
-                fieldName = dataType + fieldName;
-
                 if (value == null) {
                     continue;
                 }
                 if (SensitivityDetection.isSensitive(field)) {
-                    root.addChild(fieldName, "***");
+                    root.addChild(ReflectiveNode.valueNode(fieldName, "***"));
                     continue;
                 }
 
                 if (Types.isSimpleType(field.getType())) {
-                    root.addChild(fieldName, ctx.weave(value));
+                    root.addChild(ReflectiveNode.valueNode(fieldName, ctx.weave(value)));
                 } else if (Types.isCollection(field.getType())) {
                     root.addChild(collection(fieldName, (Collection<?>) value, ctx));
                 } else if (Types.isArray(field.getType())) {
                     root.addChild(array(fieldName, value, ctx));
                 } else {
-                    ClassFieldNode child = ClassFieldNode.innerNode(fieldName, value);
+                    ReflectiveNode child = ReflectiveNode.objectNode(fieldName, value.getClass());
                     root.addChild(build(child, value, ctx));
                 }
             } catch (Exception e) {
-                root.addChild("[?]");
+                root.addChild(ReflectiveNode.valueNode(null, "[?]"));
             }
         }
 
@@ -99,8 +95,8 @@ public class ClassFieldASTBuilder {
         return root;
     }
 
-    private ClassFieldNode collection(String fieldName, Collection<?> collection, WeavingContext ctx) {
-        ClassFieldNode root = ClassFieldNode.innerNode(fieldName, collection);
+    private ReflectiveNode collection(String fieldName, Collection<?> collection, WeavingContext ctx) {
+        ReflectiveNode root = ReflectiveNode.objectNode(fieldName, Collection.class);
 
         depth++;
         if (depth == MAX_DEPTH) {
@@ -113,16 +109,16 @@ public class ClassFieldASTBuilder {
             String prefix = "(" + i + ") ";
 
             if (i >= SEQUENCE_LIMIT) {
-                root.addChild((collection.size()-i) + " more");
+                root.addChild(ReflectiveNode.valueNode((collection.size()-i) + " more"));
                 break;
             } else if (Types.isSimpleType(item.getClass())) {
-                root.addChild(prefix + ctx.weave(item));
+                root.addChild(ReflectiveNode.valueNode((prefix + ctx.weave(item))));
             } else if (Types.isCollection(item.getClass())) {
                 root.addChild(collection(prefix.trim(), (Collection<?>) item, ctx));
             } else if (Types.isArray(item.getClass())) {
                 root.addChild(array(prefix.trim(), item, ctx));
             } else {
-                ClassFieldNode child = ClassFieldNode.innerNode(prefix + item.getClass().getSimpleName(), item);
+                ReflectiveNode child = ReflectiveNode.objectNode(prefix + item.getClass().getSimpleName(), item.getClass());
                 root.addChild(build(child, item, ctx));
             }
             i++;
@@ -132,8 +128,8 @@ public class ClassFieldASTBuilder {
         return root;
     }
 
-    private ClassFieldNode array(String fieldName, Object array, WeavingContext ctx) {
-        ClassFieldNode root = ClassFieldNode.innerNode(fieldName, array);
+    private ReflectiveNode array(String fieldName, Object array, WeavingContext ctx) {
+        ReflectiveNode root = ReflectiveNode.objectNode(fieldName, array.getClass());
 
         depth++;
         if (depth == MAX_DEPTH) {
@@ -147,16 +143,16 @@ public class ClassFieldASTBuilder {
             String prefix = "[" + i + "] ";
 
             if (i >= SEQUENCE_LIMIT) {
-                root.addChild((arrayLength-i) + " more");
+                root.addChild(ReflectiveNode.valueNode((arrayLength - i) + " more"));
                 break;
             } else if (Types.isSimpleType(item.getClass())) {
-                root.addChild(prefix + ctx.weave(item));
+                root.addChild(ReflectiveNode.valueNode(prefix + ctx.weave(item)));
             } else if (Types.isCollection(item.getClass())) {
                 root.addChild(collection(prefix.trim(), (Collection<?>) item, ctx));
             } else if (Types.isArray(item.getClass())) {
                 root.addChild(array(prefix.trim(), item, ctx));
             } else {
-                ClassFieldNode child = ClassFieldNode.innerNode(prefix + item.getClass().getSimpleName(), item);
+                ReflectiveNode child = ReflectiveNode.objectNode(prefix + item.getClass().getSimpleName(), item.getClass());
                 root.addChild(build(child, item, ctx));
             }
         }

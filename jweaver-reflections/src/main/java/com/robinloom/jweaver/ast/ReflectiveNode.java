@@ -14,58 +14,52 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.robinloom.jweaver.structure;
+package com.robinloom.jweaver.ast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClassFieldNode {
+public class ReflectiveNode {
 
-    private Class<?> clazz;
-
-    private String fieldName;
-    private String value;
-
-    private ClassFieldNode parent;
-    private final List<ClassFieldNode> children = new ArrayList<>();
-
-    public static ClassFieldNode root(Object object) {
-        return new ClassFieldNode(object);
+    public enum Type {
+        ROOT,
+        OBJECT,
+        VALUE
     }
 
-    public static ClassFieldNode leaf(String fieldName, String value) {
-        return new ClassFieldNode(fieldName, value);
-    }
+    private Type type;
 
-    public static ClassFieldNode innerNode(String value, Object object) {
-        return new ClassFieldNode(value, object);
-    }
+    private final Class<?> clazz;
+    private final String fieldName;
+    private final String value;
 
-    private ClassFieldNode(String fieldName, Object value) {
+    private ReflectiveNode parent;
+    private final List<ReflectiveNode> children = new ArrayList<>();
+
+    private ReflectiveNode(Type type, String fieldName, Class<?> clazz, String value) {
+        this.type = type;
         this.fieldName = fieldName;
-        this.clazz = value.getClass();
-    }
-
-    private ClassFieldNode(Object object) {
-        this.clazz = object.getClass();
-    }
-
-    private ClassFieldNode(String fieldName, String value) {
-        this.fieldName = fieldName;
+        this.clazz = clazz;
         this.value = value;
     }
 
-    void addChild(String value) {
-        addChild(null, value);
+    public static ReflectiveNode root(Object object) {
+        return new ReflectiveNode(Type.ROOT, null, object.getClass(), null);
     }
 
-    void addChild(String fieldName, String value) {
-        ClassFieldNode child = new ClassFieldNode(fieldName, value);
-        child.parent = this;
-        children.add(child);
+    public static ReflectiveNode objectNode(String fieldName, Object value) {
+        return new ReflectiveNode(Type.OBJECT, fieldName, value.getClass(), null);
     }
 
-    void addChild(ClassFieldNode child) {
+    public static ReflectiveNode valueNode(String fieldName, String value) {
+        return new ReflectiveNode(Type.VALUE, fieldName, null, value);
+    }
+
+    public static ReflectiveNode valueNode(String value) {
+        return new ReflectiveNode(Type.VALUE, null, null, value);
+    }
+
+    public void addChild(ReflectiveNode child) {
         child.parent = this;
         children.add(child);
     }
@@ -90,7 +84,7 @@ public class ClassFieldNode {
         return value;
     }
 
-    public List<ClassFieldNode> getChildren() {
+    public List<ReflectiveNode> getChildren() {
         return children;
     }
 

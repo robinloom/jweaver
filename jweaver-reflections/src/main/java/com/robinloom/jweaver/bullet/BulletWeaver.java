@@ -18,8 +18,8 @@ package com.robinloom.jweaver.bullet;
 
 import com.robinloom.jweaver.Weaver;
 import com.robinloom.jweaver.WeavingContext;
-import com.robinloom.jweaver.structure.ClassFieldNode;
-import com.robinloom.jweaver.structure.ClassFieldASTBuilder;
+import com.robinloom.jweaver.ast.ReflectiveNode;
+import com.robinloom.jweaver.ast.ReflectiveAST;
 import com.robinloom.jweaver.util.Types;
 import com.robinloom.loom.Loom;
 import org.jspecify.annotations.NonNull;
@@ -50,7 +50,7 @@ public class BulletWeaver implements Weaver {
             return object.toString();
         }
 
-        ClassFieldNode structure = new ClassFieldASTBuilder().build(ClassFieldNode.root(object), object, ctx);
+        ReflectiveNode structure = new ReflectiveAST().build(ReflectiveNode.root(object), object, ctx);
 
         Loom loom = Loom.empty();
         traverseDepthFirst(structure, loom);
@@ -59,7 +59,7 @@ public class BulletWeaver implements Weaver {
         return loom.toString();
     }
 
-    private void traverseDepthFirst(ClassFieldNode node, Loom loom) {
+    private void traverseDepthFirst(ReflectiveNode node, Loom loom) {
         if (node.isRoot()) {
             loom.append(node.getClazzName()).newline();
         } else {
@@ -76,7 +76,7 @@ public class BulletWeaver implements Weaver {
             }
         }
 
-        for (ClassFieldNode child : node.getChildren()) {
+        for (ReflectiveNode child : node.getChildren()) {
             traverseDepthFirst(child, loom);
         }
     }

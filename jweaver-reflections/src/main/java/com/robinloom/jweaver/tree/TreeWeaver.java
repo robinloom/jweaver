@@ -18,8 +18,8 @@ package com.robinloom.jweaver.tree;
 
 import com.robinloom.jweaver.Weaver;
 import com.robinloom.jweaver.WeavingContext;
-import com.robinloom.jweaver.structure.ClassFieldNode;
-import com.robinloom.jweaver.structure.ClassFieldASTBuilder;
+import com.robinloom.jweaver.ast.ReflectiveNode;
+import com.robinloom.jweaver.ast.ReflectiveAST;
 import com.robinloom.jweaver.util.Types;
 import com.robinloom.loom.Chars;
 import com.robinloom.loom.Loom;
@@ -59,7 +59,7 @@ public class TreeWeaver implements Weaver {
             return object.toString();
         }
 
-        ClassFieldNode tree = new ClassFieldASTBuilder().build(ClassFieldNode.root(object), object, ctx);
+        ReflectiveNode tree = new ReflectiveAST().build(ReflectiveNode.root(object), object, ctx);
 
         List<Boolean> siblingsAtCurrentLevel = new ArrayList<>();
         traverseDepthFirst(tree, siblingsAtCurrentLevel);
@@ -68,7 +68,7 @@ public class TreeWeaver implements Weaver {
         return loom.toString();
     }
 
-    private void traverseDepthFirst(ClassFieldNode node, List<Boolean> siblingsAtCurrentLevel) {
+    private void traverseDepthFirst(ReflectiveNode node, List<Boolean> siblingsAtCurrentLevel) {
         if (node.isRoot()) {
            loom.line(node.getClazzName());
         } else {
@@ -88,10 +88,10 @@ public class TreeWeaver implements Weaver {
                     .newline();
         }
 
-        List<ClassFieldNode> children = node.getChildren();
+        List<ReflectiveNode> children = node.getChildren();
 
         for (int i = 0; i < children.size(); i++) {
-            ClassFieldNode child = children.get(i);
+            ReflectiveNode child = children.get(i);
 
             List<Boolean> siblingsAtNextLevel = new ArrayList<>(siblingsAtCurrentLevel);
 

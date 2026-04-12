@@ -16,10 +16,8 @@
  */
 package com.robinloom.jweaver.util;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public final class FieldOperations {
@@ -28,18 +26,6 @@ public final class FieldOperations {
 
     public static ArrayList<Field> getFields(Class<?> clazz) {
         return new ArrayList<>(List.of(clazz.getDeclaredFields()));
-    }
-
-    public static int getCollectionSize(Collection<?> collection) {
-        return collection == null ? 0 : collection.size();
-    }
-
-    public static int getArraySize(Object array) {
-        return  array == null ? 0 : Array.getLength(array);
-    }
-
-    public static String getObjectToString(Object object) {
-        return object.getClass().getSimpleName() + "@" + Integer.toHexString(object.hashCode());
     }
 
 }
