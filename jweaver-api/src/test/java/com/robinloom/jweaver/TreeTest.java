@@ -4,7 +4,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TreeTest {
 
@@ -32,11 +34,11 @@ public class TreeTest {
 
         Person person = new Person("John Doe", new Person("Peter", null));
         String expected = """
-                          Person
-                          |-- name=John Doe
-                          `-- neighbor
-                              |-- name=Peter
-                              `-- neighbor=null""";
+                            Person
+                            |-- name=John Doe
+                            `-- neighbor=Person
+                                |-- name=Peter
+                                `-- neighbor=null""";
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.TREE));
     }
 
@@ -48,9 +50,9 @@ public class TreeTest {
         String expected = """
                           Person
                           |-- name=Jane
-                          `-- childrenNames
-                              |-- (0) Peter
-                              `-- (1) Judy""";
+                          `-- childrenNames=List12[2]
+                              |-- [0] Peter
+                              `-- [1] Judy""";
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.TREE));
     }
 
@@ -62,9 +64,9 @@ public class TreeTest {
         String expected = """
                           Person
                           |-- name=Jane
-                          |-- childrenNames
-                          |   |-- (0) Peter
-                          |   `-- (1) Judy
+                          |-- childrenNames=List12[2]
+                          |   |-- [0] Peter
+                          |   `-- [1] Judy
                           `-- age=29""";
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.TREE));
     }
@@ -82,12 +84,12 @@ public class TreeTest {
         String expected = """
                            Person
                            |-- name=Jane
-                           |-- childrenNames
-                           |   |-- (0) Peter
-                           |   `-- (1) Judy
+                           |-- childrenNames=List12[2]
+                           |   |-- [0] Peter
+                           |   `-- [1] Judy
                            |-- age=29
-                           |-- addresses
-                           |   `-- (0) 42 Wallaby Way, Sydney
+                           |-- addresses=List12[1]
+                           |   `-- [0] 42 Wallaby Way, Sydney
                            `-- bloodType=0+""";
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.TREE));
     }
@@ -98,14 +100,14 @@ public class TreeTest {
 
         Person person = new Person(List.of(List.of("A", "B"), List.of("C", "D")));
         String expected = """
-                          Person
-                          `-- listOfLists
-                              |-- (0)
-                              |   |-- (0) A
-                              |   `-- (1) B
-                              `-- (1)
-                                  |-- (0) C
-                                  `-- (1) D""";
+                            Person
+                            `-- listOfLists=List12[2]
+                                |-- [0] List12[2]
+                                |   |-- [0] A
+                                |   `-- [1] B
+                                `-- [1] List12[2]
+                                    |-- [0] C
+                                    `-- [1] D""";
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.TREE));
     }
 
@@ -118,12 +120,12 @@ public class TreeTest {
 
         Person person = new Person("John", List.of(new Person("Peter", List.of())));
         String expected = """
-                          Person
-                          |-- name=John
-                          `-- neighbors
-                              `-- (0) Person
-                                  |-- name=Peter
-                                  `-- neighbors""";
+                            Person
+                            |-- name=John
+                            `-- neighbors=List12[1]
+                                `-- [0] Person
+                                    |-- name=Peter
+                                    `-- neighbors=ListN[0]""";
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.TREE));
     }
 
@@ -134,7 +136,7 @@ public class TreeTest {
         Person person = new Person(new int[]{0,1,2});
         String expected = """
                           Person
-                          `-- numbers
+                          `-- numbers=int[][3]
                               |-- [0] 0
                               |-- [1] 1
                               `-- [2] 2""";
@@ -149,7 +151,7 @@ public class TreeTest {
         Person person = new Person(new String[]{"Anna", "Maria", "Quinn"});
         String expected = """
                           Person
-                          `-- names
+                          `-- names=String[][3]
                               |-- [0] Anna
                               |-- [1] Maria
                               `-- [2] Quinn""";
@@ -166,7 +168,7 @@ public class TreeTest {
         String expected = """
                         Person
                         |-- age=40
-                        `-- neighbors
+                        `-- neighbors=Person[][2]
                             |-- [0] Person
                             |   |-- age=15
                             |   `-- neighbors=null
@@ -183,17 +185,17 @@ public class TreeTest {
 
         Person person = new Person(new int[][]{ {0, 1}, {2, 3}, {4, 5}});
         String expected = """
-                          Person
-                          `-- matrix
-                              |-- [0]
-                              |   |-- [0] 0
-                              |   `-- [1] 1
-                              |-- [1]
-                              |   |-- [0] 2
-                              |   `-- [1] 3
-                              `-- [2]
-                                  |-- [0] 4
-                                  `-- [1] 5""";
+                            Person
+                            `-- matrix=int[][][3]
+                                |-- [0] int[][2]
+                                |   |-- [0] 0
+                                |   `-- [1] 1
+                                |-- [1] int[][2]
+                                |   |-- [0] 2
+                                |   `-- [1] 3
+                                `-- [2] int[][2]
+                                    |-- [0] 4
+                                    `-- [1] 5""";
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.TREE));
     }
@@ -240,5 +242,45 @@ public class TreeTest {
         Assertions.assertDoesNotThrow(first::toString);
         Assertions.assertDoesNotThrow(second::toString);
         Assertions.assertDoesNotThrow(third::toString);
+    }
+
+    @Test
+    void testCollection() {
+        List<String> persons = List.of("Anna", "Maria", "Quinn");
+
+        String expected = """
+                        ListN
+                        |-- [0] Anna
+                        |-- [1] Maria
+                        `-- [2] Quinn""";
+
+        Assertions.assertEquals(expected,  JWeaver.weave(persons, Mode.TREE));
+    }
+
+    @Test
+    void testArray() {
+        String[] persons = new String[]{"Anna", "Maria", "Quinn"};
+
+        String expected = """
+                            String[]
+                            |-- [0] Anna
+                            |-- [1] Maria
+                            `-- [2] Quinn""";
+
+        Assertions.assertEquals(expected,  JWeaver.weave(persons, Mode.TREE));
+    }
+
+    @Test
+    void testMap() {
+        Map<String, String> map = new HashMap<>();
+        map.put("key1", "value1");
+        map.put("key2", "value2");
+
+        String expected = """
+                            HashMap
+                            |-- [0] key1 = value1
+                            `-- [1] key2 = value2""";
+
+        Assertions.assertEquals(expected,  JWeaver.weave(map, Mode.TREE));
     }
 }

@@ -10,7 +10,7 @@ public class MapEntryWeaver extends TypeWeaver {
 
     @Override
     public Class<?> targetType() {
-        return Map.class;
+        return Map.Entry.class;
     }
 
     @Override

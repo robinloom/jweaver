@@ -17,13 +17,14 @@
 package com.robinloom.jweaver.util;
 
 import java.util.Collection;
+import java.util.Map;
 
 public final class Types {
 
     private Types() {}
 
     public static boolean isSimpleType(Class<?> clazz) {
-        return (isJdkType(clazz) && !isCollection(clazz) && !isArray(clazz))
+        return (isJdkType(clazz) && !isCollection(clazz) && !isArray(clazz) && !isMap(clazz))
                 || clazz.isEnum();
     }
 
@@ -41,6 +42,10 @@ public final class Types {
 
     public static boolean isArray(Class<?> clazz) {
         return clazz.isArray();
+    }
+
+    public static boolean isMap(Class<?> clazz) {
+        return Map.class.isAssignableFrom(clazz);
     }
 
 }

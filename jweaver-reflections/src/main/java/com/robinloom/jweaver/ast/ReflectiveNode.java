@@ -25,7 +25,8 @@ public class ReflectiveNode {
         ROOT,
         OBJECT,
         PROPERTY,
-        SEQUENCE
+        SEQUENCE,
+        SEQUENCE_ITEM
     }
 
     private final Type type;
@@ -33,31 +34,43 @@ public class ReflectiveNode {
     private final Class<?> clazz;
     private final String fieldName;
     private final String value;
+    private final Integer size;
+    private Integer index;
 
     private ReflectiveNode parent;
     private final List<ReflectiveNode> children = new ArrayList<>();
 
-    private ReflectiveNode(Type type, String fieldName, Class<?> clazz, String value) {
+    private ReflectiveNode(Type type, String fieldName, Class<?> clazz, String value, Integer size, Integer index) {
         this.type = type;
         this.fieldName = fieldName;
         this.clazz = clazz;
         this.value = value;
+        this.size = size;
+        this.index = index;
     }
 
     public static ReflectiveNode root(Object object) {
-        return new ReflectiveNode(Type.ROOT, null, object.getClass(), null);
+        return new ReflectiveNode(Type.ROOT, null, object.getClass(), null, null,null);
     }
 
     public static ReflectiveNode objectNode(String fieldName, Class<?> clazz) {
-        return new ReflectiveNode(Type.OBJECT, fieldName, clazz, null);
+        return new ReflectiveNode(Type.OBJECT, fieldName, clazz, null, null, null);
+    }
+
+    public static ReflectiveNode objectNode(Class<?> clazz) {
+        return new ReflectiveNode(Type.OBJECT, null, clazz, null, null, null);
     }
 
     public static ReflectiveNode property(String fieldName, String value) {
-        return new ReflectiveNode(Type.PROPERTY, fieldName, null, value);
+        return new ReflectiveNode(Type.PROPERTY, fieldName, null, value, null, null);
     }
 
-    public static ReflectiveNode sequenceItem(String value) {
-        return new ReflectiveNode(Type.SEQUENCE, null, null, value);
+    public static ReflectiveNode sequence(String fieldName, Class<?> clazz, Integer size) {
+        return new ReflectiveNode(Type.SEQUENCE, fieldName, clazz, null, size, null);
+    }
+
+    public static ReflectiveNode sequenceItem(String value, Integer index) {
+        return new ReflectiveNode(Type.SEQUENCE_ITEM, null, null, value, null, index);
     }
 
     public void addChild(ReflectiveNode child) {
@@ -66,7 +79,7 @@ public class ReflectiveNode {
     }
 
     public boolean isRoot() {
-        return type == Type.ROOT;
+        return type == Type.ROOT || parent == null;
     }
 
     public boolean isObject() {
@@ -77,16 +90,20 @@ public class ReflectiveNode {
         return type == Type.PROPERTY;
     }
 
-    public boolean isSequenceItem() {
+    public boolean isSequence() {
         return type == Type.SEQUENCE;
     }
 
-    public boolean isLastChild() {
-        return parent.getChildren().getLast().equals(this);
+    public boolean isSequenceItem() {
+        return type == Type.SEQUENCE_ITEM;
     }
 
-    public String getClazzName() {
-        return clazz.getSimpleName();
+    public boolean isLastChild() {
+        return parent != null && parent.getChildren().getLast().equals(this);
+    }
+
+    public String getClassName() {
+        return clazz != null ? clazz.getSimpleName() : "";
     }
 
     public String getFieldName() {
@@ -95,6 +112,18 @@ public class ReflectiveNode {
 
     public String getValue() {
         return value;
+    }
+
+    public Integer getSize() {
+        return size;
+    }
+
+    public Integer getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
     }
 
     public List<ReflectiveNode> getChildren() {

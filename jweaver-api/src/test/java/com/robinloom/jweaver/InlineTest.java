@@ -2,12 +2,11 @@ package com.robinloom.jweaver;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.Map;
 
 public class InlineTest {
 
@@ -64,7 +63,7 @@ public class InlineTest {
         record Person(String name, List<String> childrenNames) {}
 
         Person person = new Person("Jane", List.of("Peter", "Judy"));
-        String expected = "Person[name=Jane, childrenNames=List12(2) [Peter, Judy]]";
+        String expected = "Person[name=Jane, childrenNames=List12[2] [Peter, Judy]]";
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.INLINE));
     }
@@ -74,7 +73,7 @@ public class InlineTest {
         record Person(String name, List<Person> neighbors) {}
 
         Person person = new Person("Jane", List.of(new Person("Peter", List.of())));
-        String expected = "Person[name=Jane, neighbors=List12(1) [Person[name=Peter, neighbors=ListN(0) []]]]";
+        String expected = "Person[name=Jane, neighbors=List12[1] [Person[name=Peter, neighbors=ListN[0] []]]]";
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.INLINE));
     }
@@ -84,7 +83,7 @@ public class InlineTest {
         record Person(int[] numbers) {}
 
         Person person = new Person(new int[]{0,1,2});
-        String expected = "Person[numbers=int[3] [0, 1, 2]]";
+        String expected = "Person[numbers=int[][3] [0, 1, 2]]";
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.INLINE));
     }
@@ -94,7 +93,7 @@ public class InlineTest {
         record Person(String[] names) {}
 
         Person person = new Person(new String[]{"Anna", "Maria", "Quinn"});
-        String expected = "Person[names=String[3] [Anna, Maria, Quinn]]";
+        String expected = "Person[names=String[][3] [Anna, Maria, Quinn]]";
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.INLINE));
     }
@@ -104,7 +103,7 @@ public class InlineTest {
         record Person(Person[] neighbors) {}
 
         Person person = new Person(new Person[]{new Person(null)});
-        String expected = "Person[neighbors=Person[1] [Person[neighbors=null]]]";
+        String expected = "Person[neighbors=Person[][1] [Person[neighbors=null]]]";
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.INLINE));
     }
@@ -170,13 +169,32 @@ public class InlineTest {
         Assertions.assertEquals("Person[parts=***]", JWeaver.weave(person, Mode.INLINE));
     }
 
-    @ParameterizedTest
-    @MethodSource("forSmokeTest")
-    void overallSmokeTest(Object input) {
-        System.out.println(JWeaver.weave(input, Mode.INLINE));
+    @Test
+    void testCollection() {
+        List<String> persons = List.of("Anna", "Maria", "Quinn");
+
+        String expected = "ListN[Anna, Maria, Quinn]";
+
+        Assertions.assertEquals(expected,  JWeaver.weave(persons, Mode.INLINE));
     }
 
-    static Stream<Object> forSmokeTest() {
-        return Stream.of("Hello, world", 'C', 1, 2.0, new Exception());
+    @Test
+    void testArray() {
+        String[] persons = new String[]{"Anna", "Maria", "Quinn"};
+
+        String expected = "String[][Anna, Maria, Quinn]";
+
+        Assertions.assertEquals(expected,  JWeaver.weave(persons, Mode.INLINE));
+    }
+
+    @Test
+    void testMap() {
+        Map<String, String> map = new HashMap<>();
+        map.put("key1", "value1");
+        map.put("key2", "value2");
+
+        String expected = "HashMap[key1 = value1, key2 = value2]";
+
+        Assertions.assertEquals(expected,  JWeaver.weave(map, Mode.INLINE));
     }
 }

@@ -3,8 +3,10 @@ package com.robinloom.jweaver;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -110,6 +112,7 @@ class SmokeTest {
                 // ===== Time =====
                 new Date(),
                 LocalDate.now(),
+                Duration.of(10, ChronoUnit.HOURS),
                 ZonedDateTime.now(),
 
                 // ===== LARGE COLLECTION =====
@@ -171,6 +174,7 @@ class SmokeTest {
     static class B { A a; }
 
     private void printStandardToString(Object input) {
+        System.out.println("================");
         System.out.println("=== STANDARD ===");
         System.out.println(input == null ? "null" : input.toString());
         System.out.println();
@@ -179,6 +183,6 @@ class SmokeTest {
     private void printJWeaver(Object input, Mode mode) {
         System.out.println("=== JWEAVER ===");
         System.out.println(JWeaver.weave(input, mode));
-        System.out.println();
+        System.out.println("===============");
     }
 }

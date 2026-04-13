@@ -18,14 +18,14 @@ package com.robinloom.jweaver.card;
 
 import com.robinloom.jweaver.Weaver;
 import com.robinloom.jweaver.WeavingContext;
-import com.robinloom.jweaver.ast.ASTOptions;
 import com.robinloom.jweaver.ast.ReflectiveAST;
 import com.robinloom.jweaver.ast.ReflectiveNode;
 import com.robinloom.jweaver.util.Types;
 import com.robinloom.loom.Loom;
 import org.jspecify.annotations.NonNull;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * CardWeaver depicts a given object as a framed card
@@ -44,7 +44,7 @@ import java.util.*;
  */
 public class CardWeaver implements Weaver {
 
-    private final ReflectiveAST ast = new ReflectiveAST(ASTOptions.expanded());
+    private final ReflectiveAST ast = new ReflectiveAST();
 
     private final BoxChars boxChars = BoxChars.UNICODE_LIGHT;
 
@@ -63,7 +63,7 @@ public class CardWeaver implements Weaver {
             return object.toString();
         }
 
-        ReflectiveNode root = ast.build(ReflectiveNode.root(object), object, ctx);
+        ReflectiveNode root = ast.build(object, ctx);
 
         LinkedHashMap<String, String> wovenFields = new LinkedHashMap<>();
 
@@ -76,7 +76,7 @@ public class CardWeaver implements Weaver {
             }
         }
 
-        String clazzName = root.getClazzName();
+        String clazzName = root.getClassName();
 
         int longestField = determineLongestField(wovenFields);
         int overallWidth = determineOverallWidth(wovenFields, clazzName, longestField);
@@ -118,7 +118,7 @@ public class CardWeaver implements Weaver {
             return node.getValue();
         }
 
-        String type = node.getClazzName();
+        String type = node.getClassName();
         int size = node.getChildren().size();
 
         return type + "(" + size + ")";

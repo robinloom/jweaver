@@ -26,7 +26,6 @@ import com.robinloom.jweaver.util.Types;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.function.Function;
 
 public class ReflectiveAST {
 
@@ -37,11 +36,29 @@ public class ReflectiveAST {
 
     private int depth = 0;
 
-    public ReflectiveAST(ASTOptions options) {
-        this.options = options;
+    public ReflectiveAST() {
+        this.options = ASTOptions.defaultOptions();
     }
 
-    public ReflectiveNode build(ReflectiveNode root, Object object, WeavingContext ctx) {
+    public ReflectiveNode build(Object object, WeavingContext ctx) {
+
+        if (object instanceof Collection<?> col) {
+            return collection(object.getClass().getSimpleName(), col, ctx);
+        }
+
+        if (object instanceof Map<?, ?> map) {
+            return map(object.getClass().getSimpleName(), map, ctx);
+        }
+
+        if (object.getClass().isArray()) {
+            return array(Array.class.getSimpleName(), object, ctx);
+        }
+
+        ReflectiveNode root = ReflectiveNode.root(object);
+        return object(root, object, ctx);
+    }
+
+    private ReflectiveNode object(ReflectiveNode root, Object object, WeavingContext ctx) {
         if (history.get().contains(object)) {
             return root;
         } else {
@@ -83,27 +100,15 @@ public class ReflectiveAST {
                 if (Types.isSimpleType(field.getType())) {
                     root.addChild(ReflectiveNode.property(fieldName, ctx.weave(value)));
                 } else if (Types.isCollection(field.getType())) {
-
-                    if (options.isExpandSequences()) {
-                        root.addChild(collection(fieldName, (Collection<?>) value, ctx));
-                    }  else {
-                        root.addChild(ReflectiveNode.property(fieldName, ctx.weave(value)));
-                    }
-
+                    root.addChild(collection(fieldName, (Collection<?>) value, ctx));
                 } else if (Types.isArray(field.getType())) {
-
-                    if (options.isExpandSequences()) {
-                        root.addChild(array(fieldName, value, ctx));
-                    }  else {
-                        root.addChild(ReflectiveNode.property(fieldName, ctx.weave(value)));
-                    }
-
+                    root.addChild(array(fieldName, value, ctx));
                 } else {
                     ReflectiveNode child = ReflectiveNode.objectNode(fieldName, value.getClass());
-                    root.addChild(build(child, value, ctx));
+                    root.addChild(object(child, value, ctx));
                 }
             } catch (Exception e) {
-                root.addChild(ReflectiveNode.sequenceItem("[?]"));
+                root.addChild(ReflectiveNode.sequenceItem("[?]", -1));
             }
         }
 
@@ -114,7 +119,7 @@ public class ReflectiveAST {
     }
 
     private ReflectiveNode collection(String fieldName, Collection<?> collection, WeavingContext ctx) {
-        return sequence(fieldName, collection, collection.size(), collection.getClass(), i -> "(" + i + ") ", ctx);
+        return sequence(fieldName, collection, collection.size(), collection.getClass(), ctx);
     }
 
     private ReflectiveNode array(String fieldName, Object array, WeavingContext ctx) {
@@ -125,13 +130,18 @@ public class ReflectiveAST {
             listView.add(Array.get(array, i));
         }
 
-        return sequence(fieldName, listView, length, array.getClass(), i -> "[" + i + "] ", ctx);
+        return sequence(fieldName, listView, length, array.getClass(), ctx);
     }
 
-    private ReflectiveNode sequence(String fieldName, Iterable<?> iterable, int size, Class<?> displayType,
-                                    Function<Integer, String> indexFormatter, WeavingContext ctx) {
+    private ReflectiveNode map(String fieldName, Map<?, ?> map, WeavingContext ctx) {
+        return sequence(fieldName, map.entrySet(), map.size(), map.getClass(), ctx);
+    }
 
-        ReflectiveNode root = ReflectiveNode.objectNode(fieldName, displayType);
+    private ReflectiveNode sequence(String fieldName, Iterable<?> iterable, int size,
+                                    Class<?> displayType, WeavingContext ctx) {
+
+        ReflectiveNode root = ReflectiveNode.sequence(fieldName, displayType, size);
+
         depth++;
         if (depth == options.getMaxDepth()) {
             depth--;
@@ -140,14 +150,13 @@ public class ReflectiveAST {
 
         int i = 0;
         for (Object item : iterable) {
-            String prefix = indexFormatter.apply(i);
 
             if (i >= options.getMaxSequenceLength()) {
-                root.addChild(ReflectiveNode.sequenceItem((size - i) + " more"));
+                root.addChild(ReflectiveNode.sequenceItem((size - i) + " more", i));
                 break;
             }
 
-            handleSequenceItem(root, item, prefix, ctx);
+            handleSequenceItem(root, item, i, ctx);
             i++;
         }
 
@@ -155,22 +164,34 @@ public class ReflectiveAST {
         return root;
     }
 
-    private void handleSequenceItem(ReflectiveNode root, Object item, String prefix, WeavingContext ctx) {
+    private void handleSequenceItem(ReflectiveNode root, Object item, int index, WeavingContext ctx) {
         if (item == null) {
-            root.addChild(ReflectiveNode.sequenceItem(prefix + "null"));
+            root.addChild(ReflectiveNode.sequenceItem("null", index));
             return;
         }
 
         if (Types.isSimpleType(item.getClass())) {
-            root.addChild(ReflectiveNode.sequenceItem(prefix + ctx.weave(item)));
+            root.addChild(ReflectiveNode.sequenceItem(ctx.weave(item), index));
         } else if (Types.isCollection(item.getClass())) {
-            root.addChild(sequence(prefix.trim(), (Collection<?>) item, ((Collection<?>) item).size(),
-                                   item.getClass(), i -> "(" + i + ") ", ctx));
+
+            ReflectiveNode child = sequence(item.getClass().getSimpleName(),
+                                            (Collection<?>) item,
+                                            ((Collection<?>) item).size(),
+                                            item.getClass(),
+                                            ctx);
+
+            child.setIndex(index);
+            root.addChild(child);
+
         } else if (Types.isArray(item.getClass())) {
-            root.addChild(array(prefix.trim(), item, ctx));
+            ReflectiveNode child = array(item.getClass().getSimpleName(), item, ctx);
+            child.setIndex(index);
+            root.addChild(child);
         } else {
-            ReflectiveNode child = ReflectiveNode.objectNode(prefix + item.getClass().getSimpleName(), item.getClass());
-            root.addChild(build(child, item, ctx));
+            ReflectiveNode child = ReflectiveNode.objectNode(item.getClass());
+
+            child.setIndex(index);
+            root.addChild(object(child, item, ctx));
         }
     }
 

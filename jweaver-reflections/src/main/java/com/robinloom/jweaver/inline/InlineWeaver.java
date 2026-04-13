@@ -18,10 +18,8 @@ package com.robinloom.jweaver.inline;
 
 import com.robinloom.jweaver.Weaver;
 import com.robinloom.jweaver.WeavingContext;
-import com.robinloom.jweaver.ast.ASTOptions;
 import com.robinloom.jweaver.ast.ReflectiveAST;
 import com.robinloom.jweaver.ast.ReflectiveNode;
-import com.robinloom.jweaver.util.Types;
 import com.robinloom.loom.Loom;
 import org.jspecify.annotations.NonNull;
 
@@ -37,7 +35,7 @@ import org.jspecify.annotations.NonNull;
  */
 public class InlineWeaver implements Weaver {
 
-    private final ReflectiveAST ast = new ReflectiveAST(ASTOptions.compact());
+    private final ReflectiveAST ast = new ReflectiveAST();
     private final Loom loom = Loom.empty();
 
     public InlineWeaver() {}
@@ -51,40 +49,40 @@ public class InlineWeaver implements Weaver {
      * @return a well-structured, human-readable representation of that object
      */
     public String weave(@NonNull Object object, WeavingContext ctx) {
-        if (Types.isJdkType(object.getClass())) {
-            return object.toString();
-        }
-
-        ReflectiveNode root = ast.build(ReflectiveNode.root(object), object, ctx);
+        ReflectiveNode root = ast.build(object, ctx);
         traverseDepthFirst(root);
-        loom.append(closing());
 
         return loom.toString();
     }
 
     private void traverseDepthFirst(ReflectiveNode node) {
         if (node.isRoot()) {
-            loom.append(node.getClazzName()).append(opening());
+            loom.append(node.getClassName()).append(opening());
         } else if (node.isObject()) {
-            loom.append(node.getFieldName());
-            loom.eq();
-            loom.append(node.getClazzName());
+            loom.when(node.getFieldName() != null, () -> loom.append(node.getFieldName()).eq());
+            loom.append(node.getClassName());
             loom.append(opening());
         } else if (node.isProperty()) {
             loom.append(node.getFieldName());
             loom.eq();
             loom.append(node.getValue());
             loom.appendIf(!node.isLastChild(), ", ");
+        } else if (node.isSequence()) {
+            loom.append(node.getFieldName());
+            loom.eq();
+            loom.append(node.getClassName());
+            loom.lbracket().append(node.getSize()).rbracket().space();
+            loom.append(opening());
         } else if (node.isSequenceItem()) {
             loom.append(node.getValue());
-            loom.space();
+            loom.appendIf(!node.isLastChild(), ", ");
         }
 
         for (ReflectiveNode child : node.getChildren()) {
             traverseDepthFirst(child);
         }
 
-        if (node.isObject()) {
+        if (node.isObject() || node.isSequence() || node.isRoot()) {
             loom.append(closing());
         }
     }

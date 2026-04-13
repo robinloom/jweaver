@@ -18,10 +18,8 @@ package com.robinloom.jweaver.bullet;
 
 import com.robinloom.jweaver.Weaver;
 import com.robinloom.jweaver.WeavingContext;
-import com.robinloom.jweaver.ast.ASTOptions;
-import com.robinloom.jweaver.ast.ReflectiveNode;
 import com.robinloom.jweaver.ast.ReflectiveAST;
-import com.robinloom.jweaver.util.Types;
+import com.robinloom.jweaver.ast.ReflectiveNode;
 import com.robinloom.loom.Loom;
 import org.jspecify.annotations.NonNull;
 
@@ -38,7 +36,7 @@ import org.jspecify.annotations.NonNull;
  */
 public class BulletWeaver implements Weaver {
 
-    private final ReflectiveAST ast = new ReflectiveAST(ASTOptions.expanded());
+    private final ReflectiveAST ast = new ReflectiveAST();
 
     /**
      * Generates a string representation of the given object via reflections.
@@ -49,11 +47,7 @@ public class BulletWeaver implements Weaver {
      * @return a well-structured, human-readable representation of that object
      */
     public String weave(@NonNull Object object, WeavingContext ctx) {
-        if (Types.isJdkType(object.getClass())) {
-            return object.toString();
-        }
-
-        ReflectiveNode structure = ast.build(ReflectiveNode.root(object), object, ctx);
+        ReflectiveNode structure = ast.build(object, ctx);
 
         Loom loom = Loom.empty();
         traverseDepthFirst(structure, loom);
@@ -64,16 +58,37 @@ public class BulletWeaver implements Weaver {
 
     private void traverseDepthFirst(ReflectiveNode node, Loom loom) {
         if (node.isRoot()) {
-            loom.append(node.getClazzName()).newline();
+            loom.append(node.getClassName()).newline();
         } else {
             for (int i = 0; i < node.getLevel(); i++) {
                 loom.indent();
             }
-            loom.append("- ")
-                .when(node.getFieldName() != null, () -> loom.append(node.getFieldName()))
-                .when(node.getFieldName() != null && node.getValue() != null, loom::eq)
-                .when(node.getValue() != null, () -> loom.append(node.getValue()))
-                .newline();
+
+            loom.append("- ");
+            if (node.getIndex() != null) {
+                loom.lbracket().append(node.getIndex()).rbracket().space();
+            }
+
+            if (node.isObject()) {
+                loom.when(node.getFieldName() != null, () -> loom.append(node.getFieldName()).eq());
+                loom.append(node.getClassName());
+            } else if (node.isProperty()) {
+                loom.append(node.getFieldName());
+                loom.eq();
+                loom.append(node.getValue());
+            } else if (node.isSequence()) {
+                loom.append(node.getFieldName());
+                if (!node.getFieldName().equals(node.getClassName())) {
+                    loom.eq();
+                    loom.append(node.getClassName());
+                }
+                loom.lbracket().append(node.getSize()).rbracket();
+            } else if (node.isSequenceItem()) {
+                loom.append(node.getValue());
+            }
+
+            loom.newline();
+
             for (int i = 0; i < node.getLevel(); i++) {
                 loom.outdent();
             }
