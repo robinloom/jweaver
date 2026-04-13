@@ -69,8 +69,10 @@ public class InlineWeaver implements Weaver {
             loom.appendIf(!node.isLastChild(), ", ");
         } else if (node.isSequence()) {
             loom.append(node.getFieldName());
-            loom.eq();
-            loom.append(node.getClassName());
+            if (!node.getFieldName().equals(node.getClassName())) {
+                loom.eq();
+                loom.append(node.getClassName());
+            }
             loom.lbracket().append(node.getSize()).rbracket().space();
             loom.append(opening());
         } else if (node.isSequenceItem()) {
@@ -84,6 +86,9 @@ public class InlineWeaver implements Weaver {
 
         if (node.isObject() || node.isSequence() || node.isRoot()) {
             loom.append(closing());
+            if (!node.isLastChild() && !node.isRoot()) {
+                loom.commaSpace();
+            }
         }
     }
 

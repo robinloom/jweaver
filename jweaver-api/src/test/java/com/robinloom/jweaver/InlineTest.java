@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -188,12 +189,19 @@ public class InlineTest {
     }
 
     @Test
-    void testMap() {
-        Map<String, String> map = new HashMap<>();
-        map.put("key1", "value1");
-        map.put("key2", "value2");
+    void testArrayOfArrays() {
+        String[][] arrs = new String[][]{{"a", "b"}, {"c"}};
+        String expected = "String[][][String[][2] [a, b], String[][1] [c]]";
 
-        String expected = "HashMap[key1 = value1, key2 = value2]";
+        Assertions.assertEquals(expected,  JWeaver.weave(arrs, Mode.INLINE));
+    }
+
+    @Test
+    void testMap() {
+        Map<String, Collection<?>> map = new HashMap<>();
+        map.put("key", List.of(1, 2, 3));
+
+        String expected = "HashMap[key = ListN[1, 2, 3]]";
 
         Assertions.assertEquals(expected,  JWeaver.weave(map, Mode.INLINE));
     }
