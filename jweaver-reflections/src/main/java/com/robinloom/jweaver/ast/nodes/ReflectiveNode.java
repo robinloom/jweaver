@@ -3,7 +3,7 @@ package com.robinloom.jweaver.ast.nodes;
 import java.util.ArrayList;
 import java.util.List;
 
-public sealed abstract class ReflectiveNode permits ObjectNode, PropertyNode, SequenceNode, SequenceItemNode {
+public sealed abstract class ReflectiveNode permits ObjectNode, PropertyNode, SequenceNode, SequenceItemNode, MapEntryNode {
 
     protected ReflectiveNode parent;
     protected List<ReflectiveNode> children = new ArrayList<>();

@@ -201,8 +201,17 @@ public class InlineTest {
         Map<String, Collection<?>> map = new HashMap<>();
         map.put("key", List.of(1, 2, 3));
 
-        String expected = "HashMap[key = ListN[1, 2, 3]]";
+        String expected = "HashMap[ListN[3] [1, 2, 3]]";
 
         Assertions.assertEquals(expected,  JWeaver.weave(map, Mode.INLINE));
+    }
+
+    @Test
+    void testMapOfLists() {
+        Map<String, List<?>> map = new HashMap<>();
+        map.put("key", List.of("a", "b"));
+
+        String expected = "HashMap[List12[2] [a, b]]";
+        Assertions.assertEquals(expected, JWeaver.weave(map, Mode.INLINE));
     }
 }

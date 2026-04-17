@@ -279,8 +279,8 @@ class BulletTest {
 
         String expected = """
                             HashMap
-                                - [0] key1 = value1
-                                - [1] key2 = value2""";
+                                - key1=value1
+                                - key2=value2""";
 
         Assertions.assertEquals(expected,  JWeaver.weave(map, Mode.BULLET));
     }

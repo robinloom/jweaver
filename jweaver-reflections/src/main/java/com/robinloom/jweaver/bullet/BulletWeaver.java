@@ -88,8 +88,7 @@ public class BulletWeaver implements Weaver {
                     loom.lbracket().append(sequenceNode.getSize()).rbracket();
                 }
                 case SequenceItemNode sequenceItemNode -> loom.append(sequenceItemNode.getValue());
-                default -> {
-                }
+                case MapEntryNode mapEntryNode -> loom.append(mapEntryNode.getKey());
             }
 
             loom.newline();

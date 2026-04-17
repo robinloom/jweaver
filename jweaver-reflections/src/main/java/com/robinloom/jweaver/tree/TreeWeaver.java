@@ -102,11 +102,12 @@ public class TreeWeaver implements Weaver {
                         loom.eq();
                         loom.append(sequenceNode.getClassName());
                     }
-                    loom.lbracket().append(sequenceNode.getSize()).rbracket();
+                    if (sequenceNode.getSize() != null) {
+                        loom.lbracket().append(sequenceNode.getSize()).rbracket();
+                    }
                 }
                 case SequenceItemNode sequenceItem -> loom.append(sequenceItem.getValue());
-                default -> {
-                }
+                case MapEntryNode mapEntryNode -> loom.append(mapEntryNode.getKey());
             }
 
             loom.newline();

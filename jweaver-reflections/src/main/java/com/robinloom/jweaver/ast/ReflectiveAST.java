@@ -138,6 +138,27 @@ public class ReflectiveAST {
         return sequence(fieldName, map.entrySet(), map.size(), map.getClass(), ctx);
     }
 
+    private ReflectiveNode mapEntry(Map.Entry<?, ?> entry, WeavingContext ctx) {
+        String key;
+        Object value = entry.getValue();
+
+        if (Types.isSimpleType(entry.getKey().getClass())) {
+            key = ctx.weave(entry.getKey());
+        } else {
+            key = entry.getKey().toString();
+        }
+
+        if (Types.isSimpleType(value.getClass()) ) {
+            return new PropertyNode(key, ctx.weave(value));
+        }
+
+        ReflectiveNode node = new MapEntryNode(key);
+
+        handleSequenceItem(node, entry.getValue(), null, ctx);
+
+        return node;
+    }
+
     private ReflectiveNode sequence(String fieldName, Iterable<?> iterable, int size,
                                     Class<?> displayType, WeavingContext ctx) {
 
@@ -165,7 +186,7 @@ public class ReflectiveAST {
         return root;
     }
 
-    private void handleSequenceItem(ReflectiveNode root, Object item, int index, WeavingContext ctx) {
+    private void handleSequenceItem(ReflectiveNode root, Object item, Integer index, WeavingContext ctx) {
         if (item == null) {
             root.addChild(new SequenceItemNode("null", index));
             return;
@@ -187,6 +208,9 @@ public class ReflectiveAST {
         } else if (Types.isArray(item.getClass())) {
             ReflectiveNode child = array(item.getClass().getSimpleName(), item, ctx);
             child.setIndex(index);
+            root.addChild(child);
+        } else if (item instanceof Map.Entry<?,?> entry) {
+            ReflectiveNode child = mapEntry(entry, ctx);
             root.addChild(child);
         } else {
             ReflectiveNode child = new ObjectNode(item.getClass());

@@ -278,9 +278,23 @@ public class TreeTest {
 
         String expected = """
                             HashMap
-                            |-- [0] key1 = value1
-                            `-- [1] key2 = value2""";
+                            |-- key1=value1
+                            `-- key2=value2""";
 
         Assertions.assertEquals(expected,  JWeaver.weave(map, Mode.TREE));
+    }
+
+    @Test
+    void testMapOfLists() {
+        Map<String, List<?>> map = new HashMap<>();
+        map.put("key", List.of("a", "b"));
+
+        String expected = """
+                        HashMap
+                        `-- key
+                            `-- List12[2]
+                                |-- [0] a
+                                `-- [1] b""";
+        Assertions.assertEquals(expected, JWeaver.weave(map, Mode.TREE));
     }
 }

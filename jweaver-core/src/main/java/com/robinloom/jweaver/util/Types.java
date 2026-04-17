@@ -24,8 +24,8 @@ public final class Types {
     private Types() {}
 
     public static boolean isSimpleType(Class<?> clazz) {
-        return (isJdkType(clazz) && !isCollection(clazz) && !isArray(clazz) && !isMap(clazz))
-                || clazz.isEnum();
+        return (isJdkType(clazz) && !isCollection(clazz) && !isArray(clazz) && !isMap(clazz) &&
+                !Map.Entry.class.isAssignableFrom(clazz)) ||  clazz.isEnum();
     }
 
     public static boolean isJdkType(Class<?> clazz) {
