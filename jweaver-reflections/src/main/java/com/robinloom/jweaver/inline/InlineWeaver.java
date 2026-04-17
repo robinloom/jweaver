@@ -18,8 +18,8 @@ package com.robinloom.jweaver.inline;
 
 import com.robinloom.jweaver.Weaver;
 import com.robinloom.jweaver.WeavingContext;
-import com.robinloom.jweaver.ast.ReflectiveAST;
-import com.robinloom.jweaver.ast.ReflectiveNode;
+import com.robinloom.jweaver.ast.*;
+import com.robinloom.jweaver.ast.nodes.*;
 import com.robinloom.loom.Loom;
 import org.jspecify.annotations.NonNull;
 
@@ -57,26 +57,26 @@ public class InlineWeaver implements Weaver {
 
     private void traverseDepthFirst(ReflectiveNode node) {
         if (node.isRoot()) {
-            loom.append(node.getClassName()).append(opening());
-        } else if (node.isObject()) {
-            loom.when(node.getFieldName() != null, () -> loom.append(node.getFieldName()).eq());
-            loom.append(node.getClassName());
+            loom.append(node.getHeader()).append(opening());
+        } else if (node instanceof ObjectNode objectNode) {
+            loom.when(objectNode.getFieldName() != null, () -> loom.append(objectNode.getFieldName()).eq());
+            loom.append(objectNode.getClazz().getSimpleName());
             loom.append(opening());
-        } else if (node.isProperty()) {
-            loom.append(node.getFieldName());
+        } else if (node instanceof PropertyNode propertyNode) {
+            loom.append(propertyNode.getFieldName());
             loom.eq();
-            loom.append(node.getValue());
+            loom.append(propertyNode.getValue());
             loom.appendIf(!node.isLastChild(), ", ");
-        } else if (node.isSequence()) {
-            loom.append(node.getFieldName());
-            if (!node.getFieldName().equals(node.getClassName())) {
+        } else if (node instanceof SequenceNode sequenceNode) {
+            loom.append(sequenceNode.getFieldName());
+            if (!sequenceNode.getFieldName().equals(sequenceNode.getClassName())) {
                 loom.eq();
-                loom.append(node.getClassName());
+                loom.append(sequenceNode.getClassName());
             }
-            loom.lbracket().append(node.getSize()).rbracket().space();
+            loom.lbracket().append(sequenceNode.getSize()).rbracket().space();
             loom.append(opening());
-        } else if (node.isSequenceItem()) {
-            loom.append(node.getValue());
+        } else if (node instanceof SequenceItemNode sequenceItemNode) {
+            loom.append(sequenceItemNode.getValue());
             loom.appendIf(!node.isLastChild(), ", ");
         }
 
@@ -84,9 +84,9 @@ public class InlineWeaver implements Weaver {
             traverseDepthFirst(child);
         }
 
-        if (node.isObject() || node.isSequence() || node.isRoot()) {
+        if (node instanceof ObjectNode || node instanceof SequenceNode || node.isRoot() ) {
             loom.append(closing());
-            if (!node.isLastChild() && !node.isRoot()) {
+            if (!node.isLastChild() && !(node.isRoot())) {
                 loom.commaSpace();
             }
         }

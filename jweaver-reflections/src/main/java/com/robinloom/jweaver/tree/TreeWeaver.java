@@ -18,8 +18,8 @@ package com.robinloom.jweaver.tree;
 
 import com.robinloom.jweaver.Weaver;
 import com.robinloom.jweaver.WeavingContext;
-import com.robinloom.jweaver.ast.ReflectiveAST;
-import com.robinloom.jweaver.ast.ReflectiveNode;
+import com.robinloom.jweaver.ast.*;
+import com.robinloom.jweaver.ast.nodes.*;
 import com.robinloom.loom.Chars;
 import com.robinloom.loom.Loom;
 import com.robinloom.loom.Symbols;
@@ -66,7 +66,7 @@ public class TreeWeaver implements Weaver {
 
     private void traverseDepthFirst(ReflectiveNode node, List<Boolean> siblingsAtCurrentLevel) {
         if (node.isRoot()) {
-           loom.line(node.getClassName());
+           loom.line(node.getHeader());
         } else {
             for (int i = 0; i < siblingsAtCurrentLevel.size() - 1; i++) {
                 if (siblingsAtCurrentLevel.get(i)) {
@@ -86,22 +86,27 @@ public class TreeWeaver implements Weaver {
                 loom.lbracket().append(node.getIndex()).rbracket().space();
             }
 
-            if (node.isObject()) {
-                loom.when(node.getFieldName() != null, () -> loom.append(node.getFieldName()).eq());
-                loom.append(node.getClassName());
-            } else if (node.isProperty()) {
-                loom.append(node.getFieldName());
-                loom.eq();
-                loom.append(node.getValue());
-            } else if (node.isSequence()) {
-                loom.append(node.getFieldName());
-                if (!node.getFieldName().equals(node.getClassName())) {
-                    loom.eq();
-                    loom.append(node.getClassName());
+            switch (node) {
+                case ObjectNode objectNode -> {
+                    loom.when(objectNode.getFieldName() != null, () -> loom.append(objectNode.getFieldName()).eq());
+                    loom.append(objectNode.getClazz().getSimpleName());
                 }
-                loom.lbracket().append(node.getSize()).rbracket();
-            } else if (node.isSequenceItem()) {
-                loom.append(node.getValue());
+                case PropertyNode propertyNode -> {
+                    loom.append(propertyNode.getFieldName());
+                    loom.eq();
+                    loom.append(propertyNode.getValue());
+                }
+                case SequenceNode sequenceNode -> {
+                    loom.append(sequenceNode.getFieldName());
+                    if (!sequenceNode.getFieldName().equals(sequenceNode.getClassName())) {
+                        loom.eq();
+                        loom.append(sequenceNode.getClassName());
+                    }
+                    loom.lbracket().append(sequenceNode.getSize()).rbracket();
+                }
+                case SequenceItemNode sequenceItem -> loom.append(sequenceItem.getValue());
+                default -> {
+                }
             }
 
             loom.newline();

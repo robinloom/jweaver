@@ -18,8 +18,11 @@ package com.robinloom.jweaver.card;
 
 import com.robinloom.jweaver.Weaver;
 import com.robinloom.jweaver.WeavingContext;
-import com.robinloom.jweaver.ast.ReflectiveAST;
-import com.robinloom.jweaver.ast.ReflectiveNode;
+import com.robinloom.jweaver.ast.*;
+import com.robinloom.jweaver.ast.nodes.ObjectNode;
+import com.robinloom.jweaver.ast.nodes.PropertyNode;
+import com.robinloom.jweaver.ast.nodes.ReflectiveNode;
+import com.robinloom.jweaver.ast.nodes.SequenceNode;
 import com.robinloom.jweaver.util.Types;
 import com.robinloom.loom.Loom;
 import org.jspecify.annotations.NonNull;
@@ -68,7 +71,14 @@ public class CardWeaver implements Weaver {
         LinkedHashMap<String, String> wovenFields = new LinkedHashMap<>();
 
         for (ReflectiveNode child : root.getChildren()) {
-            String key = child.getFieldName();
+            String key = "";
+            if (child instanceof ObjectNode objectNode) {
+                key = objectNode.getFieldName();
+            } else if (child instanceof PropertyNode propertyNode) {
+                key = propertyNode.getFieldName();
+            } else if (child instanceof SequenceNode sequenceNode) {
+                key = sequenceNode.getFieldName();
+            }
             String value = mapValue(child);
 
             if (key != null) {
@@ -76,7 +86,7 @@ public class CardWeaver implements Weaver {
             }
         }
 
-        String clazzName = root.getClassName();
+        String clazzName = root.getHeader();
 
         int longestField = determineLongestField(wovenFields);
         int overallWidth = determineOverallWidth(wovenFields, clazzName, longestField);
@@ -114,11 +124,16 @@ public class CardWeaver implements Weaver {
      * Maps a node to a displayable string value for CARD mode.
      */
     private String mapValue(ReflectiveNode node) {
-        if (node.isProperty()) {
-            return node.getValue();
+        if (node instanceof PropertyNode propertyNode) {
+            return propertyNode.getValue();
         }
 
-        String type = node.getClassName();
+        String type = "";
+        if (node instanceof ObjectNode objectNode) {
+            type = objectNode.getClazz().getSimpleName();
+        } else if (node instanceof SequenceNode sequenceNode) {
+            type = sequenceNode.getClazz().getSimpleName();
+        }
         int size = node.getChildren().size();
 
         return type + "(" + size + ")";

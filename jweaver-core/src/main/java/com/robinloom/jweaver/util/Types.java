@@ -45,7 +45,7 @@ public final class Types {
     }
 
     public static boolean isMap(Class<?> clazz) {
-        return Map.class.isAssignableFrom(clazz);
+        return Map.class.isAssignableFrom(clazz) ;
     }
 
 }

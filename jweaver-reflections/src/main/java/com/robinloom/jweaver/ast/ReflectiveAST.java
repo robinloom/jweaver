@@ -19,6 +19,7 @@ package com.robinloom.jweaver.ast;
 import com.robinloom.jweaver.WeavingContext;
 import com.robinloom.jweaver.annotation.WeaveIgnore;
 import com.robinloom.jweaver.annotation.WeaveName;
+import com.robinloom.jweaver.ast.nodes.*;
 import com.robinloom.jweaver.util.FieldOperations;
 import com.robinloom.jweaver.util.SensitivityDetection;
 import com.robinloom.jweaver.util.Types;
@@ -54,7 +55,7 @@ public class ReflectiveAST {
             return array(Array.class.getSimpleName(), object, ctx);
         }
 
-        ReflectiveNode root = ReflectiveNode.root(object);
+        ReflectiveNode root = new ObjectNode(object.getClass());
         return object(root, object, ctx);
     }
 
@@ -88,27 +89,27 @@ public class ReflectiveAST {
                 }
 
                 if (value == null) {
-                    root.addChild(ReflectiveNode.property(fieldName, "null"));
+                    root.addChild(new PropertyNode(fieldName, "null"));
                     continue;
                 }
 
                 if (SensitivityDetection.isSensitive(field)) {
-                    root.addChild(ReflectiveNode.property(fieldName, "***"));
+                    root.addChild(new PropertyNode(fieldName, "***"));
                     continue;
                 }
 
                 if (Types.isSimpleType(field.getType())) {
-                    root.addChild(ReflectiveNode.property(fieldName, ctx.weave(value)));
+                    root.addChild(new PropertyNode(fieldName, ctx.weave(value)));
                 } else if (Types.isCollection(field.getType())) {
                     root.addChild(collection(fieldName, (Collection<?>) value, ctx));
                 } else if (Types.isArray(field.getType())) {
                     root.addChild(array(fieldName, value, ctx));
                 } else {
-                    ReflectiveNode child = ReflectiveNode.objectNode(fieldName, value.getClass());
+                    ReflectiveNode child = new ObjectNode(fieldName, value.getClass());
                     root.addChild(object(child, value, ctx));
                 }
             } catch (Exception e) {
-                root.addChild(ReflectiveNode.sequenceItem("[?]", -1));
+                root.addChild(new SequenceItemNode("[?]", -1));
             }
         }
 
@@ -140,7 +141,7 @@ public class ReflectiveAST {
     private ReflectiveNode sequence(String fieldName, Iterable<?> iterable, int size,
                                     Class<?> displayType, WeavingContext ctx) {
 
-        ReflectiveNode root = ReflectiveNode.sequence(fieldName, displayType, size);
+        ReflectiveNode root = new SequenceNode(fieldName, displayType, size);
 
         depth++;
         if (depth == options.getMaxDepth()) {
@@ -152,7 +153,7 @@ public class ReflectiveAST {
         for (Object item : iterable) {
 
             if (i >= options.getMaxSequenceLength()) {
-                root.addChild(ReflectiveNode.sequenceItem((size - i) + " more", i));
+                root.addChild(new SequenceItemNode((size - i) + " more", i));
                 break;
             }
 
@@ -166,12 +167,12 @@ public class ReflectiveAST {
 
     private void handleSequenceItem(ReflectiveNode root, Object item, int index, WeavingContext ctx) {
         if (item == null) {
-            root.addChild(ReflectiveNode.sequenceItem("null", index));
+            root.addChild(new SequenceItemNode("null", index));
             return;
         }
 
         if (Types.isSimpleType(item.getClass())) {
-            root.addChild(ReflectiveNode.sequenceItem(ctx.weave(item), index));
+            root.addChild(new SequenceItemNode(ctx.weave(item), index));
         } else if (Types.isCollection(item.getClass())) {
 
             ReflectiveNode child = sequence(item.getClass().getSimpleName(),
@@ -188,7 +189,7 @@ public class ReflectiveAST {
             child.setIndex(index);
             root.addChild(child);
         } else {
-            ReflectiveNode child = ReflectiveNode.objectNode(item.getClass());
+            ReflectiveNode child = new ObjectNode(item.getClass());
 
             child.setIndex(index);
             root.addChild(object(child, item, ctx));
