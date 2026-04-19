@@ -42,19 +42,5 @@ public enum Mode {
      * <p>
      * Emphasizes object structure and relationships.
      */
-    TREE,
-
-    /**
-     * Bullet-point style representation.
-     * <p>
-     * Focuses on concise field listing.
-     */
-    BULLET,
-
-    /**
-     * Card-style representation.
-     * <p>
-     * Presents objects in a structured, sectioned layout.
-     */
-    CARD
+    TREE
 }

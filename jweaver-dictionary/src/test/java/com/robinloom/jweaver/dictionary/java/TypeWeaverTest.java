@@ -6,8 +6,5 @@ import com.robinloom.jweaver.dictionary.Dictionary;
 public class TypeWeaverTest {
 
     protected WeavingContext ctx
-            = new WeavingContext(Mode.INLINE, Dictionary.getInstance(), _ -> (object, _) -> object.toString());
-
-    protected WeavingContext multilineCtx
-            = new WeavingContext(Mode.TREE, Dictionary.getInstance(), _ -> (_, _) -> "dummy");
+            = new WeavingContext(Mode.INLINE, Dictionary.getInstance(), _ -> (object, _) -> object.toString(), true);
 }

@@ -1,7 +1,5 @@
 package com.robinloom.jweaver;
 
-import com.robinloom.jweaver.bullet.BulletWeaver;
-import com.robinloom.jweaver.card.CardWeaver;
 import com.robinloom.jweaver.inline.InlineWeaver;
 import com.robinloom.jweaver.tree.TreeWeaver;
 
@@ -29,8 +27,6 @@ public class ModeDispatcher implements ReflectionWeaverResolver {
     public Weaver resolve(Mode mode) {
         return switch (mode) {
             case TREE -> new TreeWeaver();
-            case BULLET -> new BulletWeaver();
-            case CARD -> new CardWeaver();
             case null, default -> new InlineWeaver();
         };
     }

@@ -27,20 +27,6 @@ class SmokeTest {
         printJWeaver(input, Mode.TREE);
     }
 
-    @ParameterizedTest
-    @MethodSource("forSmokeTest")
-    void cardSmokeTest(Object input) {
-        printStandardToString(input);
-        printJWeaver(input, Mode.CARD);
-    }
-
-    @ParameterizedTest
-    @MethodSource("forSmokeTest")
-    void bulletSmokeTest(Object input) {
-        printStandardToString(input);
-        printJWeaver(input, Mode.BULLET);
-    }
-
     static Stream<Object> forSmokeTest() {
         // --- Records ---
         record Simple(String name, int age) {}
