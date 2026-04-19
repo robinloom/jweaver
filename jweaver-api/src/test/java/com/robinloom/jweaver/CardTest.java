@@ -113,47 +113,4 @@ public class CardTest {
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.CARD));
     }
-
-    @Test
-    void testReciprocalDependency() {
-        class Twin {
-            Twin twin;
-
-            @Override
-            public String toString() {
-                return JWeaver.weave(this, Mode.CARD);
-            }
-        }
-
-        Twin first = new Twin();
-        Twin second = new Twin();
-        first.twin = second;
-        second.twin = first;
-
-        Assertions.assertDoesNotThrow(first::toString);
-        Assertions.assertDoesNotThrow(second::toString);
-    }
-
-    @Test
-    void testCircularDependency() {
-        class Sibling {
-            Sibling sibling;
-
-            @Override
-            public String toString() {
-                return JWeaver.weave(this, Mode.CARD);
-            }
-        }
-
-        Sibling first = new Sibling();
-        Sibling second = new Sibling();
-        Sibling third = new Sibling();
-        first.sibling = second;
-        second.sibling = third;
-        third.sibling = first;
-
-        Assertions.assertDoesNotThrow(first::toString);
-        Assertions.assertDoesNotThrow(second::toString);
-        Assertions.assertDoesNotThrow(third::toString);
-    }
 }

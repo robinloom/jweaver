@@ -16,6 +16,7 @@
  */
 package com.robinloom.jweaver.ast;
 
+import com.robinloom.jweaver.TraversalContext;
 import com.robinloom.jweaver.WeavingContext;
 import com.robinloom.jweaver.annotation.WeaveIgnore;
 import com.robinloom.jweaver.annotation.WeaveName;
@@ -30,18 +31,21 @@ import java.util.*;
 
 public class ReflectiveAST {
 
-    protected static final ThreadLocal<Set<Object>> history
-            = ThreadLocal.withInitial(() -> Collections.newSetFromMap(new IdentityHashMap<>()));
-
     private final ASTOptions options;
-
-    private int depth = 0;
+    private final TraversalContext traversalContext;
 
     public ReflectiveAST() {
         this.options = ASTOptions.defaultOptions();
+        this.traversalContext = new TraversalContext(options.getMaxDepth());
+    }
+
+    ReflectiveAST(ASTOptions options) {
+        this.options = options;
+        this.traversalContext = new TraversalContext(options.getMaxDepth());
     }
 
     public ReflectiveNode build(Object object, WeavingContext ctx) {
+        traversalContext.reset();
 
         if (object instanceof Collection<?> col) {
             return collection(object.getClass().getSimpleName(), col, ctx);
@@ -60,15 +64,7 @@ public class ReflectiveAST {
     }
 
     private ReflectiveNode object(ReflectiveNode root, Object object, WeavingContext ctx) {
-        if (history.get().contains(object)) {
-            return root;
-        } else {
-            history.get().add(object);
-        }
-
-        depth++;
-        if (depth == options.getMaxDepth()) {
-            depth--;
+        if (!traversalContext.enter(object)) {
             return root;
         }
 
@@ -115,9 +111,7 @@ public class ReflectiveAST {
             }
         }
 
-        history.get().clear();
-
-        depth--;
+        traversalContext.exit();
         return root;
     }
 
@@ -166,9 +160,7 @@ public class ReflectiveAST {
 
         ReflectiveNode root = new SequenceNode(fieldName, displayType, size);
 
-        depth++;
-        if (depth == options.getMaxDepth()) {
-            depth--;
+        if (!traversalContext.enter(iterable)) {
             return root;
         }
 
@@ -184,7 +176,7 @@ public class ReflectiveAST {
             i++;
         }
 
-        depth--;
+        traversalContext.exit();
         return root;
     }
 

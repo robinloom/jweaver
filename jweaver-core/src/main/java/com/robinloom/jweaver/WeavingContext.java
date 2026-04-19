@@ -28,7 +28,4 @@ public final class WeavingContext {
         return weaver.weave(value, this);
     }
 
-    public Mode getMode() {
-        return mode;
-    }
 }

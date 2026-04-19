@@ -22,4 +22,9 @@ public final class PropertyNode extends ReflectiveNode {
     public String getHeader() {
         return value;
     }
+
+    @Override
+    public String toString() {
+        return value;
+    }
 }
