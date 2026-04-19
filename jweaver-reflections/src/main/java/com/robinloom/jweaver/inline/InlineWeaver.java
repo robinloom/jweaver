@@ -50,6 +50,8 @@ public class InlineWeaver implements Weaver {
      */
     public String weave(@NonNull Object object, WeavingContext ctx) {
         ReflectiveNode root = ast.build(object, ctx);
+
+        loom.reset();
         traverseDepthFirst(root);
 
         return loom.toString();

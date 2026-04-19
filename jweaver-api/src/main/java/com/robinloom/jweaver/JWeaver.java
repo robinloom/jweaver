@@ -64,7 +64,7 @@ public final class JWeaver {
      * @return a human-readable string representation of the given object
      */
     public static String weave(Object object, Mode mode) {
-        WeavingContext ctx = new WeavingContext(mode, Dictionary.getInstance(), ModeDispatcher.getInstance());
+        WeavingContext ctx = new WeavingContext(mode, Dictionary.getInstance(), ModeDispatcher.getInstance(), true);
         return ctx.weave(object);
     }
 

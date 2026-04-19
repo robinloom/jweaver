@@ -21,7 +21,7 @@ public class CardTest {
         Person person = new Person("John Doe", LocalDate.of(1990, 1, 1));
         String expected = """
                         ╭ Person ──────────────────────────╮
-                        │ name     : John Doe              │
+                        │ name     : "John Doe"            │
                         │ birthday : LocalDate[1990-01-01] │
                         ╰──────────────────────────────────╯""";
 
@@ -40,7 +40,7 @@ public class CardTest {
         Person person = new Person("Jane", new Person("Peter", null));
         String expected = """
                 ╭ Person ──────────────╮
-                │ name     : Jane      │
+                │ name     : "Jane"    │
                 │ neighbor : Person(2) │
                 ╰──────────────────────╯""";
 
@@ -54,7 +54,7 @@ public class CardTest {
         Person person = new Person("Jane", List.of("Peter", "Judy"));
         String expected = """
                         ╭ Person ───────────────────╮
-                        │ name          : Jane      │
+                        │ name          : "Jane"    │
                         │ childrenNames : List12(2) │
                         ╰───────────────────────────╯""";
 
@@ -68,7 +68,7 @@ public class CardTest {
         Person person = new Person("Jane", List.of(new Person("Peter", List.of())));
         String expected = """
                           ╭ Person ───────────────╮
-                          │ name      : Jane      │
+                          │ name      : "Jane"    │
                           │ neighbors : List12(1) │
                           ╰───────────────────────╯""";
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.CARD));

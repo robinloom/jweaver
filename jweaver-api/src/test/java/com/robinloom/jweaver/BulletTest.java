@@ -22,7 +22,7 @@ class BulletTest {
         Person person = new Person("John Doe", LocalDate.of(1990, 1, 1));
         String expected = """
                           Person
-                              - name=John Doe
+                              - name="John Doe"
                               - birthday=LocalDate[1990-01-01]""";
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.BULLET));
@@ -35,9 +35,9 @@ class BulletTest {
         Person person = new Person("John Doe", new Person("Peter", null));
         String expected = """
                           Person
-                              - name=John Doe
+                              - name="John Doe"
                               - neighbor=Person
-                                  - name=Peter
+                                  - name="Peter"
                                   - neighbor=null""";
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.BULLET));
     }
@@ -49,10 +49,10 @@ class BulletTest {
         Person person = new Person("Jane", List.of("Peter", "Judy"));
         String expected = """
                           Person
-                              - name=Jane
+                              - name="Jane"
                               - childrenNames=List12[2]
-                                  - [0] Peter
-                                  - [1] Judy""";
+                                  - [0] "Peter"
+                                  - [1] "Judy\"""";
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.BULLET));
     }
 
@@ -63,10 +63,10 @@ class BulletTest {
         Person person = new Person("Jane", List.of("Peter", "Judy"), 29);
         String expected = """
                           Person
-                              - name=Jane
+                              - name="Jane"
                               - childrenNames=List12[2]
-                                  - [0] Peter
-                                  - [1] Judy
+                                  - [0] "Peter"
+                                  - [1] "Judy"
                               - age=29""";
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.BULLET));
     }
@@ -83,14 +83,14 @@ class BulletTest {
                 List.of("42 Wallaby Way, Sydney"), "0+");
         String expected = """
                            Person
-                               - name=Jane
+                               - name="Jane"
                                - childrenNames=List12[2]
-                                   - [0] Peter
-                                   - [1] Judy
+                                   - [0] "Peter"
+                                   - [1] "Judy"
                                - age=29
                                - addresses=List12[1]
-                                   - [0] 42 Wallaby Way, Sydney
-                               - bloodType=0+""";
+                                   - [0] "42 Wallaby Way, Sydney"
+                               - bloodType="0+\"""";
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.BULLET));
     }
 
@@ -103,11 +103,11 @@ class BulletTest {
                             Person
                                 - listOfLists=List12[2]
                                     - [0] List12[2]
-                                        - [0] A
-                                        - [1] B
+                                        - [0] "A"
+                                        - [1] "B"
                                     - [1] List12[2]
-                                        - [0] C
-                                        - [1] D""";
+                                        - [0] "C"
+                                        - [1] "D\"""";
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.BULLET));
     }
 
@@ -121,10 +121,10 @@ class BulletTest {
         Person person = new Person("John", List.of(new Person("Peter", List.of())));
         String expected = """
                             Person
-                                - name=John
+                                - name="John"
                                 - neighbors=List12[1]
                                     - [0] Person
-                                        - name=Peter
+                                        - name="Peter"
                                         - neighbors=ListN[0]""";
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.BULLET));
     }
@@ -152,9 +152,9 @@ class BulletTest {
         String expected = """
                           Person
                               - names=String[][3]
-                                  - [0] Anna
-                                  - [1] Maria
-                                  - [2] Quinn""";
+                                  - [0] "Anna"
+                                  - [1] "Maria"
+                                  - [2] "Quinn\"""";
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.BULLET));
     }
@@ -207,9 +207,9 @@ class BulletTest {
 
         String expected = """
                         ListN
-                            - [0] Anna
-                            - [1] Maria
-                            - [2] Quinn""";
+                            - [0] "Anna"
+                            - [1] "Maria"
+                            - [2] "Quinn\"""";
 
         Assertions.assertEquals(expected,  JWeaver.weave(persons, Mode.BULLET));
     }
@@ -220,9 +220,9 @@ class BulletTest {
 
         String expected = """
                             String[]
-                                - [0] Anna
-                                - [1] Maria
-                                - [2] Quinn""";
+                                - [0] "Anna"
+                                - [1] "Maria"
+                                - [2] "Quinn\"""";
 
         Assertions.assertEquals(expected,  JWeaver.weave(persons, Mode.BULLET));
     }
@@ -235,8 +235,8 @@ class BulletTest {
 
         String expected = """
                             HashMap
-                                - key1=value1
-                                - key2=value2""";
+                                - "key1"="value1"
+                                - "key2"="value2\"""";
 
         Assertions.assertEquals(expected,  JWeaver.weave(map, Mode.BULLET));
     }

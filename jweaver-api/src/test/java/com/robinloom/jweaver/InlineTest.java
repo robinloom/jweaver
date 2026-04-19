@@ -21,7 +21,7 @@ public class InlineTest {
         record Person(String name, LocalDate birthday) {}
 
         Person person = new Person("John Doe", LocalDate.of(1990, 1, 1));
-        String expected = "Person[name=John Doe, birthday=LocalDate[1990-01-01]]";
+        String expected = "Person[name=\"John Doe\", birthday=LocalDate[1990-01-01]]";
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.INLINE));
     }
@@ -31,7 +31,7 @@ public class InlineTest {
         record Person(String name, Person neighbor) {}
 
         Person person = new Person("Jane", new Person("Peter", null));
-        String expected = "Person[name=Jane, neighbor=Person[name=Peter, neighbor=null]]";
+        String expected = "Person[name=\"Jane\", neighbor=Person[name=\"Peter\", neighbor=null]]";
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.INLINE));
     }
@@ -54,7 +54,7 @@ public class InlineTest {
         record Person(String name, Car car) {}
 
         Person person = new Person("Jane", new Car("Black"));
-        String expected = "Person[name=Jane, car=Car[color=Black]]";
+        String expected = "Person[name=\"Jane\", car=Car[color=\"Black\"]]";
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.INLINE));
     }
@@ -64,7 +64,7 @@ public class InlineTest {
         record Person(String name, List<String> childrenNames) {}
 
         Person person = new Person("Jane", List.of("Peter", "Judy"));
-        String expected = "Person[name=Jane, childrenNames=List12[2] [Peter, Judy]]";
+        String expected = "Person[name=\"Jane\", childrenNames=List12[2] [\"Peter\", \"Judy\"]]";
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.INLINE));
     }
@@ -74,7 +74,7 @@ public class InlineTest {
         record Person(String name, List<Person> neighbors) {}
 
         Person person = new Person("Jane", List.of(new Person("Peter", List.of())));
-        String expected = "Person[name=Jane, neighbors=List12[1] [Person[name=Peter, neighbors=ListN[0] []]]]";
+        String expected = "Person[name=\"Jane\", neighbors=List12[1] [Person[name=\"Peter\", neighbors=ListN[0] []]]]";
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.INLINE));
     }
@@ -94,7 +94,7 @@ public class InlineTest {
         record Person(String[] names) {}
 
         Person person = new Person(new String[]{"Anna", "Maria", "Quinn"});
-        String expected = "Person[names=String[][3] [Anna, Maria, Quinn]]";
+        String expected = "Person[names=String[][3] [\"Anna\", \"Maria\", \"Quinn\"]]";
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.INLINE));
     }
@@ -131,7 +131,7 @@ public class InlineTest {
     void testCollection() {
         List<String> persons = List.of("Anna", "Maria", "Quinn");
 
-        String expected = "ListN[Anna, Maria, Quinn]";
+        String expected = "ListN[\"Anna\", \"Maria\", \"Quinn\"]";
 
         Assertions.assertEquals(expected,  JWeaver.weave(persons, Mode.INLINE));
     }
@@ -140,7 +140,7 @@ public class InlineTest {
     void testArray() {
         String[] persons = new String[]{"Anna", "Maria", "Quinn"};
 
-        String expected = "String[][Anna, Maria, Quinn]";
+        String expected = "String[][\"Anna\", \"Maria\", \"Quinn\"]";
 
         Assertions.assertEquals(expected,  JWeaver.weave(persons, Mode.INLINE));
     }
@@ -148,7 +148,7 @@ public class InlineTest {
     @Test
     void testArrayOfArrays() {
         String[][] arrs = new String[][]{{"a", "b"}, {"c"}};
-        String expected = "String[][][String[][2] [a, b], String[][1] [c]]";
+        String expected = "String[][][String[][2] [\"a\", \"b\"], String[][1] [\"c\"]]";
 
         Assertions.assertEquals(expected,  JWeaver.weave(arrs, Mode.INLINE));
     }
@@ -168,7 +168,7 @@ public class InlineTest {
         Map<String, List<?>> map = new HashMap<>();
         map.put("key", List.of("a", "b"));
 
-        String expected = "HashMap[List12[2] [a, b]]";
+        String expected = "HashMap[List12[2] [\"a\", \"b\"]]";
         Assertions.assertEquals(expected, JWeaver.weave(map, Mode.INLINE));
     }
 }

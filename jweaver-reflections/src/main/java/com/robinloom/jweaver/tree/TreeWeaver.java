@@ -58,6 +58,8 @@ public class TreeWeaver implements Weaver {
         ReflectiveNode tree = ast.build(object, ctx);
 
         List<Boolean> siblingsAtCurrentLevel = new ArrayList<>();
+
+        loom.reset();
         traverseDepthFirst(tree, siblingsAtCurrentLevel);
         loom.removeLastNewline();
 

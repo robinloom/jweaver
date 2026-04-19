@@ -15,7 +15,8 @@ public class ReflectiveASTTest {
         return new WeavingContext(
                 Mode.TREE,
                 _ -> null,
-                _ -> (value, _) -> value.toString()
+                _ -> (value, _) -> value.toString(),
+                true
         );
     }
 

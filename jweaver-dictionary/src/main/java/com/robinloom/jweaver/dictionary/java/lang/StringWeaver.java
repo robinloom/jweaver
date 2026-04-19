@@ -12,7 +12,13 @@ public class StringWeaver extends TypeWeaver {
     }
 
     @Override
-    public String weave(@NonNull Object object, WeavingContext ctx) {
-        return (String) object;
+    public String weave(@NonNull Object value, WeavingContext ctx) {
+        String s = (String) value;
+
+        if (ctx.isRoot()) {
+            return s;
+        }
+
+        return "\"" + s + "\"";
     }
 }
