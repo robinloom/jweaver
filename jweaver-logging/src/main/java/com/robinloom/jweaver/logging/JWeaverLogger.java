@@ -21,8 +21,6 @@ import com.robinloom.jweaver.Mode;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 
-import java.util.Arrays;
-
 /**
  * A wrapper class for {@link Logger}.
  * When formatting Strings, it will use the provided {@link com.robinloom.jweaver.Weaver}
@@ -36,6 +34,24 @@ public class JWeaverLogger implements Logger {
     public JWeaverLogger(Logger logger, Mode mode) {
         this.logger = logger;
         this.mode = mode;
+    }
+
+    private Object transform(Object arg) {
+        return switch (arg) {
+            case null -> null;
+            case String _, Throwable _ -> arg;
+            default -> JWeaver.weave(arg, mode);
+        };
+    }
+
+    private Object[] transform(Object[] args) {
+        if (args == null) return null;
+
+        Object[] result = new Object[args.length];
+        for (int i = 0; i < args.length; i++) {
+            result[i] = transform(args[i]);
+        }
+        return result;
     }
 
     @Override
@@ -55,17 +71,17 @@ public class JWeaverLogger implements Logger {
 
     @Override
     public void trace(String format, Object arg) {
-        logger.trace(format, JWeaver.weave(arg, mode));
+        logger.trace(format, transform(arg));
     }
 
     @Override
     public void trace(String format, Object arg1, Object arg2) {
-        logger.trace(format, JWeaver.weave(arg1, mode), JWeaver.weave(arg2, mode));
+        logger.trace(format, transform(arg1), transform(arg2));
     }
 
     @Override
     public void trace(String format, Object... arguments) {
-        logger.trace(format, Arrays.stream(arguments).map(a -> JWeaver.weave(a, mode)).toArray());
+        logger.trace(format, transform(arguments));
     }
 
     @Override
@@ -85,17 +101,17 @@ public class JWeaverLogger implements Logger {
 
     @Override
     public void trace(Marker marker, String format, Object arg) {
-        logger.trace(marker, format, JWeaver.weave(arg, mode));
+        logger.trace(marker, format, transform(arg));
     }
 
     @Override
     public void trace(Marker marker, String format, Object arg1, Object arg2) {
-        logger.trace(marker, format, JWeaver.weave(arg1, mode), JWeaver.weave(arg2, mode));
+        logger.trace(marker, format, transform(arg1), transform(arg2));
     }
 
     @Override
-    public void trace(Marker marker, String format, Object... argArray) {
-        logger.trace(marker, format, Arrays.stream(argArray).map(a -> JWeaver.weave(a, mode)).toArray());
+    public void trace(Marker marker, String format, Object... arguments) {
+        logger.trace(marker, format, transform(arguments));
     }
 
     @Override
@@ -115,17 +131,17 @@ public class JWeaverLogger implements Logger {
 
     @Override
     public void debug(String format, Object arg) {
-        logger.debug(format, JWeaver.weave(arg, mode));
+        logger.debug(format, transform(arg));
     }
 
     @Override
     public void debug(String format, Object arg1, Object arg2) {
-        logger.debug(format, JWeaver.weave(arg1, mode), JWeaver.weave(arg2, mode));
+        logger.debug(format, transform(arg1), transform(arg2));
     }
 
     @Override
     public void debug(String format, Object... arguments) {
-        logger.debug(format, Arrays.stream(arguments).map(a -> JWeaver.weave(a, mode)).toArray());
+        logger.debug(format, transform(arguments));
     }
 
     @Override
@@ -145,17 +161,17 @@ public class JWeaverLogger implements Logger {
 
     @Override
     public void debug(Marker marker, String format, Object arg) {
-        logger.debug(marker, format, JWeaver.weave(arg, mode));
+        logger.debug(marker, format, transform(arg));
     }
 
     @Override
     public void debug(Marker marker, String format, Object arg1, Object arg2) {
-        logger.debug(marker, format, JWeaver.weave(arg1, mode), JWeaver.weave(arg2, mode));
+        logger.debug(marker, format, transform(arg1), transform(arg2));
     }
 
     @Override
     public void debug(Marker marker, String format, Object... arguments) {
-        logger.debug(marker, format, Arrays.stream(arguments).map(a -> JWeaver.weave(a, mode)).toArray());
+        logger.debug(marker, format, transform(arguments));
     }
 
     @Override
@@ -175,17 +191,17 @@ public class JWeaverLogger implements Logger {
 
     @Override
     public void info(String format, Object arg) {
-        logger.info(format, JWeaver.weave(arg, mode));
+        logger.info(format, transform(arg));
     }
 
     @Override
     public void info(String format, Object arg1, Object arg2) {
-        logger.info(format, JWeaver.weave(arg1, mode), JWeaver.weave(arg2, mode));
+        logger.info(format, transform(arg1), transform(arg2));
     }
 
     @Override
     public void info(String format, Object... arguments) {
-        logger.info(format, Arrays.stream(arguments).map(a -> JWeaver.weave(a, mode)).toArray());
+        logger.info(format, transform(arguments));
     }
 
     @Override
@@ -205,17 +221,17 @@ public class JWeaverLogger implements Logger {
 
     @Override
     public void info(Marker marker, String format, Object arg) {
-        logger.info(marker, format, JWeaver.weave(arg, mode));
+        logger.info(marker, format, transform(arg));
     }
 
     @Override
     public void info(Marker marker, String format, Object arg1, Object arg2) {
-        logger.info(marker, format, JWeaver.weave(arg1, mode), JWeaver.weave(arg2, mode));
+        logger.info(marker, format, transform(arg1), transform(arg2));
     }
 
     @Override
     public void info(Marker marker, String format, Object... arguments) {
-        logger.info(marker, format, Arrays.stream(arguments).map(a -> JWeaver.weave(a, mode)).toArray());
+        logger.info(marker, format, transform(arguments));
     }
 
     @Override
@@ -235,17 +251,17 @@ public class JWeaverLogger implements Logger {
 
     @Override
     public void warn(String format, Object arg) {
-        logger.warn(format, JWeaver.weave(arg, mode));
+        logger.warn(format, transform(arg));
     }
 
     @Override
     public void warn(String format, Object... arguments) {
-        logger.warn(format, Arrays.stream(arguments).map(a -> JWeaver.weave(a, mode)).toArray());
+        logger.warn(format, transform(arguments));
     }
 
     @Override
     public void warn(String format, Object arg1, Object arg2) {
-        logger.warn(format, JWeaver.weave(arg1, mode), JWeaver.weave(arg2, mode));
+        logger.warn(format, transform(arg1), transform(arg2));
     }
 
     @Override
@@ -265,17 +281,17 @@ public class JWeaverLogger implements Logger {
 
     @Override
     public void warn(Marker marker, String format, Object arg) {
-        logger.warn(marker, format, JWeaver.weave(arg, mode));
+        logger.warn(marker, format, transform(arg));
     }
 
     @Override
     public void warn(Marker marker, String format, Object arg1, Object arg2) {
-        logger.warn(marker, format, JWeaver.weave(arg1, mode), JWeaver.weave(arg2, mode));
+        logger.warn(marker, format, transform(arg1), transform(arg2));
     }
 
     @Override
     public void warn(Marker marker, String format, Object... arguments) {
-        logger.warn(marker, format, Arrays.stream(arguments).map(a -> JWeaver.weave(a, mode)).toArray());
+        logger.warn(marker, format, transform(arguments));
     }
 
     @Override
@@ -295,17 +311,17 @@ public class JWeaverLogger implements Logger {
 
     @Override
     public void error(String format, Object arg) {
-        logger.error(format, JWeaver.weave(arg, mode));
+        logger.error(format, transform(arg));
     }
 
     @Override
     public void error(String format, Object arg1, Object arg2) {
-        logger.error(format, JWeaver.weave(arg1, mode), JWeaver.weave(arg2, mode));
+        logger.error(format, transform(arg1), transform(arg2));
     }
 
     @Override
     public void error(String format, Object... arguments) {
-        logger.error(format, Arrays.stream(arguments).map(a -> JWeaver.weave(a, mode)).toArray());
+        logger.error(format, transform(arguments));
     }
 
     @Override
@@ -325,17 +341,17 @@ public class JWeaverLogger implements Logger {
 
     @Override
     public void error(Marker marker, String format, Object arg) {
-        logger.error(marker, format, JWeaver.weave(arg, mode));
+        logger.error(marker, format, transform(arg));
     }
 
     @Override
     public void error(Marker marker, String format, Object arg1, Object arg2) {
-        logger.error(marker, format, JWeaver.weave(arg1, mode), JWeaver.weave(arg2, mode));
+        logger.error(marker, format, transform(arg1), transform(arg2));
     }
 
     @Override
     public void error(Marker marker, String format, Object... arguments) {
-        logger.error(marker, format, Arrays.stream(arguments).map(a -> JWeaver.weave(a, mode)).toArray());
+        logger.error(marker, format, transform(arguments));
     }
 
     @Override
