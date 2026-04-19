@@ -68,8 +68,4 @@ public final class JWeaver {
         return ctx.weave(object);
     }
 
-    public static void print(Object object) {
-        System.out.print(weave(object));
-    }
-
 }
