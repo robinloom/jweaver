@@ -18,16 +18,18 @@ package com.robinloom.jweaver.ast;
 
 import com.robinloom.jweaver.TraversalContext;
 import com.robinloom.jweaver.WeavingContext;
-import com.robinloom.jweaver.annotation.WeaveIgnore;
 import com.robinloom.jweaver.annotation.WeaveName;
 import com.robinloom.jweaver.ast.nodes.*;
-import com.robinloom.jweaver.util.FieldOperations;
+import com.robinloom.jweaver.fields.FieldExtractor;
 import com.robinloom.jweaver.util.SensitivityDetection;
 import com.robinloom.jweaver.util.Types;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 public class ReflectiveAST {
 
@@ -103,10 +105,7 @@ public class ReflectiveAST {
             return root;
         }
 
-        List<Field> fields = FieldOperations.getFields(object.getClass())
-                                            .stream()
-                                            .filter(f -> !f.isAnnotationPresent(WeaveIgnore.class))
-                                            .toList();
+        List<Field> fields = new FieldExtractor().extract(object.getClass());
 
         try {
             for (Field field : fields) {
