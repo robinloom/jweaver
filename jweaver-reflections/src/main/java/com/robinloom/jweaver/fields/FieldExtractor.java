@@ -17,6 +17,7 @@
 package com.robinloom.jweaver.fields;
 
 import com.robinloom.jweaver.annotation.WeaveIgnore;
+import com.robinloom.jweaver.ast.ReflectiveAST;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -24,10 +25,36 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Extracts the relevant fields of a class for reflective traversal.
+ * <p>
+ * The {@code FieldExtractor} defines which fields of a class are considered
+ * part of its logical structure when building a reflective AST via
+ * {@link ReflectiveAST}. It filters out technical and language-specific
+ * artifacts to provide a stable, human-readable representation.
+ * <p>
+ * The extraction process:
+ * <ul>
+ *     <li>collects all declared fields across the class hierarchy</li>
+ *     <li>removes static and synthetic fields</li>
+ *     <li>applies language-specific filtering (e.g. Kotlin companion objects)</li>
+ * </ul>
+ * <p>
+ * Results are cached per class to avoid repeated reflective analysis.
+ * <p>
+ * This class is thread-safe and intended to be reused across multiple
+ * traversal operations.
+ */
 public final class FieldExtractor {
 
     private final Map<Class<?>, List<Field>> CACHE = new ConcurrentHashMap<>();
 
+    /**
+     * Returns the filtered list of relevant fields for the given class.
+     *
+     * @param clazz the class to inspect
+     * @return a list of fields considered part of the object's structure
+     */
     public List<Field> extract(Class<?> clazz) {
         return CACHE.computeIfAbsent(clazz, this::compute);
     }

@@ -29,17 +29,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TreeWeaver depicts a given object and its fields as a tree.
- * This representation is particularly suitable for nested objects.
- * After setting up the tree structure, it is traversed in a depth-first search.
- * The object string is built while traversing the tree.
+ * {@link Weaver} implementation producing a hierarchical, tree-style
+ * representation of an object.
  * <p>
- * Example:
+ * The {@code TreeWeaver} renders objects as a multi-line structure using
+ * indentation and branch markers to visualize the relationships between
+ * nested elements. It is designed for debugging and inspection scenarios
+ * where understanding object structure is more important than compactness.
+ * <p>
+ * A typical output resembles:
  * <pre>
  * Person
- * |-- name=John Doe
- * `-- birthday=1990-01-01
+ * |-- name=Jane
+ * |-- age=29
+ * `-- address=Address
+ *     |-- street=Main St
+ *     `-- city=Springfield
  * </pre>
+ * <p>
+ * Traversal and structure are provided by {@link ReflectiveAST}, ensuring
+ * consistent handling of cycles, depth limits, and collections.
+ * <p>
+ * This weaver is stateful during rendering but intended to be used per
+ * invocation.
  */
 public class TreeWeaver implements Weaver {
 
@@ -47,13 +59,13 @@ public class TreeWeaver implements Weaver {
     private final Loom loom = Loom.empty();
 
     /**
-     * Generates a string representation of the given object via reflections.
-     * Prints the class name followed by every accessible field in a tree structure.
-     * For JDK classes, a regular <code>toString()</code> result is returned.
-     * Detects reciprocal and circular object dependencies.
-     * @param object object to generate a string representation for
-     * @return a well-structured, human-readable representation of that object
+     * Produces a tree-style representation of the given object.
+     *
+     * @param object the object to render
+     * @param ctx the current weaving context
+     * @return a multi-line, structured representation of the object
      */
+    @Override
     public String weave(@NonNull Object object, WeavingContext ctx) {
         ReflectiveNode tree = ast.build(object, ctx);
 

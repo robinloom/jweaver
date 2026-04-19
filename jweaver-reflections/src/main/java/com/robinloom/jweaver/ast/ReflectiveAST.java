@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Robin Kösters
+ * Copyright (C) 2026 Robin Kösters
  * mail[at]robinloom[dot]com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,9 @@
 package com.robinloom.jweaver.ast;
 
 import com.robinloom.jweaver.TraversalContext;
+import com.robinloom.jweaver.Weaver;
 import com.robinloom.jweaver.WeavingContext;
+import com.robinloom.jweaver.annotation.WeaveIgnore;
 import com.robinloom.jweaver.annotation.WeaveName;
 import com.robinloom.jweaver.ast.nodes.*;
 import com.robinloom.jweaver.fields.FieldExtractor;
@@ -31,6 +33,35 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Builds a reflective, acyclic object tree from arbitrary Java objects.
+ * <p>
+ * The {@code ReflectiveAST} is the core traversal engine of JWeaver. It inspects
+ * an object graph using reflection and transforms it into a structured tree of
+ * {@link ReflectiveNode}s, which can then be rendered by different {@link Weaver}
+ * implementations.
+ * <p>
+ * The resulting structure is always a <b>tree</b>, never a graph. Cycles and
+ * repeated object references are detected via a {@link TraversalContext} and
+ * traversal is stopped once an object has already been visited or a configured
+ * depth limit is reached.
+ * <p>
+ * During traversal, the following rules apply:
+ * <ul>
+ *     <li>Simple types are converted directly into {@link PropertyNode}s.</li>
+ *     <li>Collections, arrays, and maps are represented as {@link SequenceNode}s.</li>
+ *     <li>Map entries are represented as {@link MapEntryNode}s.</li>
+ *     <li>Complex objects are expanded into {@link ObjectNode}s based on their fields.</li>
+ *     <li>Fields annotated with {@link WeaveIgnore} are skipped.</li>
+ *     <li>Sensitive fields are masked via {@link SensitivityDetection}.</li>
+ * </ul>
+ * <p>
+ * The traversal is stateful but scoped to a single {@link #build(Object, WeavingContext)}
+ * invocation. A new traversal always resets the internal {@link TraversalContext}.
+ * <p>
+ * This class is intentionally not thread-safe and is expected to be used per
+ * weaving operation.
+ */
 public class ReflectiveAST {
 
     private final ASTOptions options;
@@ -46,6 +77,13 @@ public class ReflectiveAST {
         this.traversalContext = new TraversalContext(options.getMaxDepth());
     }
 
+    /**
+     * Builds a reflective node tree for the given object.
+     *
+     * @param object the root object to inspect (may be {@code null})
+     * @param ctx the weaving context used for value transformation
+     * @return the root {@link ReflectiveNode} representing the object
+     */
     public ReflectiveNode build(Object object, WeavingContext ctx) {
         try {
             if (object == null) {

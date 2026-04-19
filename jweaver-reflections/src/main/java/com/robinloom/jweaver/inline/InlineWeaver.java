@@ -24,30 +24,39 @@ import com.robinloom.loom.Loom;
 import org.jspecify.annotations.NonNull;
 
 /**
- * LinearWeaver generates a string representation for a given object by combining
- * the object information (class name, field names, values) with a set of separator strings.
- * The set of separator strings is dynamically configurable.
+ * {@link Weaver} implementation producing a compact, single-line representation
+ * of an object.
  * <p>
- * Example:
+ * The {@code InlineWeaver} renders objects in a concise, bracket-based format
+ * that emphasizes readability while preserving structural information. It is
+ * intended for logging and quick inspection scenarios where space is limited.
+ * <p>
+ * Objects are represented as:
  * <pre>
- * Person[name=John Doe, birthday=1990-01-01]
+ * ClassName[field1=value1, field2=value2]
  * </pre>
+ * <p>
+ * Nested objects and collections are rendered recursively using the same
+ * inline format. Structural traversal is delegated to {@link ReflectiveAST},
+ * ensuring consistent handling of cycles and depth limits.
+ * <p>
+ * This weaver is stateless apart from its internal buffers and is typically
+ * instantiated per use.
  */
 public class InlineWeaver implements Weaver {
-
     private final ReflectiveAST ast = new ReflectiveAST();
     private final Loom loom = Loom.empty();
 
     public InlineWeaver() {}
 
     /**
-     * Generates a string representation of the given object via reflections.
-     * Prints the class name followed by every accessible field.
-     * For JDK classes, a regular <code>toString()</code> result is returned.
-     * Detects reciprocal and circular object dependencies.
-     * @param object object to generate a string representation for
-     * @return a well-structured, human-readable representation of that object
+     * Produces a compact, single-line representation of the given object.
+     *
+     * @param object the object to render
+     * @param ctx the current weaving context
+     * @return a concise, human-readable string representation
      */
+    @Override
     public String weave(@NonNull Object object, WeavingContext ctx) {
         ReflectiveNode root = ast.build(object, ctx);
 

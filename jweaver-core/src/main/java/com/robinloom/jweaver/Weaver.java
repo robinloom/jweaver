@@ -18,7 +18,28 @@ package com.robinloom.jweaver;
 
 import org.jspecify.annotations.NonNull;
 
+/**
+ * Defines a strategy for converting an object into a string representation.
+ * <p>
+ * A {@code Weaver} is responsible for rendering complex objects that are not
+ * handled by a specific {@link TypeWeaver}. It typically processes object
+ * structures and produces a human-readable representation according to a
+ * given {@link Mode}.
+ * <p>
+ * Different implementations provide different output styles, such as
+ * inline, tree, or structured representations.
+ * <p>
+ * Implementations are expected to be stateless and should not throw exceptions.
+ * Nested values should be delegated back to the provided {@link WeavingContext}
+ * to ensure consistent processing.
+ */
 public interface Weaver {
 
-    String weave(@NonNull Object object, WeavingContext ctx);
-}
+    /**
+     * Produces a string representation of the given object.
+     *
+     * @param object the object to render
+     * @param ctx the current weaving context
+     * @return a human-readable representation of the object
+     */
+    String weave(@NonNull Object object, WeavingContext ctx);}
