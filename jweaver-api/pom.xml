@@ -10,6 +10,8 @@
     </parent>
 
     <artifactId>jweaver-api</artifactId>
+    <description>JWeaver API</description>
+    <name>jweaver-api</name>
 
     <properties>
         <maven.compiler.source>25</maven.compiler.source>

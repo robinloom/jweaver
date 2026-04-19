@@ -8,8 +8,8 @@
     </parent>
 
     <artifactId>jweaver-reflections</artifactId>
-    <description>JWeaver Objects</description>
-    <name>jweaver-objects</name>
+    <description>JWeaver Reflections</description>
+    <name>jweaver-reflections</name>
 
     <properties>
         <maven.compiler.source>25</maven.compiler.source>
