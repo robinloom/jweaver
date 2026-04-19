@@ -104,6 +104,8 @@ public class ReflectiveAST {
                     root.addChild(collection(fieldName, (Collection<?>) value, ctx));
                 } else if (Types.isArray(field.getType())) {
                     root.addChild(array(fieldName, value, ctx));
+                } else if (Types.isMap(field.getType())) {
+                    root.addChild(map(fieldName, (Map<?, ?>) value, ctx));
                 } else {
                     ReflectiveNode child = new ObjectNode(fieldName, value.getClass());
                     root.addChild(object(child, value, ctx));
@@ -195,7 +197,6 @@ public class ReflectiveAST {
         if (Types.isSimpleType(item.getClass())) {
             root.addChild(new SequenceItemNode(ctx.weave(item), index));
         } else if (Types.isCollection(item.getClass())) {
-
             ReflectiveNode child = sequence(item.getClass().getSimpleName(),
                                             (Collection<?>) item,
                                             ((Collection<?>) item).size(),
@@ -204,13 +205,19 @@ public class ReflectiveAST {
 
             child.setIndex(index);
             root.addChild(child);
-
         } else if (Types.isArray(item.getClass())) {
             ReflectiveNode child = array(item.getClass().getSimpleName(), item, ctx);
+
+            child.setIndex(index);
+            root.addChild(child);
+        } else if (Types.isMap(item.getClass())) {
+            ReflectiveNode child = map(item.getClass().getSimpleName(), (Map<?, ?>) item, ctx);
+
             child.setIndex(index);
             root.addChild(child);
         } else if (item instanceof Map.Entry<?,?> entry) {
             ReflectiveNode child = mapEntry(entry, ctx);
+
             root.addChild(child);
         } else {
             ReflectiveNode child = new ObjectNode(item.getClass());

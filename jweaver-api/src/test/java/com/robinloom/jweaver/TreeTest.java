@@ -7,6 +7,8 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TreeTest {
 
@@ -296,5 +298,55 @@ public class TreeTest {
                                 |-- [0] a
                                 `-- [1] b""";
         Assertions.assertEquals(expected, JWeaver.weave(map, Mode.TREE));
+    }
+
+    @Test
+    void testObjectWithMap() {
+        enum Role {
+            ADMIN,
+            GUEST
+        }
+
+        enum HouseHoldRole {
+            ACTIVE, ADMIN
+        }
+
+        record SessionId (UUID value) {
+        }
+
+        record HouseHoldId (UUID value) {
+        }
+
+        record SessionData (UUID userId, List<Role> roles, HashMap<HouseHoldId, List<HouseHoldRole>> houseHoldRoles) {
+        }
+
+        class SessionStore {
+            final ConcurrentHashMap<SessionId, SessionData> sessions  = new ConcurrentHashMap<>();
+        }
+
+        SessionStore sessionStore = new SessionStore();
+        SessionId sessionId = new SessionId(UUID.fromString("ea15da83-96f3-4eff-87bf-b61f4ae36b30"));
+
+        HashMap<HouseHoldId, List<HouseHoldRole>> houseHoldRoles = new HashMap<>();
+        houseHoldRoles.put(new HouseHoldId(UUID.fromString("6679b8d6-561f-4838-95bc-f4f8bdc6568b")), List.of(HouseHoldRole.ACTIVE));
+        SessionData sessionData = new SessionData(UUID.fromString("aac2d6d1-dd44-46cd-8b2f-20163d396d11"),
+                                                  List.of(Role.GUEST),
+                                                  houseHoldRoles);
+        sessionStore.sessions.put(sessionId, sessionData);
+
+        String expected = """
+                SessionStore
+                `-- sessions=ConcurrentHashMap[1]
+                    `-- SessionId[value=ea15da83-96f3-4eff-87bf-b61f4ae36b30]
+                        `-- SessionData
+                            |-- userId=aac2d6d1-dd44-46cd-8b2f-20163d396d11
+                            |-- roles=List12[1]
+                            |   `-- [0] Role.GUEST
+                            `-- houseHoldRoles=HashMap[1]
+                                `-- HouseHoldId[value=6679b8d6-561f-4838-95bc-f4f8bdc6568b]
+                                    `-- List12[1]
+                                        `-- [0] HouseHoldRole.ACTIVE""";
+
+        Assertions.assertEquals(expected, JWeaver.weave(sessionStore, Mode.TREE));
     }
 }

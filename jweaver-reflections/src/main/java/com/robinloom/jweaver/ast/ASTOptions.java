@@ -19,6 +19,6 @@ public final class ASTOptions {
     }
 
     public static ASTOptions defaultOptions() {
-        return new ASTOptions(4, 10);
+        return new ASTOptions(10, 10);
     }
 }
