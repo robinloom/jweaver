@@ -21,10 +21,18 @@ import com.robinloom.jweaver.annotation.WeaveIgnore;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class FieldExtractor {
 
+    private final Map<Class<?>, List<Field>> CACHE = new ConcurrentHashMap<>();
+
     public List<Field> extract(Class<?> clazz) {
+        return CACHE.computeIfAbsent(clazz, this::compute);
+    }
+
+    private List<Field> compute(Class<?> clazz) {
         boolean isKotlin = KotlinSupport.isKotlinClass(clazz);
         return collectFields(clazz).stream()
                                    .filter(f -> isRelevant(f, isKotlin) && isIncluded(f))
