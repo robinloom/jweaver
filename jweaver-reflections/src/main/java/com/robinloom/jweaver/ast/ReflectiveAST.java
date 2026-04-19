@@ -45,22 +45,57 @@ public class ReflectiveAST {
     }
 
     public ReflectiveNode build(Object object, WeavingContext ctx) {
-        traversalContext.reset();
+        try {
+            if (object == null) {
+                return new PropertyNode("root", "null");
+            }
 
-        if (object instanceof Collection<?> col) {
-            return collection(object.getClass().getSimpleName(), col, ctx);
+            traversalContext.reset();
+            return toNode(object.getClass().getSimpleName(), object, ctx);
+
+        } catch (Throwable t) {
+            return new PropertyNode("root", "[error]");
+        }
+    }
+
+    private ReflectiveNode toNode(String name, Object value, WeavingContext ctx) {
+        if (value == null) {
+            return new PropertyNode(name, "null");
         }
 
-        if (object instanceof Map<?, ?> map) {
-            return map(object.getClass().getSimpleName(), map, ctx);
+        Class<?> type = value.getClass();
+
+        // --- Simple Types ---
+        if (Types.isSimpleType(type)) {
+            return new PropertyNode(name, ctx.weave(value));
         }
 
-        if (object.getClass().isArray()) {
-            return array(Array.class.getSimpleName(), object, ctx);
+        // --- Collection ---
+        if (Types.isCollection(type)) {
+            return collection(name, (Collection<?>) value, ctx);
         }
 
-        ReflectiveNode root = new ObjectNode(object.getClass());
-        return object(root, object, ctx);
+        // --- Array ---
+        if (Types.isArray(type)) {
+            return array(name, value, ctx);
+        }
+
+        // --- Map ---
+        if (Types.isMap(type)) {
+            return map(name, (Map<?, ?>) value, ctx);
+        }
+
+        // --- Map.Entry ---
+        if (value instanceof Map.Entry<?, ?> entry) {
+            return mapEntry(entry, ctx);
+        }
+
+        // --- Complex Object ---
+        ReflectiveNode node = (name != null)
+                ? new ObjectNode(name, type)
+                : new ObjectNode(type);
+
+        return object(node, value, ctx);
     }
 
     private ReflectiveNode object(ReflectiveNode root, Object object, WeavingContext ctx) {
@@ -73,45 +108,38 @@ public class ReflectiveAST {
                                             .filter(f -> !f.isAnnotationPresent(WeaveIgnore.class))
                                             .toList();
 
-        for (Field field : fields) {
-            try {
-                Object value = readField(field, object);
+        try {
+            for (Field field : fields) {
+                try {
+                    Object value = readField(field, object);
 
-                String fieldName;
-                if (field.isAnnotationPresent(WeaveName.class)) {
-                    fieldName = field.getAnnotation(WeaveName.class).value();
-                } else {
-                    fieldName = field.getName();
-                }
+                    String fieldName;
+                    if (field.isAnnotationPresent(WeaveName.class)) {
+                        fieldName = field.getAnnotation(WeaveName.class).value();
+                    } else {
+                        fieldName = field.getName();
+                    }
 
-                if (value == null) {
-                    root.addChild(new PropertyNode(fieldName, "null"));
-                    continue;
-                }
+                    if (value == null) {
+                        root.addChild(new PropertyNode(fieldName, "null"));
+                        continue;
+                    }
 
-                if (SensitivityDetection.isSensitive(field)) {
-                    root.addChild(new PropertyNode(fieldName, "***"));
-                    continue;
-                }
+                    if (SensitivityDetection.isSensitive(field)) {
+                        root.addChild(new PropertyNode(fieldName, "***"));
+                        continue;
+                    }
 
-                if (Types.isSimpleType(field.getType())) {
-                    root.addChild(new PropertyNode(fieldName, ctx.weave(value)));
-                } else if (Types.isCollection(field.getType())) {
-                    root.addChild(collection(fieldName, (Collection<?>) value, ctx));
-                } else if (Types.isArray(field.getType())) {
-                    root.addChild(array(fieldName, value, ctx));
-                } else if (Types.isMap(field.getType())) {
-                    root.addChild(map(fieldName, (Map<?, ?>) value, ctx));
-                } else {
-                    ReflectiveNode child = new ObjectNode(fieldName, value.getClass());
-                    root.addChild(object(child, value, ctx));
+                    ReflectiveNode child = toNode(fieldName, value, ctx);
+                    root.addChild(child);
+                } catch (Exception e) {
+                    root.addChild(new PropertyNode("[?]", "[?]"));
                 }
-            } catch (Exception e) {
-                root.addChild(new SequenceItemNode("[?]", -1));
             }
+        } finally {
+            traversalContext.exit();
         }
 
-        traversalContext.exit();
         return root;
     }
 
@@ -144,13 +172,17 @@ public class ReflectiveAST {
             key = entry.getKey().toString();
         }
 
+        if (value == null) {
+            return new PropertyNode(key, "null");
+        }
+
         if (Types.isSimpleType(value.getClass()) ) {
             return new PropertyNode(key, ctx.weave(value));
         }
 
         ReflectiveNode node = new MapEntryNode(key);
 
-        handleSequenceItem(node, entry.getValue(), null, ctx);
+        sequenceItem(node, entry.getValue(), null, ctx);
 
         return node;
     }
@@ -168,11 +200,14 @@ public class ReflectiveAST {
         for (Object item : iterable) {
 
             if (i >= options.getMaxSequenceLength()) {
-                root.addChild(new SequenceItemNode((size - i) + " more", i));
+                ReflectiveNode child = new PropertyNode((size - i) + " more");
+                child.setIndex(i);
+
+                root.addChild(child);
                 break;
             }
 
-            handleSequenceItem(root, item, i, ctx);
+            sequenceItem(root, item, i, ctx);
             i++;
         }
 
@@ -180,43 +215,24 @@ public class ReflectiveAST {
         return root;
     }
 
-    private void handleSequenceItem(ReflectiveNode root, Object item, Integer index, WeavingContext ctx) {
+    private void sequenceItem(ReflectiveNode root, Object item, Integer index, WeavingContext ctx) {
         if (item == null) {
-            root.addChild(new SequenceItemNode("null", index));
+            ReflectiveNode node = new PropertyNode("null");
+            node.setIndex(index);
+            root.addChild(node);
             return;
         }
 
-        if (Types.isSimpleType(item.getClass())) {
-            root.addChild(new SequenceItemNode(ctx.weave(item), index));
-        } else if (Types.isCollection(item.getClass())) {
-            ReflectiveNode child = sequence(item.getClass().getSimpleName(),
-                                            (Collection<?>) item,
-                                            ((Collection<?>) item).size(),
-                                            item.getClass(),
-                                            ctx);
-
-            child.setIndex(index);
-            root.addChild(child);
-        } else if (Types.isArray(item.getClass())) {
-            ReflectiveNode child = array(item.getClass().getSimpleName(), item, ctx);
-
-            child.setIndex(index);
-            root.addChild(child);
-        } else if (Types.isMap(item.getClass())) {
-            ReflectiveNode child = map(item.getClass().getSimpleName(), (Map<?, ?>) item, ctx);
-
-            child.setIndex(index);
-            root.addChild(child);
-        } else if (item instanceof Map.Entry<?,?> entry) {
-            ReflectiveNode child = mapEntry(entry, ctx);
-
-            root.addChild(child);
-        } else {
-            ReflectiveNode child = new ObjectNode(item.getClass());
-
-            child.setIndex(index);
-            root.addChild(object(child, item, ctx));
+        String name = null;
+        if (Types.isIterableType(item.getClass())) {
+            name = item.getClass().getSimpleName();
         }
+
+        ReflectiveNode node = toNode(name, item, ctx);
+        if (!(item instanceof Map.Entry)) {
+            node.setIndex(index);
+        }
+        root.addChild(node);
     }
 
     Object readField(Field field, Object target) throws ReflectiveOperationException {

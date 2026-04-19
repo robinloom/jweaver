@@ -91,11 +91,7 @@ public class TreeWeaver implements Weaver {
                     loom.when(objectNode.getFieldName() != null, () -> loom.append(objectNode.getFieldName()).eq());
                     loom.append(objectNode.getClazz().getSimpleName());
                 }
-                case PropertyNode propertyNode -> {
-                    loom.append(propertyNode.getFieldName());
-                    loom.eq();
-                    loom.append(propertyNode.getValue());
-                }
+                case PropertyNode propertyNode -> loom.append(propertyNode.toString());
                 case SequenceNode sequenceNode -> {
                     loom.append(sequenceNode.getFieldName());
                     if (!sequenceNode.getFieldName().equals(sequenceNode.getClassName())) {
@@ -106,7 +102,6 @@ public class TreeWeaver implements Weaver {
                         loom.lbracket().append(sequenceNode.getSize()).rbracket();
                     }
                 }
-                case SequenceItemNode sequenceItem -> loom.append(sequenceItem.getValue());
                 case MapEntryNode mapEntryNode -> loom.append(mapEntryNode.getKey());
             }
 

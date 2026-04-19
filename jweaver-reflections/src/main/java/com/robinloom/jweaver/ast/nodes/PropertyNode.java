@@ -1,8 +1,12 @@
 package com.robinloom.jweaver.ast.nodes;
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
+@NullMarked
 public final class PropertyNode extends ReflectiveNode {
 
-    private final String fieldName;
+    @Nullable private final String fieldName;
     private final String value;
 
     public PropertyNode(String fieldName, String value) {
@@ -10,7 +14,12 @@ public final class PropertyNode extends ReflectiveNode {
         this.value = value;
     }
 
-    public String getFieldName() {
+    public PropertyNode(String value) {
+        this.fieldName = null;
+        this.value = value;
+    }
+
+    public @Nullable String getFieldName() {
         return fieldName;
     }
 
@@ -25,6 +34,10 @@ public final class PropertyNode extends ReflectiveNode {
 
     @Override
     public String toString() {
-        return value;
+        if (fieldName == null) {
+            return value;
+        } else {
+            return fieldName + "=" + value;
+        }
     }
 }

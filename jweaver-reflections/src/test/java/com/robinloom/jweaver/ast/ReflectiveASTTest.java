@@ -159,8 +159,8 @@ public class ReflectiveASTTest {
 
         Assertions.assertEquals(4, root.getChildren().size(), "Should contain 3 elements + 'more' node");
 
-        SequenceItemNode last = (SequenceItemNode) root.getChildren().get(3);
-        Assertions.assertTrue(last.getValue().contains("more"));
+        ReflectiveNode last = root.getChildren().get(3);
+        Assertions.assertTrue(last.toString().contains("more"));
     }
 
     @Test

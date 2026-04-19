@@ -6,8 +6,7 @@ import java.util.Set;
 
 public final class TraversalContext {
 
-    private final Set<Object> visited =
-            Collections.newSetFromMap(new IdentityHashMap<>());
+    private final Set<Object> visited = Collections.newSetFromMap(new IdentityHashMap<>());
 
     private final int maxDepth;
     private int depth = 0;
@@ -17,12 +16,16 @@ public final class TraversalContext {
     }
 
     public boolean enter(Object o) {
+        if (depth >= maxDepth) {
+            return false;
+        }
+
         if (!visited.add(o)) {
             return false;
         }
 
         depth++;
-        return depth <= maxDepth;
+        return true;
     }
 
     public void exit() {

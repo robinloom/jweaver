@@ -36,6 +36,10 @@ public final class Types {
                clazz.getPackageName().startsWith("com.sun");
     }
 
+    public static boolean isIterableType(Class<?> clazz) {
+        return isCollection(clazz) || isArray(clazz) || isMap(clazz);
+    }
+
     public static boolean isCollection(Class<?> clazz) {
         return Collection.class.isAssignableFrom(clazz);
     }
