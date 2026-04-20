@@ -23,6 +23,7 @@ import com.robinloom.jweaver.annotation.WeaveIgnore;
 import com.robinloom.jweaver.annotation.WeaveName;
 import com.robinloom.jweaver.ast.nodes.*;
 import com.robinloom.jweaver.fields.FieldExtractor;
+import com.robinloom.jweaver.fields.TypeNormalizer;
 import com.robinloom.jweaver.util.SensitivityDetection;
 import com.robinloom.jweaver.util.Types;
 
@@ -181,7 +182,7 @@ public class ReflectiveAST {
     }
 
     private ReflectiveNode collection(String fieldName, Collection<?> collection, WeavingContext ctx) {
-        return sequence(fieldName, collection, collection.size(), collection.getClass(), ctx);
+        return sequence(fieldName, collection, collection.size(), TypeNormalizer.normalize(collection.getClass()), ctx);
     }
 
     private ReflectiveNode array(String fieldName, Object array, WeavingContext ctx) {
@@ -192,11 +193,11 @@ public class ReflectiveAST {
             listView.add(Array.get(array, i));
         }
 
-        return sequence(fieldName, listView, length, array.getClass(), ctx);
+        return sequence(fieldName, listView, length, TypeNormalizer.normalize(array.getClass()), ctx);
     }
 
     private ReflectiveNode map(String fieldName, Map<?, ?> map, WeavingContext ctx) {
-        return sequence(fieldName, map.entrySet(), map.size(), map.getClass(), ctx);
+        return sequence(fieldName, map.entrySet(), map.size(), TypeNormalizer.normalize(map.getClass()), ctx);
     }
 
     private ReflectiveNode mapEntry(Map.Entry<?, ?> entry, WeavingContext ctx) {
@@ -260,12 +261,7 @@ public class ReflectiveAST {
             return;
         }
 
-        String name = null;
-        if (Types.isIterableType(item.getClass())) {
-            name = item.getClass().getSimpleName();
-        }
-
-        ReflectiveNode node = toNode(name, item, ctx);
+        ReflectiveNode node = toNode(null, item, ctx);
         if (!(item instanceof Map.Entry)) {
             node.setIndex(index);
         }

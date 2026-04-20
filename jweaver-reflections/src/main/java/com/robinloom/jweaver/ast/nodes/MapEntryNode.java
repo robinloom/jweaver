@@ -33,12 +33,8 @@ public final class MapEntryNode extends ReflectiveNode {
         this.key = key;
     }
 
-    public String getKey() {
-        return key;
-    }
-
     @Override
-    public String getHeader() {
-        return "";
+    public String toString() {
+        return key;
     }
 }

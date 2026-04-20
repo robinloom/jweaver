@@ -50,11 +50,6 @@ public final class PropertyNode extends ReflectiveNode {
     }
 
     @Override
-    public String getHeader() {
-        return value;
-    }
-
-    @Override
     public String toString() {
         if (fieldName == null) {
             return value;

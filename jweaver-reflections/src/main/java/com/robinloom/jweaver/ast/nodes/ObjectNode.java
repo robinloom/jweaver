@@ -45,16 +45,12 @@ public final class ObjectNode extends ReflectiveNode {
         this.clazz = clazz;
     }
 
-    public @Nullable String getFieldName() {
-        return fieldName;
-    }
-
-    public Class<?> getClazz() {
-        return clazz;
-    }
-
     @Override
-    public String getHeader() {
-        return getClazz().getSimpleName();
+    public String toString() {
+        if (fieldName == null || isRoot()) {
+            return clazz.getSimpleName();
+        }  else {
+            return fieldName + "=" +  clazz.getSimpleName();
+        }
     }
 }

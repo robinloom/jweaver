@@ -64,7 +64,7 @@ public class InlineTest {
         record Person(String name, List<String> childrenNames) {}
 
         Person person = new Person("Jane", List.of("Peter", "Judy"));
-        String expected = "Person[name=\"Jane\", childrenNames=List12[2] [\"Peter\", \"Judy\"]]";
+        String expected = "Person[name=\"Jane\", childrenNames=List[2][\"Peter\", \"Judy\"]]";
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.INLINE));
     }
@@ -74,7 +74,7 @@ public class InlineTest {
         record Person(String name, List<Person> neighbors) {}
 
         Person person = new Person("Jane", List.of(new Person("Peter", List.of())));
-        String expected = "Person[name=\"Jane\", neighbors=List12[1] [Person[name=\"Peter\", neighbors=ListN[0] []]]]";
+        String expected = "Person[name=\"Jane\", neighbors=List[1][Person[name=\"Peter\", neighbors=List[0]]]]";
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.INLINE));
     }
@@ -84,7 +84,7 @@ public class InlineTest {
         record Person(int[] numbers) {}
 
         Person person = new Person(new int[]{0,1,2});
-        String expected = "Person[numbers=int[][3] [0, 1, 2]]";
+        String expected = "Person[numbers=int[3][0, 1, 2]]";
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.INLINE));
     }
@@ -94,7 +94,7 @@ public class InlineTest {
         record Person(String[] names) {}
 
         Person person = new Person(new String[]{"Anna", "Maria", "Quinn"});
-        String expected = "Person[names=String[][3] [\"Anna\", \"Maria\", \"Quinn\"]]";
+        String expected = "Person[names=String[3][\"Anna\", \"Maria\", \"Quinn\"]]";
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.INLINE));
     }
@@ -104,7 +104,7 @@ public class InlineTest {
         record Person(Person[] neighbors) {}
 
         Person person = new Person(new Person[]{new Person(null)});
-        String expected = "Person[neighbors=Person[][1] [Person[neighbors=null]]]";
+        String expected = "Person[neighbors=Person[1][Person[neighbors=null]]]";
 
         Assertions.assertEquals(expected, JWeaver.weave(person, Mode.INLINE));
     }
@@ -131,7 +131,7 @@ public class InlineTest {
     void testCollection() {
         List<String> persons = List.of("Anna", "Maria", "Quinn");
 
-        String expected = "ListN[\"Anna\", \"Maria\", \"Quinn\"]";
+        String expected = "List[3][\"Anna\", \"Maria\", \"Quinn\"]";
 
         Assertions.assertEquals(expected,  JWeaver.weave(persons, Mode.INLINE));
     }
@@ -140,7 +140,7 @@ public class InlineTest {
     void testArray() {
         String[] persons = new String[]{"Anna", "Maria", "Quinn"};
 
-        String expected = "String[][\"Anna\", \"Maria\", \"Quinn\"]";
+        String expected = "String[3][\"Anna\", \"Maria\", \"Quinn\"]";
 
         Assertions.assertEquals(expected,  JWeaver.weave(persons, Mode.INLINE));
     }
@@ -148,7 +148,7 @@ public class InlineTest {
     @Test
     void testArrayOfArrays() {
         String[][] arrs = new String[][]{{"a", "b"}, {"c"}};
-        String expected = "String[][][String[][2] [\"a\", \"b\"], String[][1] [\"c\"]]";
+        String expected = "String[][2][String[2][\"a\", \"b\"], String[1][\"c\"]]";
 
         Assertions.assertEquals(expected,  JWeaver.weave(arrs, Mode.INLINE));
     }
@@ -158,7 +158,7 @@ public class InlineTest {
         Map<String, Collection<?>> map = new HashMap<>();
         map.put("key", List.of(1, 2, 3));
 
-        String expected = "HashMap[ListN[3] [1, 2, 3]]";
+        String expected = "HashMap[1][\"key\"=List[3][1, 2, 3]]";
 
         Assertions.assertEquals(expected,  JWeaver.weave(map, Mode.INLINE));
     }
@@ -168,7 +168,7 @@ public class InlineTest {
         Map<String, List<?>> map = new HashMap<>();
         map.put("key", List.of("a", "b"));
 
-        String expected = "HashMap[List12[2] [\"a\", \"b\"]]";
+        String expected = "HashMap[1][\"key\"=List[2][\"a\", \"b\"]]";
         Assertions.assertEquals(expected, JWeaver.weave(map, Mode.INLINE));
     }
 }

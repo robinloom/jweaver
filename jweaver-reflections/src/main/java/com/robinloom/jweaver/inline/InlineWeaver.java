@@ -20,6 +20,7 @@ import com.robinloom.jweaver.Weaver;
 import com.robinloom.jweaver.WeavingContext;
 import com.robinloom.jweaver.ast.*;
 import com.robinloom.jweaver.ast.nodes.*;
+import com.robinloom.loom.Chars;
 import com.robinloom.loom.Loom;
 import org.jspecify.annotations.NonNull;
 
@@ -67,43 +68,27 @@ public class InlineWeaver implements Weaver {
     }
 
     private void traverseDepthFirst(ReflectiveNode node) {
-        if (node.isRoot()) {
-            loom.append(node.getHeader()).append(opening());
-        } else if (node instanceof ObjectNode objectNode) {
-            loom.when(objectNode.getFieldName() != null, () -> loom.append(objectNode.getFieldName()).eq());
-            loom.append(objectNode.getClazz().getSimpleName());
-            loom.append(opening());
-        } else if (node instanceof PropertyNode propertyNode) {
-            loom.append(propertyNode.toString());
-            loom.appendIf(!node.isLastChild(), ", ");
-        } else if (node instanceof SequenceNode sequenceNode) {
-            loom.append(sequenceNode.getFieldName());
-            if (!sequenceNode.getFieldName().equals(sequenceNode.getClassName())) {
-                loom.eq();
-                loom.append(sequenceNode.getClassName());
-            }
-            loom.lbracket().append(sequenceNode.getSize()).rbracket().space();
-            loom.append(opening());
+        loom.append(node);
+
+        if (node instanceof MapEntryNode) {
+            loom.eq();
+        } else if (node.hasChildren()) {
+            loom.append(Chars.LBRACKET);
+        } else if (!node.isLastChild()) {
+            loom.commaSpace();
         }
 
         for (ReflectiveNode child : node.getChildren()) {
             traverseDepthFirst(child);
         }
 
-        if (node instanceof ObjectNode || node instanceof SequenceNode || node.isRoot() ) {
-            loom.append(closing());
-            if (!node.isLastChild() && !(node.isRoot())) {
+        if (node.hasChildren() && !(node instanceof MapEntryNode)) {
+            loom.append(Chars.RBRACKET);
+
+            if (!node.isLastChild() && !node.isRoot()) {
                 loom.commaSpace();
             }
         }
-    }
-
-    protected String opening() {
-        return "[";
-    }
-
-    protected String closing() {
-        return "]";
     }
 
 }

@@ -16,6 +16,9 @@
  */
 package com.robinloom.jweaver.ast.nodes;
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
 /**
  * Represents an ordered collection of elements.
  * <p>
@@ -25,32 +28,25 @@ package com.robinloom.jweaver.ast.nodes;
  * Each child node may carry an index indicating its position within the sequence.
  * The node also retains the collection type and optional size information.
  */
+@NullMarked
 public final class SequenceNode extends ReflectiveNode {
 
-    private final String fieldName;
+    @Nullable private final String fieldName;
     private final Class<?> clazz;
     private final Integer size;
 
-    public SequenceNode(String fieldName, Class<?> clazz, Integer size) {
+    public SequenceNode(@Nullable String fieldName, Class<?> clazz, Integer size) {
         this.fieldName = fieldName;
         this.clazz = clazz;
         this.size = size;
     }
 
-    public String getFieldName() {
-        return fieldName;
-    }
-
-    public String getClassName() {
-        return clazz.getSimpleName();
-    }
-
-    public Integer getSize() {
-        return size;
-    }
-
     @Override
-    public String getHeader() {
-        return getClassName();
+    public String toString() {
+        if (fieldName == null || isRoot()) {
+            return clazz.getSimpleName() + "[" + size + "]";
+        } else {
+            return fieldName + "=" + clazz.getSimpleName() + "[" + size + "]";
+        }
     }
 }

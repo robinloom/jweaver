@@ -79,48 +79,26 @@ public class TreeWeaver implements Weaver {
     }
 
     private void traverseDepthFirst(ReflectiveNode node, List<Boolean> siblingsAtCurrentLevel) {
-        if (node.isRoot()) {
-           loom.line(node.getHeader());
-        } else {
-            for (int i = 0; i < siblingsAtCurrentLevel.size() - 1; i++) {
-                if (siblingsAtCurrentLevel.get(i)) {
-                    loom.append(Chars.PIPE).spaces(3);
-                } else {
-                    loom.spaces(4);
-                }
-            }
-
-            if (node.isLastChild()) {
-                loom.append(Symbols.LAST_TREE_BRANCH).space();
+        for (int i = 0; i < siblingsAtCurrentLevel.size() - 1; i++) {
+            if (siblingsAtCurrentLevel.get(i)) {
+                loom.append(Chars.PIPE).spaces(3);
             } else {
-                loom.append(Symbols.TREE_BRANCH).space();
+                loom.spaces(4);
             }
-
-            if (node.getIndex() != null) {
-                loom.lbracket().append(node.getIndex()).rbracket().space();
-            }
-
-            switch (node) {
-                case ObjectNode objectNode -> {
-                    loom.when(objectNode.getFieldName() != null, () -> loom.append(objectNode.getFieldName()).eq());
-                    loom.append(objectNode.getClazz().getSimpleName());
-                }
-                case PropertyNode propertyNode -> loom.append(propertyNode.toString());
-                case SequenceNode sequenceNode -> {
-                    loom.append(sequenceNode.getFieldName());
-                    if (!sequenceNode.getFieldName().equals(sequenceNode.getClassName())) {
-                        loom.eq();
-                        loom.append(sequenceNode.getClassName());
-                    }
-                    if (sequenceNode.getSize() != null) {
-                        loom.lbracket().append(sequenceNode.getSize()).rbracket();
-                    }
-                }
-                case MapEntryNode mapEntryNode -> loom.append(mapEntryNode.getKey());
-            }
-
-            loom.newline();
         }
+
+        if (node.isLastChild()) {
+            loom.append(Symbols.LAST_TREE_BRANCH).space();
+        } else if (!node.isRoot()) {
+            loom.append(Symbols.TREE_BRANCH).space();
+        }
+
+        if (node.getIndex() != null) {
+            loom.lbracket().append(node.getIndex()).rbracket().space();
+        }
+
+        loom.append(node);
+        loom.newline();
 
         List<ReflectiveNode> children = node.getChildren();
 

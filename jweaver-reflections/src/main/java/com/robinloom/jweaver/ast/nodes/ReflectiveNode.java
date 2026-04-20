@@ -58,10 +58,12 @@ public sealed abstract class ReflectiveNode permits ObjectNode, PropertyNode, Se
         this.index = index;
     }
 
-    public abstract String getHeader();
-
     public List<ReflectiveNode> getChildren() {
         return children;
+    }
+
+    public boolean hasChildren() {
+        return !children.isEmpty();
     }
 
     public boolean isRoot() {
