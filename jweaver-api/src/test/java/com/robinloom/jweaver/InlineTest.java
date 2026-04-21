@@ -158,7 +158,7 @@ public class InlineTest {
         Map<String, Collection<?>> map = new HashMap<>();
         map.put("key", List.of(1, 2, 3));
 
-        String expected = "HashMap[1][\"key\"=List[3][1, 2, 3]]";
+        String expected = "Map[1][\"key\"=List[3][1, 2, 3]]";
 
         Assertions.assertEquals(expected,  JWeaver.weave(map, Mode.INLINE));
     }
@@ -168,7 +168,7 @@ public class InlineTest {
         Map<String, List<?>> map = new HashMap<>();
         map.put("key", List.of("a", "b"));
 
-        String expected = "HashMap[1][\"key\"=List[2][\"a\", \"b\"]]";
+        String expected = "Map[1][\"key\"=List[2][\"a\", \"b\"]]";
         Assertions.assertEquals(expected, JWeaver.weave(map, Mode.INLINE));
     }
 }

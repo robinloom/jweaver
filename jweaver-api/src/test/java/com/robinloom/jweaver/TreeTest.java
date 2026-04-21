@@ -81,11 +81,11 @@ public class TreeTest {
                       List<String> addresses,
                       String bloodType) {}
 
-        Person person = new Person("Jane", List.of("Peter", "Judy"), 29,
+        Person person = new Person("P. Sherman", List.of("Peter", "Judy"), 29,
                                    List.of("42 Wallaby Way, Sydney"), "0+");
         String expected = """
                            Person
-                           |-- name="Jane"
+                           |-- name="P. Sherman"
                            |-- childrenNames=List[2]
                            |   |-- [0] "Peter"
                            |   `-- [1] "Judy"
@@ -232,7 +232,7 @@ public class TreeTest {
         map.put("key2", "value2");
 
         String expected = """
-                            HashMap[2]
+                            Map[2]
                             |-- "key1"="value1"
                             `-- "key2"="value2\"""";
 
@@ -245,7 +245,7 @@ public class TreeTest {
         map.put("key", List.of("a", "b"));
 
         String expected = """
-                        HashMap[1]
+                        Map[1]
                         `-- "key"
                             `-- List[2]
                                 |-- [0] "a"
@@ -289,13 +289,13 @@ public class TreeTest {
 
         String expected = """
                 SessionStore
-                `-- sessions=ConcurrentHashMap[1]
+                `-- sessions=Map[1]
                     `-- SessionId[value=ea15da83-96f3-4eff-87bf-b61f4ae36b30]
                         `-- SessionData
                             |-- userId=aac2d6d1-dd44-46cd-8b2f-20163d396d11
                             |-- roles=List[1]
                             |   `-- [0] Role.GUEST
-                            `-- houseHoldRoles=HashMap[1]
+                            `-- houseHoldRoles=Map[1]
                                 `-- HouseHoldId[value=6679b8d6-561f-4838-95bc-f4f8bdc6568b]
                                     `-- List[1]
                                         `-- [0] HouseHoldRole.ACTIVE""";
