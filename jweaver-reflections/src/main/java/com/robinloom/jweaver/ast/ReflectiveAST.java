@@ -29,10 +29,7 @@ import com.robinloom.jweaver.util.Types;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Builds a reflective, acyclic object tree from arbitrary Java objects.
@@ -175,7 +172,7 @@ public class ReflectiveAST {
                 }
             }
         } finally {
-            traversalContext.exit();
+            traversalContext.exit(object);
         }
 
         return root;
@@ -249,7 +246,7 @@ public class ReflectiveAST {
             i++;
         }
 
-        traversalContext.exit();
+        traversalContext.exit(iterable);
         return root;
     }
 

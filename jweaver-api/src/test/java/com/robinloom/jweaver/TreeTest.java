@@ -200,7 +200,7 @@ public class TreeTest {
     }
 
     @Test
-    void testCollection() {
+    void testList() {
         List<String> persons = List.of("Anna", "Maria", "Quinn");
 
         String expected = """

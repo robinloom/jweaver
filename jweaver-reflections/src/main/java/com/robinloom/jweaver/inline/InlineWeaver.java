@@ -74,7 +74,7 @@ public class InlineWeaver implements Weaver {
             loom.eq();
         } else if (node.hasChildren()) {
             loom.append(Chars.LBRACKET);
-        } else if (!node.isLastChild()) {
+        } else if (!node.isLastChild() && !node.isRoot()) {
             loom.commaSpace();
         }
 

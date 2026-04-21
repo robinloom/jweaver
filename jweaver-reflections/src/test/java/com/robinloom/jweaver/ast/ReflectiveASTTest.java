@@ -165,30 +165,6 @@ public class ReflectiveASTTest {
     }
 
     @Test
-    void testSharedReferenceWithinSameGraph() {
-        class Node {
-            Node left;
-            Node right;
-        }
-
-        Node shared = new Node();
-
-        Node root = new Node();
-        root.left = shared;
-        root.right = shared;
-
-        ReflectiveAST ast = new ReflectiveAST();
-
-        ReflectiveNode result = ast.build(root, dummyContext());
-
-        ReflectiveNode left = result.getChildren().get(0);
-        ReflectiveNode right = result.getChildren().get(1);
-
-        Assertions.assertFalse(left.getChildren().isEmpty());
-        Assertions.assertTrue(right.getChildren().isEmpty());
-    }
-
-    @Test
     void testMapEntries() {
         Map<String, Integer> map = Map.of("a", 1, "b", 2);
 

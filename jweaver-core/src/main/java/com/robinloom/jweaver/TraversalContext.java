@@ -86,8 +86,9 @@ public final class TraversalContext {
      * <p>
      * Must be paired with a successful {@link #enter(Object)} call.
      */
-    public void exit() {
+    public void exit(Object o) {
         depth--;
+        visited.remove(o);
     }
 
     /**
