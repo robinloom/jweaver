@@ -108,7 +108,7 @@ Basic installation
 ```xml
 <groupId>com.robinloom</groupId>
 <artifactId>jweaver</artifactId>
-<version>3.0</version>
+<version>4.0</version>
 ```
 
 ## License
