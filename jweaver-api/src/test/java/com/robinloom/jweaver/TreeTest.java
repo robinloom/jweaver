@@ -292,7 +292,7 @@ public class TreeTest {
                 `-- sessions=Map[1]
                     `-- SessionId[value=ea15da83-96f3-4eff-87bf-b61f4ae36b30]
                         `-- SessionData
-                            |-- userId=aac2d6d1-dd44-46cd-8b2f-20163d396d11
+                            |-- userId=UUID["aac2d6d1-dd44-46cd-8b2f-20163d396d11"]
                             |-- roles=List[1]
                             |   `-- [0] Role.GUEST
                             `-- houseHoldRoles=Map[1]
