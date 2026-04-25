@@ -42,17 +42,18 @@ import com.robinloom.jweaver.dictionary.Dictionary;
  */
 public final class JWeaver {
 
+    private static Mode DEFAULT_MODE = Mode.INLINE;
+
     private JWeaver() {}
 
     /**
-     * Generates a string representation of the given object using the default
-     * {@link Mode#INLINE} mode.
+     * Generates a string representation of the given object using the default mode.
      *
      * @param object the object to generate a string representation for
      * @return a human-readable string representation of the given object
      */
     public static String weave(Object object) {
-        return weave(object, Mode.INLINE);
+        return weave(object, DEFAULT_MODE);
     }
 
     /**
@@ -66,6 +67,14 @@ public final class JWeaver {
     public static String weave(Object object, Mode mode) {
         WeavingContext ctx = new WeavingContext(mode, Dictionary.getInstance(), ModeDispatcher.getInstance(), true);
         return ctx.weave(object);
+    }
+
+    /**
+     * Switches the default mode for {@link #weave(Object)}.
+     * @param mode the new default mode to use
+     */
+    public static void switchMode(Mode mode) {
+        DEFAULT_MODE = mode;
     }
 
 }
