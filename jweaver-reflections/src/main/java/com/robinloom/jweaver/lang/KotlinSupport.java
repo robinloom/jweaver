@@ -14,21 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.robinloom.jweaver.dictionary;
+package com.robinloom.jweaver.lang;
 
-import com.robinloom.jweaver.TypeWeaver;
-import com.robinloom.jweaver.WeavingContext;
-import org.jspecify.annotations.NonNull;
+import java.lang.annotation.Annotation;
 
-class JdkWeaver extends TypeWeaver {
+final class KotlinSupport {
 
-    @Override
-    public Class<?> targetType() {
-        return Object.class;
-    }
+    private static final String KOTLIN_METADATA = "kotlin.Metadata";
 
-    @Override
-    public String weave(@NonNull Object object, WeavingContext ctx) {
-        return object.toString();
+    static boolean isKotlinClass(Class<?> clazz) {
+        for (Annotation a : clazz.getDeclaredAnnotations()) {
+            if (a.annotationType().getName().equals(KOTLIN_METADATA)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

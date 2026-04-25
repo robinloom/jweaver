@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.robinloom.jweaver.fields;
+package com.robinloom.jweaver.lang;
 
 import com.robinloom.jweaver.annotation.WeaveIgnore;
 import com.robinloom.jweaver.ast.ReflectiveAST;

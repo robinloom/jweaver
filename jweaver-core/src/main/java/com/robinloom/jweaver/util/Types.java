@@ -23,23 +23,6 @@ public final class Types {
 
     private Types() {}
 
-    public static boolean isSimpleType(Class<?> clazz) {
-        return (isJdkType(clazz) && !isCollection(clazz) && !isArray(clazz) && !isMap(clazz) &&
-                !Map.Entry.class.isAssignableFrom(clazz)) ||  clazz.isEnum();
-    }
-
-    public static boolean isJdkType(Class<?> clazz) {
-        return clazz.isPrimitive() ||
-               clazz.getPackageName().startsWith("java.") ||
-               clazz.getPackageName().startsWith("javax.") ||
-               clazz.getPackageName().startsWith("jdk.") ||
-               clazz.getPackageName().startsWith("com.sun");
-    }
-
-    public static boolean isIterableType(Class<?> clazz) {
-        return isCollection(clazz) || isArray(clazz) || isMap(clazz);
-    }
-
     public static boolean isCollection(Class<?> clazz) {
         return Collection.class.isAssignableFrom(clazz);
     }

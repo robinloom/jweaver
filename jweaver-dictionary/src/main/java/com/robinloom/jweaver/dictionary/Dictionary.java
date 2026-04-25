@@ -29,8 +29,10 @@ import com.robinloom.jweaver.dictionary.java.security.cert.X509CertificateWeaver
 import com.robinloom.jweaver.dictionary.java.time.DurationWeaver;
 import com.robinloom.jweaver.dictionary.java.time.PeriodWeaver;
 import com.robinloom.jweaver.dictionary.java.time.TemporalWeaver;
-import com.robinloom.jweaver.dictionary.java.util.*;
-import com.robinloom.jweaver.util.Types;
+import com.robinloom.jweaver.dictionary.java.util.DateWeaver;
+import com.robinloom.jweaver.dictionary.java.util.MapEntryWeaver;
+import com.robinloom.jweaver.dictionary.java.util.OptionalWeaver;
+import com.robinloom.jweaver.lang.ExpansionBlacklist;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +74,7 @@ public class Dictionary implements TypeWeaverResolver {
 
     private static final List<TypeWeaver> RENDERERS = new ArrayList<>();
     private static final Map<Class<?>, TypeWeaver> CACHE = new ConcurrentHashMap<>();
-    private static final JdkWeaver JDK_WEAVER = new JdkWeaver();
+    private static final BlacklistWeaver FALLBACK = new BlacklistWeaver();
 
     static {
         // java.io
@@ -135,8 +137,8 @@ public class Dictionary implements TypeWeaverResolver {
             return best;
         }
 
-        if (Types.isSimpleType(clazz)) {
-            return JDK_WEAVER;
+        if (ExpansionBlacklist.isBlacklisted(clazz)) {
+            return FALLBACK;
         }
 
         return null;
