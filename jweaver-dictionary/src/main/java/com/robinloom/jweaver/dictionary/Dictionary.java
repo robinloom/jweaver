@@ -22,6 +22,8 @@ import com.robinloom.jweaver.dictionary.java.io.ByteArrayOutputStreamWeaver;
 import com.robinloom.jweaver.dictionary.java.io.FileWeaver;
 import com.robinloom.jweaver.dictionary.java.io.InputStreamWeaver;
 import com.robinloom.jweaver.dictionary.java.lang.*;
+import com.robinloom.jweaver.dictionary.java.net.URIWeaver;
+import com.robinloom.jweaver.dictionary.java.net.URLWeaver;
 import com.robinloom.jweaver.dictionary.java.nio.PathWeaver;
 import com.robinloom.jweaver.dictionary.java.security.KeyWeaver;
 import com.robinloom.jweaver.dictionary.java.security.cert.X509CRLWeaver;
@@ -32,6 +34,7 @@ import com.robinloom.jweaver.dictionary.java.time.TemporalWeaver;
 import com.robinloom.jweaver.dictionary.java.util.DateWeaver;
 import com.robinloom.jweaver.dictionary.java.util.MapEntryWeaver;
 import com.robinloom.jweaver.dictionary.java.util.OptionalWeaver;
+import com.robinloom.jweaver.dictionary.java.util.UUIDWeaver;
 import com.robinloom.jweaver.lang.ExpansionBlacklist;
 
 import java.util.ArrayList;
@@ -88,12 +91,16 @@ public class Dictionary implements TypeWeaverResolver {
         register(new ClassWeaver());
         register(new EnumWeaver());
         register(new StringWeaver());
+        // java.net
+        register(new URIWeaver());
+        register(new URLWeaver());
         // java.nio
         register(new PathWeaver());
         // java.util
         register(new DateWeaver());
         register(new MapEntryWeaver());
         register(new OptionalWeaver());
+        register(new UUIDWeaver());
         // java.time
         register(new DurationWeaver());
         register(new PeriodWeaver());
