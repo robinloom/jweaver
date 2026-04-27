@@ -35,7 +35,7 @@ import com.robinloom.jweaver.dictionary.java.util.DateWeaver;
 import com.robinloom.jweaver.dictionary.java.util.MapEntryWeaver;
 import com.robinloom.jweaver.dictionary.java.util.OptionalWeaver;
 import com.robinloom.jweaver.dictionary.java.util.UUIDWeaver;
-import com.robinloom.jweaver.lang.ExpansionBlacklist;
+import com.robinloom.jweaver.lang.ExpansionPolicy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -144,7 +144,7 @@ public class Dictionary implements TypeWeaverResolver {
             return best;
         }
 
-        if (ExpansionBlacklist.isBlacklisted(clazz)) {
+        if (ExpansionPolicy.shouldNotExpand(clazz)) {
             return FALLBACK;
         }
 

@@ -22,7 +22,7 @@ import com.robinloom.jweaver.WeavingContext;
 import com.robinloom.jweaver.annotation.WeaveIgnore;
 import com.robinloom.jweaver.annotation.WeaveName;
 import com.robinloom.jweaver.ast.nodes.*;
-import com.robinloom.jweaver.lang.ExpansionBlacklist;
+import com.robinloom.jweaver.lang.ExpansionPolicy;
 import com.robinloom.jweaver.lang.FieldExtractor;
 import com.robinloom.jweaver.lang.TypeNormalizer;
 import com.robinloom.jweaver.util.SensitivityDetection;
@@ -30,7 +30,10 @@ import com.robinloom.jweaver.util.Types;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Builds a reflective, acyclic object tree from arbitrary Java objects.
@@ -105,7 +108,7 @@ public class ReflectiveAST {
         Class<?> type = value.getClass();
 
         // --- Blacklisted types ---
-        if (ExpansionBlacklist.isBlacklisted(type)) {
+        if (ExpansionPolicy.shouldNotExpand(type)) {
             return new PropertyNode(name, ctx.weave(value));
         }
 
@@ -202,7 +205,7 @@ public class ReflectiveAST {
         String key;
         Object value = entry.getValue();
 
-        if (ExpansionBlacklist.isBlacklisted(entry.getKey().getClass())) {
+        if (ExpansionPolicy.shouldNotExpand(entry.getKey().getClass())) {
             key = ctx.weave(entry.getKey());
         } else {
             key = entry.getKey().toString();
@@ -212,7 +215,7 @@ public class ReflectiveAST {
             return new PropertyNode(key, "null");
         }
 
-        if (ExpansionBlacklist.isBlacklisted(value.getClass()) ) {
+        if (ExpansionPolicy.shouldNotExpand(value.getClass()) ) {
             return new PropertyNode(key, ctx.weave(value));
         }
 
