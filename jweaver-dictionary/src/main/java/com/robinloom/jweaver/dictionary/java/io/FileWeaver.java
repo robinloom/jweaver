@@ -18,7 +18,6 @@ package com.robinloom.jweaver.dictionary.java.io;
 
 import com.robinloom.jweaver.TypeWeaver;
 import com.robinloom.jweaver.WeavingContext;
-import com.robinloom.loom.Loom;
 import org.jspecify.annotations.NonNull;
 
 import java.io.File;
@@ -34,13 +33,26 @@ public class FileWeaver extends TypeWeaver {
     public String weave(@NonNull Object object, WeavingContext ctx) {
         File file = (File) object;
 
-        return Loom.with("File[", file.getAbsolutePath())
-                   .appendIf(file.exists(), ", exists", ", missing")
-                   .appendIf(file.isDirectory(), ", dir")
-                   .appendIf(file.isFile(), ", file, ")
-                   .appendIf(file.isFile(), formatSize(file.length()))
-                   .rbracket()
-                   .toString();
+        StringBuilder sb = new StringBuilder("File[");
+        sb.append(file.getAbsolutePath());
+
+        if (file.exists()) {
+            sb.append(", exists");
+        } else {
+            sb.append(", missing");
+        }
+
+        if (file.isDirectory()) {
+            sb.append(", dir");
+        }
+
+        if (file.isFile()) {
+            sb.append(", file, ");
+            sb.append(formatSize(file.length()));
+        }
+
+        sb.append("]");
+        return sb.toString();
     }
 
     private String formatSize(long bytes) {

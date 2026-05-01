@@ -18,7 +18,6 @@ package com.robinloom.jweaver.dictionary.java.io;
 
 import com.robinloom.jweaver.TypeWeaver;
 import com.robinloom.jweaver.WeavingContext;
-import com.robinloom.loom.Loom;
 import org.jspecify.annotations.NonNull;
 
 import java.io.IOException;
@@ -36,10 +35,7 @@ public class InputStreamWeaver extends TypeWeaver {
         InputStream in = (InputStream) object;
         String className = in.getClass().getSimpleName();
         try {
-            return Loom.with(className,
-                             "[remaining=", in.available(),
-                            "]")
-                       .toString();
+            return className + "[remaining=" + in.available() + "]";
         } catch (IOException e) {
             return className + "[]";
         }

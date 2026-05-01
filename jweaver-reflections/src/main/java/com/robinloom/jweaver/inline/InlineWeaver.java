@@ -20,8 +20,6 @@ import com.robinloom.jweaver.Weaver;
 import com.robinloom.jweaver.WeavingContext;
 import com.robinloom.jweaver.ast.*;
 import com.robinloom.jweaver.ast.nodes.*;
-import com.robinloom.loom.Chars;
-import com.robinloom.loom.Loom;
 import org.jspecify.annotations.NonNull;
 
 /**
@@ -45,8 +43,9 @@ import org.jspecify.annotations.NonNull;
  * instantiated per use.
  */
 public class InlineWeaver implements Weaver {
+
     private final ReflectiveAST ast = new ReflectiveAST();
-    private final Loom loom = Loom.empty();
+    private StringBuilder sb;
 
     public InlineWeaver() {}
 
@@ -61,21 +60,21 @@ public class InlineWeaver implements Weaver {
     public String weave(@NonNull Object object, WeavingContext ctx) {
         ReflectiveNode root = ast.build(object, ctx);
 
-        loom.reset();
+        sb = new StringBuilder();
         traverseDepthFirst(root);
 
-        return loom.toString();
+        return sb.toString();
     }
 
     private void traverseDepthFirst(ReflectiveNode node) {
-        loom.append(node);
+        sb.append(node);
 
         if (node instanceof MapEntryNode) {
-            loom.eq();
+            sb.append("=");
         } else if (node.hasChildren()) {
-            loom.append(Chars.LBRACKET);
+            sb.append("[");
         } else if (!node.isLastChild() && !node.isRoot()) {
-            loom.commaSpace();
+            sb.append(", ");
         }
 
         for (ReflectiveNode child : node.getChildren()) {
@@ -83,10 +82,10 @@ public class InlineWeaver implements Weaver {
         }
 
         if (node.hasChildren() && !(node instanceof MapEntryNode)) {
-            loom.append(Chars.RBRACKET);
+            sb.append("]");
 
             if (!node.isLastChild() && !node.isRoot()) {
-                loom.commaSpace();
+                sb.append(", ");
             }
         }
     }

@@ -18,7 +18,6 @@ package com.robinloom.jweaver.dictionary.java.security.cert;
 
 import com.robinloom.jweaver.TypeWeaver;
 import com.robinloom.jweaver.WeavingContext;
-import com.robinloom.loom.Loom;
 import org.jspecify.annotations.NonNull;
 
 import javax.naming.ldap.LdapName;
@@ -43,17 +42,11 @@ public class X509CRLWeaver extends TypeWeaver {
 
         String subject = formatSubject(crl.getIssuerX500Principal());
 
-        return Loom.with("X509CRL")
-                   .lbracket()
-                   .keyEqValue("issuer", subject)
-                   .commaSpace()
-                   .keyEqValue("version", crl.getVersion())
-                   .commaSpace()
-                   .keyEqValue("algorithm", crl.getSigAlgName())
-                   .commaSpace()
-                   .keyEqValue("entries", crl.getRevokedCertificates() != null ? crl.getRevokedCertificates().size() : 0)
-                   .rbracket()
-                   .toString();
+        return "X509CRL[" + "issuer=" + subject + ", " +
+                "version=" + crl.getVersion() + ", " +
+                "algorithm=" + crl.getSigAlgName() + ", " +
+                "entries=" + (crl.getRevokedCertificates() != null ? crl.getRevokedCertificates().size() : 0) +
+                "]";
     }
 
     private String formatSubject(X500Principal principal) {

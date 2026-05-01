@@ -18,7 +18,6 @@ package com.robinloom.jweaver.dictionary.java.security.cert;
 
 import com.robinloom.jweaver.TypeWeaver;
 import com.robinloom.jweaver.WeavingContext;
-import com.robinloom.loom.Loom;
 import org.jspecify.annotations.NonNull;
 
 import javax.naming.ldap.LdapName;
@@ -44,18 +43,10 @@ public class X509CertificateWeaver extends TypeWeaver {
         String notBefore = formatDate(cert.getNotBefore());
         String notAfter = formatDate(cert.getNotAfter());
 
-        Loom loom = Loom.with("X509Certificate");
-        loom.bracket(() -> {
-                loom.keyEqValue("subject", subject);
-                loom.commaSpace();
-                loom.keyEqValue("issuer", issuer);
-                loom.commaSpace();
-                loom.append("validity");
-                loom.eq();
-                loom.append(notBefore).space().append("-").space().append(notAfter);
-        });
-
-        return loom.toString();
+        return "X509Certificate[" + "subject=" + subject + ", " +
+                                    "issuer=" + issuer + ", " +
+                                    "validity=" + notBefore + "-" + notAfter +
+                               "]";
     }
 
     private String formatSubject(X500Principal principal) {

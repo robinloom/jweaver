@@ -56,7 +56,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *     is assignable from the requested class</li>
  *     <li>If multiple candidates match, the most specific type is selected</li>
  *     <li>If no match is found, simple types are handled by a default
- *     {@code JdkWeaver}</li>
+ *     {@code ToStringWeaver}</li>
  *     <li>If no applicable weaver exists, {@code null} is returned</li>
  * </ul>
  * <p>
@@ -77,7 +77,7 @@ public class Dictionary implements TypeWeaverResolver {
 
     private static final List<TypeWeaver> RENDERERS = new ArrayList<>();
     private static final Map<Class<?>, TypeWeaver> CACHE = new ConcurrentHashMap<>();
-    private static final BlacklistWeaver FALLBACK = new BlacklistWeaver();
+    private static final ToStringWeaver FALLBACK = new ToStringWeaver();
 
     static {
         // java.io

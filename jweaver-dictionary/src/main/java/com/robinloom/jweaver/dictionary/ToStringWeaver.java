@@ -20,7 +20,7 @@ import com.robinloom.jweaver.TypeWeaver;
 import com.robinloom.jweaver.WeavingContext;
 import org.jspecify.annotations.NonNull;
 
-class BlacklistWeaver extends TypeWeaver {
+class ToStringWeaver extends TypeWeaver {
 
     @Override
     public Class<?> targetType() {

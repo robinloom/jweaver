@@ -20,9 +20,6 @@ import com.robinloom.jweaver.Weaver;
 import com.robinloom.jweaver.WeavingContext;
 import com.robinloom.jweaver.ast.*;
 import com.robinloom.jweaver.ast.nodes.*;
-import com.robinloom.loom.Chars;
-import com.robinloom.loom.Loom;
-import com.robinloom.loom.Symbols;
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
@@ -56,7 +53,7 @@ import java.util.List;
 public class TreeWeaver implements Weaver {
 
     private final ReflectiveAST ast = new ReflectiveAST();
-    private final Loom loom = Loom.empty();
+    private StringBuilder sb = new StringBuilder();
 
     /**
      * Produces a tree-style representation of the given object.
@@ -71,34 +68,37 @@ public class TreeWeaver implements Weaver {
 
         List<Boolean> siblingsAtCurrentLevel = new ArrayList<>();
 
-        loom.reset();
+        sb = new StringBuilder();
         traverseDepthFirst(tree, siblingsAtCurrentLevel);
-        loom.removeLastNewline();
+        if (sb.charAt(sb.length() - 1) == '\n') {
+            sb.deleteCharAt(sb.length() - 1);
+        }
 
-        return loom.toString();
+        return sb.toString();
     }
 
     private void traverseDepthFirst(ReflectiveNode node, List<Boolean> siblingsAtCurrentLevel) {
         for (int i = 0; i < siblingsAtCurrentLevel.size() - 1; i++) {
             if (siblingsAtCurrentLevel.get(i)) {
-                loom.append(Chars.PIPE).spaces(3);
+                sb.append("|");
+                sb.append("   ");
             } else {
-                loom.spaces(4);
+                sb.append("    ");
             }
         }
 
         if (node.isLastChild()) {
-            loom.append(Symbols.LAST_TREE_BRANCH).space();
+            sb.append("`-- ");
         } else if (!node.isRoot()) {
-            loom.append(Symbols.TREE_BRANCH).space();
+            sb.append("|-- ");
         }
 
         if (node.getIndex() != null) {
-            loom.lbracket().append(node.getIndex()).rbracket().space();
+            sb.append("[").append(node.getIndex()).append("] ");
         }
 
-        loom.append(node);
-        loom.newline();
+        sb.append(node);
+        sb.append('\n');
 
         List<ReflectiveNode> children = node.getChildren();
 

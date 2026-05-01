@@ -18,8 +18,6 @@ package com.robinloom.jweaver.dictionary.java.lang;
 
 import com.robinloom.jweaver.TypeWeaver;
 import com.robinloom.jweaver.WeavingContext;
-import com.robinloom.loom.Chars;
-import com.robinloom.loom.Loom;
 import org.jspecify.annotations.NonNull;
 
 public class ByteArrayWeaver extends TypeWeaver {
@@ -37,21 +35,23 @@ public class ByteArrayWeaver extends TypeWeaver {
             return "byte[0]";
         }
 
-        Loom loom = Loom.with("byte[", bytes.length).append("]: ");
+        StringBuilder sb = new StringBuilder("byte[");
+        sb.append(bytes.length);
+        sb.append("]: ");
 
         int limit = Math.min(bytes.length, 8);
 
         for (int i = 0; i < limit; i++) {
-            loom.append(String.format("%02X", bytes[i]));
+            sb.append(String.format("%02X", bytes[i]));
             if (i < limit - 1) {
-                loom.space();
+                sb.append(" ");
             }
         }
 
         if (bytes.length > limit) {
-            loom.space().append(Chars.repeat(Chars.DOT, 2));
+            sb.append(" ..");
         }
 
-        return loom.toString();
+        return sb.toString();
     }
 }
