@@ -26,23 +26,7 @@ Output (INLINE mode):
 Person[name=John Doe, birthday=1990-01-01]
 ```
 
----
-
-## Rendering Modes
-
-JWeaver supports multiple rendering styles depending on the context.
-
-### INLINE (default)
-
-Compact, record-style output ideal for logs.
-
-```
-Person[name=John Doe, birthday=1990-01-01]
-```
-
-### TREE
-
-Structured representation for nested object graphs.
+Output (TREE mode):
 
 ```
 Person
@@ -108,7 +92,7 @@ Basic installation
 ```xml
 <groupId>com.robinloom</groupId>
 <artifactId>jweaver</artifactId>
-<version>4.0</version>
+<version>4.1</version>
 ```
 
 ## License
