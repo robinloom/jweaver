@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [4.1] - 2026-05-01
+
+### Added
+- Safer traversal of object graphs
+  - avoids rendering proxies (e.g. Hibernate)
+  - skips consumable types such as streams and iterators
+- Default mode is now switchable via `JWeaver.switchMode(Mode mode)`
+
 ## [4.0] - 2026-04-21
 
 ### Added

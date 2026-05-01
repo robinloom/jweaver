@@ -91,7 +91,7 @@ Basic installation
 
 ```xml
 <groupId>com.robinloom</groupId>
-<artifactId>jweaver</artifactId>
+<artifactId>jweaver-api</artifactId>
 <version>4.1</version>
 ```
 
