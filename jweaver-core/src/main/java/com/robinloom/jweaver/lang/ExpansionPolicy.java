@@ -1,5 +1,7 @@
 package com.robinloom.jweaver.lang;
 
+import org.jspecify.annotations.Nullable;
+
 import java.io.InputStream;
 import java.io.Reader;
 import java.lang.reflect.Proxy;
@@ -10,11 +12,45 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
+/**
+
+ * Heuristic policy that determines whether a given type should be excluded
+ * from reflective expansion.
+ *
+ * <p>The goal of this policy is to prevent unsafe, expensive, or semantically
+ * misleading traversals when inspecting object graphs. Instead of relying on
+ * explicit configuration, this class applies a set of pragmatic rules based on
+ * common Java and ecosystem patterns.</p>
+ *
+ * <p>Types are excluded from expansion if they fall into one of the following categories:</p>
+ * <ul>
+ *     <li><strong>Value types</strong> – simple, self-contained types that should not be expanded further</li>
+ *     <li><strong>Consumables</strong> – types that represent one-time or stateful resources (e.g. streams, iterators, futures)</li>
+ *     <li><strong>Proxies</strong> – dynamically generated classes (e.g. CGLIB, ByteBuddy, JDK proxies)</li>
+ *     <li><strong>JDK internals</strong> – low-level or reflective infrastructure classes</li>
+ *     <li><strong>Infrastructure types</strong> – framework or runtime components (e.g. Spring, Hibernate, thread pools)</li>
+ * </ul>
+ *
+ * <p>Container types such as arrays, {@link Iterable}, and {@link Map} are explicitly
+ * allowed, as they represent structural data rather than infrastructure.</p>
+ *
+ * <p>This policy is intentionally conservative and may evolve over time as new
+ * edge cases are discovered.</p>
+ */
 public final class ExpansionPolicy {
 
     private ExpansionPolicy() {}
 
-    public static boolean shouldNotExpand(Class<?> type) {
+    /**
+     * Determines whether the given type should <strong>not</strong> be expanded.
+     *
+     * <p>A return value of {@code true} indicates that the type should be treated
+     * as a leaf and not traversed reflectively.</p>
+     *
+     * @param type the type to evaluate
+     * @return {@code true} if the type should not be expanded, {@code false} otherwise
+     */
+    public static boolean shouldNotExpand(@Nullable Class<?> type) {
 
         if (type == null) return true;
 
