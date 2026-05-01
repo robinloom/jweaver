@@ -26,7 +26,6 @@ import com.robinloom.jweaver.lang.ExpansionPolicy;
 import com.robinloom.jweaver.lang.FieldExtractor;
 import com.robinloom.jweaver.lang.TypeNormalizer;
 import com.robinloom.jweaver.util.SensitivityDetection;
-import com.robinloom.jweaver.util.Types;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -113,18 +112,18 @@ public class ReflectiveAST {
         }
 
         // --- Collection ---
-        if (Types.isCollection(type)) {
-            return collection(name, (Collection<?>) value, ctx);
+        if (value instanceof Collection<?> collection) {
+            return collection(name, collection, ctx);
         }
 
         // --- Array ---
-        if (Types.isArray(type)) {
+        if (type.isArray()) {
             return array(name, value, ctx);
         }
 
         // --- Map ---
-        if (Types.isMap(type)) {
-            return map(name, (Map<?, ?>) value, ctx);
+        if (value instanceof Map<?, ?> map) {
+            return map(name, map, ctx);
         }
 
         // --- Map.Entry ---
