@@ -302,4 +302,39 @@ public class TreeTest {
 
         Assertions.assertEquals(expected, JWeaver.weave(sessionStore, Mode.TREE));
     }
+
+    @Test
+    void testExampleInReadme() {
+        record Address(String street,
+                       String city) {}
+
+        record Customer(String name,
+                        Address address) {}
+
+        record Item(String name) {}
+
+        enum Payment { CASH, CARD}
+
+        record Order(Customer customer,
+                     List<Item> items,
+                     Payment payment) {}
+
+        Order order = new Order(new Customer("John", new Address("123 Main St", "Anytown")),
+                               List.of(new Item("Widget")),
+                               Payment.CASH);
+
+        String expected = """
+                Order
+                |-- customer=Customer
+                |   |-- name="John"
+                |   `-- address=Address
+                |       |-- street="123 Main St"
+                |       `-- city="Anytown"
+                |-- items=List[1]
+                |   `-- [0] Item
+                |       `-- name="Widget"
+                `-- payment=Payment.CASH""";
+
+        Assertions.assertEquals(expected, JWeaver.weave(order, Mode.TREE));
+    }
 }
