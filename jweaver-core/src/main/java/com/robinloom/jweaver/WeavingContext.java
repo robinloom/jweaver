@@ -75,6 +75,24 @@ public final class WeavingContext {
     }
 
     /**
+     * Attempts to render the given value using a dedicated {@link TypeWeaver},
+     * without falling back to reflective traversal.
+     * <p>
+     * This allows callers that perform their own structural traversal (such as
+     * {@code ReflectiveAST}) to still honor registered {@link TypeWeaver}s for
+     * complex types, instead of only consulting them for values that are already
+     * excluded from expansion.
+     *
+     * @param value the value to render (must not be {@code null})
+     * @return the rendered representation, or {@code null} if no {@link TypeWeaver}
+     *         is registered for the value's type
+     */
+    public String weaveIfKnownType(Object value) {
+        TypeWeaver typeWeaver = typeWeaverResolver.resolve(value.getClass());
+        return typeWeaver != null ? typeWeaver.weave(value, childContext()) : null;
+    }
+
+    /**
      * Indicates whether the current weaving operation is at the root level.
      *
      * @return {@code true} if this context represents the root object,

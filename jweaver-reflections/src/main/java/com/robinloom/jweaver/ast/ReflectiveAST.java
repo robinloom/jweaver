@@ -106,11 +106,6 @@ public class ReflectiveAST {
 
         Class<?> type = value.getClass();
 
-        // --- Blacklisted types ---
-        if (ExpansionPolicy.shouldNotExpand(type)) {
-            return new PropertyNode(name, ctx.weave(value));
-        }
-
         // --- Collection ---
         if (value instanceof Collection<?> collection) {
             return collection(name, collection, ctx);
@@ -129,6 +124,17 @@ public class ReflectiveAST {
         // --- Map.Entry ---
         if (value instanceof Map.Entry<?, ?> entry) {
             return mapEntry(entry, ctx);
+        }
+
+        // --- Registered TypeWeaver takes precedence over reflective expansion ---
+        String rendered = ctx.weaveIfKnownType(value);
+        if (rendered != null) {
+            return new PropertyNode(name, rendered);
+        }
+
+        // --- Blacklisted types without a registered weaver ---
+        if (ExpansionPolicy.shouldNotExpand(type)) {
+            return new PropertyNode(name, value.toString());
         }
 
         // --- Complex Object ---
@@ -204,8 +210,9 @@ public class ReflectiveAST {
         String key;
         Object value = entry.getValue();
 
-        if (ExpansionPolicy.shouldNotExpand(entry.getKey().getClass())) {
-            key = ctx.weave(entry.getKey());
+        String knownKey = ctx.weaveIfKnownType(entry.getKey());
+        if (knownKey != null) {
+            key = knownKey;
         } else {
             key = entry.getKey().toString();
         }

@@ -1,6 +1,7 @@
 package com.robinloom.jweaver.ast;
 
 import com.robinloom.jweaver.Mode;
+import com.robinloom.jweaver.TypeWeaver;
 import com.robinloom.jweaver.WeavingContext;
 import com.robinloom.jweaver.ast.nodes.*;
 import org.junit.jupiter.api.Assertions;
@@ -172,6 +173,81 @@ public class ReflectiveASTTest {
         ReflectiveNode root = ast.build(map, dummyContext());
 
         Assertions.assertEquals(2, root.getChildren().size());
+    }
+
+    @Test
+    void testRegisteredTypeWeaverTakesPrecedenceOverReflectiveExpansion() {
+        class Money {
+            @SuppressWarnings("unused")
+            final int cents = 100;
+        }
+
+        TypeWeaver moneyWeaver = new TypeWeaver() {
+            @Override
+            public Class<?> targetType() {
+                return Money.class;
+            }
+
+            @Override
+            public String weave(Object object, WeavingContext ctx) {
+                return "MONEY";
+            }
+        };
+
+        WeavingContext ctx = new WeavingContext(
+                Mode.TREE,
+                clazz -> Money.class.equals(clazz) ? moneyWeaver : null,
+                _ -> (value, _) -> value.toString(),
+                true
+        );
+
+        ReflectiveAST ast = new ReflectiveAST();
+        ReflectiveNode root = ast.build(new Money(), ctx);
+
+        Assertions.assertInstanceOf(PropertyNode.class, root,
+                "A type with a registered TypeWeaver must not be reflectively expanded");
+        Assertions.assertEquals("MONEY", ((PropertyNode) root).getValue());
+        Assertions.assertTrue(root.getChildren().isEmpty());
+    }
+
+    @Test
+    void testRegisteredTypeWeaverTakesPrecedenceForMapKeys() {
+        class UserId {
+            @SuppressWarnings("unused")
+            final int value = 42;
+        }
+
+        TypeWeaver userIdWeaver = new TypeWeaver() {
+            @Override
+            public Class<?> targetType() {
+                return UserId.class;
+            }
+
+            @Override
+            public String weave(Object object, WeavingContext ctx) {
+                return "USER-42";
+            }
+        };
+
+        WeavingContext ctx = new WeavingContext(
+                Mode.TREE,
+                clazz -> UserId.class.equals(clazz) ? userIdWeaver : null,
+                _ -> (value, _) -> value.toString(),
+                true
+        );
+
+        record Profile(String displayName) {}
+
+        Map<UserId, Profile> map = new HashMap<>();
+        map.put(new UserId(), new Profile("Jane"));
+
+        ReflectiveAST ast = new ReflectiveAST();
+        ReflectiveNode root = ast.build(map, ctx);
+
+        ReflectiveNode entry = root.getChildren().getFirst();
+        Assertions.assertInstanceOf(MapEntryNode.class, entry);
+        Assertions.assertEquals("USER-42", entry.toString(),
+                "Map key with a registered TypeWeaver must use it instead of raw toString()");
     }
 
     @Test
