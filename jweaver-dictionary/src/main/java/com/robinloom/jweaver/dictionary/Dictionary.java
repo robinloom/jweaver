@@ -112,15 +112,23 @@ public class Dictionary implements TypeWeaverResolver {
     }
 
     /**
-     * Registers a new {@link TypeWeaver}.
+     * Registers a new {@link TypeWeaver}, making it available to all future
+     * resolutions.
+     * <p>
+     * This is the extension point behind JWeaver's custom renderer support:
+     * register a {@link TypeWeaver} for one of your own types to have JWeaver
+     * use it instead of reflectively expanding the type's fields.
      * <p>
      * Newly registered weavers participate in future resolution and may override
      * existing matches if they are more specific. The internal cache is cleared
      * to ensure consistent resolution.
+     * <p>
+     * Registration is global and affects the shared, process-wide {@link Dictionary}
+     * instance; it is typically done once during application startup.
      *
      * @param weaver the weaver to register
      */
-    static void register(TypeWeaver weaver) {
+    public static void register(TypeWeaver weaver) {
         RENDERERS.add(weaver);
         CACHE.clear();
     }

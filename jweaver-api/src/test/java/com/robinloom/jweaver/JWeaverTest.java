@@ -59,4 +59,37 @@ class JWeaverTest {
         assertTrue(output.contains("PrivateKey["),
                 "The registered KeyWeaver must be used instead of falling back to raw reflection");
     }
+
+    private static class Money {
+        @SuppressWarnings("unused")
+        private final long cents;
+
+        private Money(long cents) {
+            this.cents = cents;
+        }
+    }
+
+    @Test
+    void registerTypeWeaverIsUsedInsteadOfReflectiveExpansion() {
+        JWeaver.registerTypeWeaver(new TypeWeaver() {
+            @Override
+            public Class<?> targetType() {
+                return Money.class;
+            }
+
+            @Override
+            public String weave(Object object, WeavingContext ctx) {
+                return "$" + (((Money) object).cents / 100.0);
+            }
+        });
+
+        record Order(Money total) {}
+
+        String output = JWeaver.weave(new Order(new Money(1050)));
+
+        assertTrue(output.contains("$10.5"),
+                "A publicly registered TypeWeaver must be used for rendering");
+        assertFalse(output.contains("cents"),
+                "Once a TypeWeaver is registered, the type must no longer be reflectively expanded");
+    }
 }

@@ -241,22 +241,25 @@ public class ReflectiveAST {
             return root;
         }
 
-        int i = 0;
-        for (Object item : iterable) {
+        try {
+            int i = 0;
+            for (Object item : iterable) {
 
-            if (i >= options.getMaxSequenceLength()) {
-                ReflectiveNode child = new PropertyNode((size - i) + " more");
-                child.setIndex(i);
+                if (i >= options.getMaxSequenceLength()) {
+                    ReflectiveNode child = new PropertyNode((size - i) + " more");
+                    child.setIndex(i);
 
-                root.addChild(child);
-                break;
+                    root.addChild(child);
+                    break;
+                }
+
+                sequenceItem(root, item, i, ctx);
+                i++;
             }
-
-            sequenceItem(root, item, i, ctx);
-            i++;
+        } finally {
+            traversalContext.exit(iterable);
         }
 
-        traversalContext.exit(iterable);
         return root;
     }
 

@@ -77,4 +77,18 @@ public final class JWeaver {
         DEFAULT_MODE = mode;
     }
 
+    /**
+     * Registers a custom {@link TypeWeaver}, allowing JWeaver to use a dedicated
+     * rendering for one of your own types instead of reflectively expanding its
+     * fields.
+     * <p>
+     * Registration is global and affects every subsequent {@link #weave(Object)}
+     * call across the JVM; it is typically done once during application startup.
+     *
+     * @param weaver the weaver to register
+     */
+    public static void registerTypeWeaver(TypeWeaver weaver) {
+        Dictionary.register(weaver);
+    }
+
 }

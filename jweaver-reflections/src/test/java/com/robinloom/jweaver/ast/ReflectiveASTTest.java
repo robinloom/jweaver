@@ -176,6 +176,59 @@ public class ReflectiveASTTest {
     }
 
     @Test
+    void testTraversalStateIsRestoredAfterExceptionDuringSequenceIteration() {
+        class BrokenCollection extends AbstractCollection<Object> {
+            @Override
+            public int size() {
+                return 1;
+            }
+
+            @Override
+            public Iterator<Object> iterator() {
+                return new Iterator<>() {
+                    @Override
+                    public boolean hasNext() {
+                        // Simulates e.g. a ConcurrentModificationException thrown
+                        // while iterating a live, concurrently mutated collection.
+                        throw new RuntimeException("boom");
+                    }
+
+                    @Override
+                    public Object next() {
+                        throw new NoSuchElementException();
+                    }
+                };
+            }
+        }
+
+        class Sibling {
+            @SuppressWarnings("unused")
+            final String value = "reachable";
+        }
+
+        class Root {
+            @SuppressWarnings("unused")
+            final Collection<Object> broken = new BrokenCollection();
+            @SuppressWarnings("unused")
+            final Sibling sibling = new Sibling();
+        }
+
+        ASTOptions options = new ASTOptions(2, 10);
+        ReflectiveAST ast = new ReflectiveAST(options);
+
+        ReflectiveNode root = ast.build(new Root(), dummyContext());
+
+        ReflectiveNode brokenChild = root.getChildren().get(0);
+        Assertions.assertInstanceOf(PropertyNode.class, brokenChild,
+                "An exception while iterating a sequence must degrade to a single '[?]' node");
+
+        ReflectiveNode siblingChild = root.getChildren().get(1);
+        Assertions.assertFalse(siblingChild.getChildren().isEmpty(),
+                "TraversalContext must stay balanced (enter/exit) even when iteration throws, "
+                        + "otherwise the depth budget silently leaks and truncates unrelated siblings");
+    }
+
+    @Test
     void testRegisteredTypeWeaverTakesPrecedenceOverReflectiveExpansion() {
         class Money {
             @SuppressWarnings("unused")
