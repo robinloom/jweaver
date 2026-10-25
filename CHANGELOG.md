@@ -12,6 +12,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Dedicated rendering for `Throwable` – message, first stack frame and the
   cause chain instead of an empty reflective expansion
 
+### Fixed
+- Fields inherited from superclasses are now included when reflectively
+  expanding an object, instead of only the fields declared directly on its
+  own class
+
 ## [4.1] - 2026-05-01
 
 ### Added

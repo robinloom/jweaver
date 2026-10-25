@@ -318,4 +318,31 @@ public class ReflectiveASTTest {
         Assertions.assertEquals("***", child.getValue());
     }
 
+    @Test
+    void testInheritedFieldsAreRendered() {
+        class Base {
+            @SuppressWarnings("unused")
+            final String id = "abc-123";
+        }
+
+        class Child extends Base {
+            @SuppressWarnings("unused")
+            final String name = "Jane";
+        }
+
+        ReflectiveAST ast = new ReflectiveAST();
+        ReflectiveNode root = ast.build(new Child(), dummyContext());
+
+        List<String> fieldNames = root.getChildren().stream()
+                .map(ReflectiveNode::toString)
+                .toList();
+
+        Assertions.assertEquals(2, root.getChildren().size(),
+                "Fields inherited from a superclass must be part of the object's structure");
+        Assertions.assertTrue(fieldNames.stream().anyMatch(s -> s.startsWith("id=")),
+                "Inherited field 'id' from Base must be rendered");
+        Assertions.assertTrue(fieldNames.stream().anyMatch(s -> s.startsWith("name=")),
+                "Own field 'name' from Child must still be rendered");
+    }
+
 }

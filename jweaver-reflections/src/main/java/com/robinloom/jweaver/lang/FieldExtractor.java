@@ -21,8 +21,11 @@ import com.robinloom.jweaver.ast.ReflectiveAST;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -67,7 +70,21 @@ public final class FieldExtractor {
     }
 
     private List<Field> collectFields(Class<?> clazz) {
-        return List.of(clazz.getDeclaredFields());
+        List<Field> fields = new ArrayList<>();
+        Set<String> seenNames = new HashSet<>();
+
+        for (Class<?> current = clazz; current != null && current != Object.class; current = current.getSuperclass()) {
+            if (current != clazz && ExpansionPolicy.shouldNotExpand(current)) {
+                break;
+            }
+            for (Field field : current.getDeclaredFields()) {
+                if (seenNames.add(field.getName())) {
+                    fields.add(field);
+                }
+            }
+        }
+
+        return fields;
     }
 
     private boolean isRelevant(Field field, boolean isKotlin) {
