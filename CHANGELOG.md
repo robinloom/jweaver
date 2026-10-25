@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [Unreleased]
+
+### Added
+- Dedicated rendering for `Throwable` – message, first stack frame and the
+  cause chain instead of an empty reflective expansion
+
 ## [4.1] - 2026-05-01
 
 ### Added

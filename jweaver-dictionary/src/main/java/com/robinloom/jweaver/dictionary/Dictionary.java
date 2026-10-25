@@ -91,6 +91,7 @@ public class Dictionary implements TypeWeaverResolver {
         register(new ClassWeaver());
         register(new EnumWeaver());
         register(new StringWeaver());
+        register(new ThrowableWeaver());
         // java.net
         register(new URIWeaver());
         register(new URLWeaver());
