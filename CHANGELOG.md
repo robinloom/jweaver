@@ -11,6 +11,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 - Dedicated rendering for `Throwable` – message, first stack frame and the
   cause chain instead of an empty reflective expansion
+- Dedicated rendering for `Thread` – name, state and priority instead of
+  reflectively expanding its internal, often inaccessible fields
 
 ### Fixed
 - Fields inherited from superclasses are now included when reflectively
