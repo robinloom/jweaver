@@ -345,4 +345,41 @@ public class ReflectiveASTTest {
                 "Own field 'name' from Child must still be rendered");
     }
 
+    @Test
+    void testRegisteredTypeWeaverTakesPrecedenceOverGenericMapRendering() {
+        class SpecialMap extends HashMap<String, String> {
+            SpecialMap() {
+                put("a", "1");
+                put("b", "2");
+            }
+        }
+
+        TypeWeaver specialMapWeaver = new TypeWeaver() {
+            @Override
+            public Class<?> targetType() {
+                return SpecialMap.class;
+            }
+
+            @Override
+            public String weave(Object object, WeavingContext ctx) {
+                return "SPECIAL_MAP";
+            }
+        };
+
+        WeavingContext ctx = new WeavingContext(
+                Mode.TREE,
+                clazz -> SpecialMap.class.equals(clazz) ? specialMapWeaver : null,
+                _ -> (value, _) -> value.toString(),
+                true
+        );
+
+        ReflectiveAST ast = new ReflectiveAST();
+        ReflectiveNode root = ast.build(new SpecialMap(), ctx);
+
+        Assertions.assertInstanceOf(PropertyNode.class, root,
+                "A Map-implementing type with a registered TypeWeaver must use it instead of "
+                        + "being flattened into its entries (e.g. java.security.Provider)");
+        Assertions.assertEquals("SPECIAL_MAP", ((PropertyNode) root).getValue());
+    }
+
 }

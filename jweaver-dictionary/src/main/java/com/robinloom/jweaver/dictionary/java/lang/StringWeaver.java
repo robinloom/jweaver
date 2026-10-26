@@ -20,16 +20,24 @@ import com.robinloom.jweaver.TypeWeaver;
 import com.robinloom.jweaver.WeavingContext;
 import org.jspecify.annotations.NonNull;
 
+/**
+ * {@link TypeWeaver} for {@link CharSequence}.
+ * <p>
+ * Targets the interface rather than just {@link String} so that textual types
+ * such as {@link StringBuilder} and {@link StringBuffer} are quoted consistently
+ * with {@code String} values, instead of falling back to their raw, unquoted
+ * {@code toString()}.
+ */
 public class StringWeaver extends TypeWeaver {
 
     @Override
     public Class<?> targetType() {
-        return String.class;
+        return CharSequence.class;
     }
 
     @Override
     public String weave(@NonNull Object value, WeavingContext ctx) {
-        String s = (String) value;
+        String s = value.toString();
 
         if (ctx.isRoot()) {
             return s;

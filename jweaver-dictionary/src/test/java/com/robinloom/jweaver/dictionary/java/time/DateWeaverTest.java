@@ -15,4 +15,10 @@ class DateWeaverTest extends TypeWeaverTest {
     public void testWeaver() {
         Assertions.assertEquals("Date[1970-01-01T00:00:00Z]", weaver.weave(new Date(0), ctx));
     }
+
+    @Test
+    public void testSubclassKeepsItsOwnName() {
+        Assertions.assertEquals("Timestamp[1970-01-01T00:00:00Z]",
+                weaver.weave(new java.sql.Timestamp(0), ctx));
+    }
 }

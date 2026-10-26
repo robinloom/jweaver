@@ -116,20 +116,22 @@ public class ReflectiveAST {
             return array(name, value, ctx);
         }
 
-        // --- Map ---
-        if (value instanceof Map<?, ?> map) {
-            return map(name, map, ctx);
-        }
-
         // --- Map.Entry ---
         if (value instanceof Map.Entry<?, ?> entry) {
             return mapEntry(entry, ctx);
         }
 
-        // --- Registered TypeWeaver takes precedence over reflective expansion ---
+        // --- Registered TypeWeaver takes precedence over reflective expansion,
+        //     and over generic Map rendering: some JDK types (e.g. Provider) are
+        //     incidentally Maps but should not be flattened into their entries ---
         String rendered = ctx.weaveIfKnownType(value);
         if (rendered != null) {
             return new PropertyNode(name, rendered);
+        }
+
+        // --- Map ---
+        if (value instanceof Map<?, ?> map) {
+            return map(name, map, ctx);
         }
 
         // --- Blacklisted types without a registered weaver ---

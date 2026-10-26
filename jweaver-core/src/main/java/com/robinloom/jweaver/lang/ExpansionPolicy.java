@@ -27,7 +27,10 @@ import java.util.stream.Stream;
  *     <li><strong>Value types</strong> – simple, self-contained types that should not be expanded further</li>
  *     <li><strong>Consumables</strong> – types that represent one-time or stateful resources (e.g. streams, iterators, futures)</li>
  *     <li><strong>Proxies</strong> – dynamically generated classes (e.g. CGLIB, ByteBuddy, JDK proxies)</li>
- *     <li><strong>JDK internals</strong> – low-level or reflective infrastructure classes</li>
+ *     <li><strong>JDK internals</strong> – types from the {@code java.*}/{@code javax.*}/
+ *     {@code jdk.*} namespace, whose packages the module system does not open for
+ *     deep reflection by default, making field-level access fail regardless of
+ *     visibility</li>
  *     <li><strong>Infrastructure types</strong> – framework or runtime components (e.g. Spring, Hibernate, thread pools)</li>
  * </ul>
  *
@@ -109,7 +112,9 @@ public final class ExpansionPolicy {
     private static boolean isJdkInternal(Class<?> type) {
         String pkg = type.getPackageName();
 
-        return pkg.startsWith("java.lang.reflect")
+        return pkg.startsWith("java.")
+                || pkg.startsWith("javax.")
+                || pkg.startsWith("jdk.")
                 || pkg.startsWith("sun.")
                 || pkg.startsWith("com.sun.");
     }

@@ -33,6 +33,6 @@ public class DateWeaver extends TypeWeaver {
     public String weave(@NonNull Object object, WeavingContext ctx) {
         Date date = (Date) object;
 
-        return Date.class.getSimpleName() + "[" + date.toInstant() + "]";
+        return date.getClass().getSimpleName() + "[" + date.toInstant() + "]";
     }
 }

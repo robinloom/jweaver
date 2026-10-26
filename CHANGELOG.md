@@ -9,15 +9,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
-- Dedicated rendering for `Throwable` – message, first stack frame and the
-  cause chain instead of an empty reflective expansion
-- Dedicated rendering for `Thread` – name, state and priority instead of
-  reflectively expanding its internal, often inaccessible fields
+- Added weavers for `Throwable`, `Thread`, `TimeZone`, `Calendar`, `Provider`,
+  `KeyPair`, and `CyclicBarrier`
+- `SQLException` rendering now also includes `sqlState`/`errorCode`
 
 ### Fixed
-- Fields inherited from superclasses are now included when reflectively
-  expanding an object, instead of only the fields declared directly on its
-  own class
+- `StringBuilder`/`StringBuffer` are now quoted like `String`
+- `Date` subclasses (`java.sql.Date`, `Timestamp`, ...) render under their own
+  class name instead of being mislabeled as `Date`
+- Fields inherited from superclasses are now included during reflective
+  expansion
+- A registered `TypeWeaver` now takes precedence over generic `Map`
+  rendering for nested values too, not just at the root
+- Plain JDK types now fall back to `toString()` instead of `[?]` noise –
+  `java.base` doesn't open its packages for reflection by default
 
 ## [4.1] - 2026-05-01
 

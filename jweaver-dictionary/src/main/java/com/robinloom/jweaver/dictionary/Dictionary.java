@@ -25,16 +25,22 @@ import com.robinloom.jweaver.dictionary.java.lang.*;
 import com.robinloom.jweaver.dictionary.java.net.URIWeaver;
 import com.robinloom.jweaver.dictionary.java.net.URLWeaver;
 import com.robinloom.jweaver.dictionary.java.nio.PathWeaver;
+import com.robinloom.jweaver.dictionary.java.security.KeyPairWeaver;
 import com.robinloom.jweaver.dictionary.java.security.KeyWeaver;
+import com.robinloom.jweaver.dictionary.java.security.ProviderWeaver;
 import com.robinloom.jweaver.dictionary.java.security.cert.X509CRLWeaver;
 import com.robinloom.jweaver.dictionary.java.security.cert.X509CertificateWeaver;
+import com.robinloom.jweaver.dictionary.java.sql.SQLExceptionWeaver;
 import com.robinloom.jweaver.dictionary.java.time.DurationWeaver;
 import com.robinloom.jweaver.dictionary.java.time.PeriodWeaver;
 import com.robinloom.jweaver.dictionary.java.time.TemporalWeaver;
+import com.robinloom.jweaver.dictionary.java.util.CalendarWeaver;
 import com.robinloom.jweaver.dictionary.java.util.DateWeaver;
 import com.robinloom.jweaver.dictionary.java.util.MapEntryWeaver;
 import com.robinloom.jweaver.dictionary.java.util.OptionalWeaver;
+import com.robinloom.jweaver.dictionary.java.util.TimeZoneWeaver;
 import com.robinloom.jweaver.dictionary.java.util.UUIDWeaver;
+import com.robinloom.jweaver.dictionary.java.util.concurrent.CyclicBarrierWeaver;
 import com.robinloom.jweaver.lang.ExpansionPolicy;
 
 import java.util.ArrayList;
@@ -99,18 +105,26 @@ public class Dictionary implements TypeWeaverResolver {
         // java.nio
         register(new PathWeaver());
         // java.util
+        register(new CalendarWeaver());
         register(new DateWeaver());
         register(new MapEntryWeaver());
         register(new OptionalWeaver());
+        register(new TimeZoneWeaver());
         register(new UUIDWeaver());
+        // java.util.concurrent
+        register(new CyclicBarrierWeaver());
         // java.time
         register(new DurationWeaver());
         register(new PeriodWeaver());
         register(new TemporalWeaver());
         // java.security
+        register(new KeyPairWeaver());
         register(new KeyWeaver());
+        register(new ProviderWeaver());
         register(new X509CertificateWeaver());
         register(new X509CRLWeaver());
+        // java.sql
+        register(new SQLExceptionWeaver());
     }
 
     /**
