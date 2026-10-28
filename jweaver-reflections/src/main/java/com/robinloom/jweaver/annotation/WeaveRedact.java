@@ -28,6 +28,11 @@ import java.lang.annotation.Target;
  * API keys, tokens, or personally identifiable data. Redacted values will
  * be replaced by a sequence of mask characters (for example {@code ***}).
  * </p>
+ * <p>
+ * Unlike the heuristic, name-based detection in
+ * {@link com.robinloom.jweaver.util.SensitivityDetection}, this annotation
+ * provides explicit, guaranteed masking regardless of the field's name.
+ * </p>
  *
  * <pre>{@code
  * public class Credentials {

@@ -49,6 +49,12 @@ import java.util.regex.Pattern;
  * <p>
  * This classification is heuristic and may evolve as additional patterns
  * are identified.
+ * <p>
+ * This is a best-effort heuristic, not an exhaustive or compliance-grade
+ * guarantee — it will not catch every sensitive field name, especially
+ * non-English names or domain-specific terms. For fields that must always
+ * be masked regardless of their name, annotate them explicitly with
+ * {@link WeaveRedact} instead of relying on name-based detection alone.
  */
 public final class SensitivityDetection {
 
