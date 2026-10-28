@@ -28,6 +28,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   registry is now safe under concurrent registration, and blacklisted map
   values no longer spin up a full reflective weaver just to call
   `toString()`
+- `Dictionary`, `FieldExtractor`, and `ExpansionPolicy` now cache their
+  per-`Class` results via `ClassValue` instead of a plain map, avoiding a
+  classloader leak in applications with dynamic classloading (hot-redeploy,
+  OSGi, plugin systems)
 
 ## [4.1] - 2026-05-01
 

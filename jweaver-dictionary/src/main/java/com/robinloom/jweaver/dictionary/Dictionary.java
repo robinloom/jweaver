@@ -44,8 +44,6 @@ import com.robinloom.jweaver.dictionary.java.util.concurrent.CyclicBarrierWeaver
 import com.robinloom.jweaver.lang.ExpansionPolicy;
 
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -82,8 +80,18 @@ public class Dictionary implements TypeWeaverResolver {
     }
 
     private static final List<TypeWeaver> RENDERERS = new CopyOnWriteArrayList<>();
-    private static final Map<Class<?>, TypeWeaver> CACHE = new ConcurrentHashMap<>();
     private static final ToStringWeaver FALLBACK = new ToStringWeaver();
+
+    private static volatile ClassValue<TypeWeaver> CACHE = newCache();
+
+    private static ClassValue<TypeWeaver> newCache() {
+        return new ClassValue<>() {
+            @Override
+            protected TypeWeaver computeValue(Class<?> clazz) {
+                return find(clazz);
+            }
+        };
+    }
 
     static {
         // java.io
@@ -146,7 +154,7 @@ public class Dictionary implements TypeWeaverResolver {
      */
     public static void register(TypeWeaver weaver) {
         RENDERERS.add(weaver);
-        CACHE.clear();
+        CACHE = newCache();
     }
 
     private Dictionary() {}
@@ -159,10 +167,10 @@ public class Dictionary implements TypeWeaverResolver {
      */
     @Override
     public TypeWeaver resolve(Class<?> clazz) {
-        return CACHE.computeIfAbsent(clazz, this::find);
+        return CACHE.get(clazz);
     }
 
-    private TypeWeaver find(Class<?> clazz) {
+    private static TypeWeaver find(Class<?> clazz) {
         TypeWeaver best = findBest(clazz);
         if (best != null) {
             return best;
@@ -175,7 +183,7 @@ public class Dictionary implements TypeWeaverResolver {
         return null;
     }
 
-    private TypeWeaver findBest(Class<?> clazz) {
+    private static TypeWeaver findBest(Class<?> clazz) {
         TypeWeaver best = null;
 
         for (TypeWeaver weaver : RENDERERS) {
@@ -191,7 +199,7 @@ public class Dictionary implements TypeWeaverResolver {
         return best;
     }
 
-    private boolean isMoreSpecific(Class<?> a, Class<?> b) {
+    private static boolean isMoreSpecific(Class<?> a, Class<?> b) {
         return b.isAssignableFrom(a);
     }
 }

@@ -24,9 +24,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Extracts the relevant fields of a class for reflective traversal.
@@ -50,7 +48,12 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class FieldExtractor {
 
-    private static final Map<Class<?>, List<Field>> CACHE = new ConcurrentHashMap<>();
+    private static final ClassValue<List<Field>> CACHE = new ClassValue<>() {
+        @Override
+        protected List<Field> computeValue(Class<?> clazz) {
+            return compute(clazz);
+        }
+    };
 
     /**
      * Returns the filtered list of relevant fields for the given class.
@@ -59,17 +62,17 @@ public final class FieldExtractor {
      * @return a list of fields considered part of the object's structure
      */
     public List<Field> extract(Class<?> clazz) {
-        return CACHE.computeIfAbsent(clazz, this::compute);
+        return CACHE.get(clazz);
     }
 
-    private List<Field> compute(Class<?> clazz) {
+    private static List<Field> compute(Class<?> clazz) {
         boolean isKotlin = KotlinSupport.isKotlinClass(clazz);
         return collectFields(clazz).stream()
                                    .filter(f -> isRelevant(f, isKotlin) && isIncluded(f))
                                    .toList();
     }
 
-    private List<Field> collectFields(Class<?> clazz) {
+    private static List<Field> collectFields(Class<?> clazz) {
         List<Field> fields = new ArrayList<>();
         Set<String> seenNames = new HashSet<>();
 
@@ -87,7 +90,7 @@ public final class FieldExtractor {
         return fields;
     }
 
-    private boolean isRelevant(Field field, boolean isKotlin) {
+    private static boolean isRelevant(Field field, boolean isKotlin) {
         if (Modifier.isStatic(field.getModifiers())) {
             return false;
         }
@@ -104,7 +107,7 @@ public final class FieldExtractor {
         return true;
     }
 
-    private boolean isIncluded(Field field) {
+    private static boolean isIncluded(Field field) {
         return !field.isAnnotationPresent(WeaveIgnore.class);
     }
 
