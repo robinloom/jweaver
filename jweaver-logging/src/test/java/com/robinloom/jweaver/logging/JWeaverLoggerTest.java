@@ -26,6 +26,10 @@ public class JWeaverLoggerTest {
             if (method.getDeclaringClass() == Object.class) continue;
             if (method.isDefault()) continue;
 
+            // Object-arg overloads only delegate (and transform their arguments) when
+            // the corresponding level is enabled, so all levels must be stubbed as enabled.
+            stubAllLevelsEnabled(delegate);
+
             Object[] args = createArguments(method.getParameterTypes());
 
             // invoke on wrapper
@@ -37,6 +41,57 @@ public class JWeaverLoggerTest {
             // reset for next iteration
             Mockito.reset(delegate);
         }
+    }
+
+    @Test
+    void shouldSkipTransformationAndDelegationWhenLevelDisabled() {
+        Logger delegate = Mockito.mock(Logger.class);
+        Mockito.when(delegate.isDebugEnabled()).thenReturn(false);
+        JWeaverLogger wrapper = new JWeaverLogger(delegate, Mode.INLINE);
+
+        wrapper.debug("some {}", new Object());
+
+        Mockito.verify(delegate, Mockito.never()).debug(Mockito.anyString(), Mockito.any(Object.class));
+    }
+
+    @Test
+    void shouldSkipDelegationForEveryObjectArgOverloadWhenItsLevelIsDisabled() throws Exception {
+        // A fresh, unstubbed mock reports every isXEnabled()/isXEnabled(Marker) as false.
+        Logger delegate = Mockito.mock(Logger.class);
+        JWeaverLogger wrapper = new JWeaverLogger(delegate, Mode.INLINE);
+
+        for (Method method : Logger.class.getMethods()) {
+            if (Modifier.isStatic(method.getModifiers())) continue;
+            if (method.getDeclaringClass() == Object.class) continue;
+            if (method.isDefault()) continue;
+            if (!takesObjectArgument(method)) continue;
+
+            Object[] args = createArguments(method.getParameterTypes());
+
+            method.invoke(wrapper, args);
+
+            method.invoke(Mockito.verify(delegate, Mockito.never()), args);
+        }
+    }
+
+    private boolean takesObjectArgument(Method method) {
+        for (Class<?> type : method.getParameterTypes()) {
+            if (type == Object.class || type == Object[].class) return true;
+        }
+        return false;
+    }
+
+    private void stubAllLevelsEnabled(Logger delegate) {
+        Mockito.when(delegate.isTraceEnabled()).thenReturn(true);
+        Mockito.when(delegate.isTraceEnabled(Mockito.any())).thenReturn(true);
+        Mockito.when(delegate.isDebugEnabled()).thenReturn(true);
+        Mockito.when(delegate.isDebugEnabled(Mockito.any())).thenReturn(true);
+        Mockito.when(delegate.isInfoEnabled()).thenReturn(true);
+        Mockito.when(delegate.isInfoEnabled(Mockito.any())).thenReturn(true);
+        Mockito.when(delegate.isWarnEnabled()).thenReturn(true);
+        Mockito.when(delegate.isWarnEnabled(Mockito.any())).thenReturn(true);
+        Mockito.when(delegate.isErrorEnabled()).thenReturn(true);
+        Mockito.when(delegate.isErrorEnabled(Mockito.any())).thenReturn(true);
     }
 
     private Object[] createArguments(Class<?>[] parameterTypes) {

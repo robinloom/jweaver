@@ -71,16 +71,19 @@ public class JWeaverLogger implements Logger {
 
     @Override
     public void trace(String format, Object arg) {
+        if (!logger.isTraceEnabled()) return;
         logger.trace(format, transform(arg));
     }
 
     @Override
     public void trace(String format, Object arg1, Object arg2) {
+        if (!logger.isTraceEnabled()) return;
         logger.trace(format, transform(arg1), transform(arg2));
     }
 
     @Override
     public void trace(String format, Object... arguments) {
+        if (!logger.isTraceEnabled()) return;
         logger.trace(format, transform(arguments));
     }
 
@@ -101,16 +104,19 @@ public class JWeaverLogger implements Logger {
 
     @Override
     public void trace(Marker marker, String format, Object arg) {
+        if (!logger.isTraceEnabled(marker)) return;
         logger.trace(marker, format, transform(arg));
     }
 
     @Override
     public void trace(Marker marker, String format, Object arg1, Object arg2) {
+        if (!logger.isTraceEnabled(marker)) return;
         logger.trace(marker, format, transform(arg1), transform(arg2));
     }
 
     @Override
     public void trace(Marker marker, String format, Object... arguments) {
+        if (!logger.isTraceEnabled(marker)) return;
         logger.trace(marker, format, transform(arguments));
     }
 
@@ -131,16 +137,19 @@ public class JWeaverLogger implements Logger {
 
     @Override
     public void debug(String format, Object arg) {
+        if (!logger.isDebugEnabled()) return;
         logger.debug(format, transform(arg));
     }
 
     @Override
     public void debug(String format, Object arg1, Object arg2) {
+        if (!logger.isDebugEnabled()) return;
         logger.debug(format, transform(arg1), transform(arg2));
     }
 
     @Override
     public void debug(String format, Object... arguments) {
+        if (!logger.isDebugEnabled()) return;
         logger.debug(format, transform(arguments));
     }
 
@@ -161,16 +170,19 @@ public class JWeaverLogger implements Logger {
 
     @Override
     public void debug(Marker marker, String format, Object arg) {
+        if (!logger.isDebugEnabled(marker)) return;
         logger.debug(marker, format, transform(arg));
     }
 
     @Override
     public void debug(Marker marker, String format, Object arg1, Object arg2) {
+        if (!logger.isDebugEnabled(marker)) return;
         logger.debug(marker, format, transform(arg1), transform(arg2));
     }
 
     @Override
     public void debug(Marker marker, String format, Object... arguments) {
+        if (!logger.isDebugEnabled(marker)) return;
         logger.debug(marker, format, transform(arguments));
     }
 
@@ -191,16 +203,19 @@ public class JWeaverLogger implements Logger {
 
     @Override
     public void info(String format, Object arg) {
+        if (!logger.isInfoEnabled()) return;
         logger.info(format, transform(arg));
     }
 
     @Override
     public void info(String format, Object arg1, Object arg2) {
+        if (!logger.isInfoEnabled()) return;
         logger.info(format, transform(arg1), transform(arg2));
     }
 
     @Override
     public void info(String format, Object... arguments) {
+        if (!logger.isInfoEnabled()) return;
         logger.info(format, transform(arguments));
     }
 
@@ -221,16 +236,19 @@ public class JWeaverLogger implements Logger {
 
     @Override
     public void info(Marker marker, String format, Object arg) {
+        if (!logger.isInfoEnabled(marker)) return;
         logger.info(marker, format, transform(arg));
     }
 
     @Override
     public void info(Marker marker, String format, Object arg1, Object arg2) {
+        if (!logger.isInfoEnabled(marker)) return;
         logger.info(marker, format, transform(arg1), transform(arg2));
     }
 
     @Override
     public void info(Marker marker, String format, Object... arguments) {
+        if (!logger.isInfoEnabled(marker)) return;
         logger.info(marker, format, transform(arguments));
     }
 
@@ -251,16 +269,19 @@ public class JWeaverLogger implements Logger {
 
     @Override
     public void warn(String format, Object arg) {
+        if (!logger.isWarnEnabled()) return;
         logger.warn(format, transform(arg));
     }
 
     @Override
     public void warn(String format, Object... arguments) {
+        if (!logger.isWarnEnabled()) return;
         logger.warn(format, transform(arguments));
     }
 
     @Override
     public void warn(String format, Object arg1, Object arg2) {
+        if (!logger.isWarnEnabled()) return;
         logger.warn(format, transform(arg1), transform(arg2));
     }
 
@@ -281,16 +302,19 @@ public class JWeaverLogger implements Logger {
 
     @Override
     public void warn(Marker marker, String format, Object arg) {
+        if (!logger.isWarnEnabled(marker)) return;
         logger.warn(marker, format, transform(arg));
     }
 
     @Override
     public void warn(Marker marker, String format, Object arg1, Object arg2) {
+        if (!logger.isWarnEnabled(marker)) return;
         logger.warn(marker, format, transform(arg1), transform(arg2));
     }
 
     @Override
     public void warn(Marker marker, String format, Object... arguments) {
+        if (!logger.isWarnEnabled(marker)) return;
         logger.warn(marker, format, transform(arguments));
     }
 
@@ -311,16 +335,19 @@ public class JWeaverLogger implements Logger {
 
     @Override
     public void error(String format, Object arg) {
+        if (!logger.isErrorEnabled()) return;
         logger.error(format, transform(arg));
     }
 
     @Override
     public void error(String format, Object arg1, Object arg2) {
+        if (!logger.isErrorEnabled()) return;
         logger.error(format, transform(arg1), transform(arg2));
     }
 
     @Override
     public void error(String format, Object... arguments) {
+        if (!logger.isErrorEnabled()) return;
         logger.error(format, transform(arguments));
     }
 
@@ -341,16 +368,19 @@ public class JWeaverLogger implements Logger {
 
     @Override
     public void error(Marker marker, String format, Object arg) {
+        if (!logger.isErrorEnabled(marker)) return;
         logger.error(marker, format, transform(arg));
     }
 
     @Override
     public void error(Marker marker, String format, Object arg1, Object arg2) {
+        if (!logger.isErrorEnabled(marker)) return;
         logger.error(marker, format, transform(arg1), transform(arg2));
     }
 
     @Override
     public void error(Marker marker, String format, Object... arguments) {
+        if (!logger.isErrorEnabled(marker)) return;
         logger.error(marker, format, transform(arguments));
     }
 
