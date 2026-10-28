@@ -346,6 +346,119 @@ public class ReflectiveASTTest {
     }
 
     @Test
+    void testBuildWithNullObjectReturnsRootNullPropertyNode() {
+        ReflectiveAST ast = new ReflectiveAST();
+        ReflectiveNode root = ast.build(null, dummyContext());
+
+        Assertions.assertInstanceOf(PropertyNode.class, root);
+        Assertions.assertEquals("null", ((PropertyNode) root).getValue());
+    }
+
+    @Test
+    void testBuildDegradesToErrorNodeWhenTraversalThrows() {
+        WeavingContext throwingCtx = new WeavingContext(
+                Mode.TREE,
+                _ -> { throw new RuntimeException("boom"); },
+                _ -> (value, _) -> value.toString(),
+                true
+        );
+
+        ReflectiveAST ast = new ReflectiveAST();
+        ReflectiveNode root = ast.build(new Object(), throwingCtx);
+
+        Assertions.assertInstanceOf(PropertyNode.class, root);
+        Assertions.assertEquals("[error]", ((PropertyNode) root).getValue(),
+                "An unexpected exception during traversal must degrade to a single error node");
+    }
+
+    @Test
+    void testWeaveNameAnnotationOverridesFieldName() {
+        class Address {
+            @com.robinloom.jweaver.annotation.WeaveName("zip")
+            @SuppressWarnings("unused")
+            final String postalCode = "12345";
+        }
+
+        ReflectiveAST ast = new ReflectiveAST();
+        ReflectiveNode root = ast.build(new Address(), dummyContext());
+
+        ReflectiveNode child = root.getChildren().getFirst();
+        Assertions.assertTrue(child.toString().startsWith("zip="),
+                "@WeaveName must override the reflected field name");
+    }
+
+    @Test
+    void testNullFieldValueBecomesNullPropertyNode() {
+        class WithNullField {
+            @SuppressWarnings("unused")
+            final String name = null;
+        }
+
+        ReflectiveAST ast = new ReflectiveAST();
+        ReflectiveNode root = ast.build(new WithNullField(), dummyContext());
+
+        PropertyNode child = (PropertyNode) root.getChildren().getFirst();
+        Assertions.assertEquals("null", child.getValue());
+    }
+
+    @Test
+    void testNullMapValueBecomesNullPropertyNode() {
+        Map<String, String> map = new HashMap<>();
+        map.put("key", null);
+
+        ReflectiveAST ast = new ReflectiveAST();
+        ReflectiveNode root = ast.build(map, dummyContext());
+
+        PropertyNode entry = (PropertyNode) root.getChildren().getFirst();
+        Assertions.assertEquals("null", entry.getValue());
+    }
+
+    @Test
+    void testSelfReferencingCollectionStopsRecursion() {
+        List<Object> list = new ArrayList<>();
+        list.add(list);
+
+        ReflectiveAST ast = new ReflectiveAST();
+        ReflectiveNode root = ast.build(list, dummyContext());
+
+        Assertions.assertEquals(1, root.getChildren().size());
+
+        ReflectiveNode child = root.getChildren().getFirst();
+        Assertions.assertTrue(child.getChildren().isEmpty(),
+                "A collection containing itself must not recurse infinitely");
+    }
+
+    @Test
+    void testNullElementInSequenceBecomesNullPropertyNode() {
+        List<String> list = new ArrayList<>();
+        list.add("a");
+        list.add(null);
+
+        ReflectiveAST ast = new ReflectiveAST();
+        ReflectiveNode root = ast.build(list, dummyContext());
+
+        ReflectiveNode nullChild = root.getChildren().get(1);
+        Assertions.assertInstanceOf(PropertyNode.class, nullChild);
+        Assertions.assertEquals("null", ((PropertyNode) nullChild).getValue());
+        Assertions.assertEquals(1, nullChild.getIndex());
+    }
+
+    @Test
+    void testNestedSequenceFieldIncludesFieldNameInLabel() {
+        class WithListField {
+            @SuppressWarnings("unused")
+            final List<String> items = List.of("a", "b");
+        }
+
+        ReflectiveAST ast = new ReflectiveAST();
+        ReflectiveNode root = ast.build(new WithListField(), dummyContext());
+
+        ReflectiveNode itemsNode = root.getChildren().getFirst();
+        Assertions.assertEquals("items=List[2]", itemsNode.toString(),
+                "A non-root sequence must render as 'fieldName=Type[size]'");
+    }
+
+    @Test
     void testRegisteredTypeWeaverTakesPrecedenceOverGenericMapRendering() {
         class SpecialMap extends HashMap<String, String> {
             SpecialMap() {

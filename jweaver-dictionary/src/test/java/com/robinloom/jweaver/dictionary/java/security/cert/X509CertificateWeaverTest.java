@@ -2,11 +2,14 @@ package com.robinloom.jweaver.dictionary.java.security.cert;
 
 import com.robinloom.jweaver.dictionary.java.TypeWeaverTest;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
+import javax.security.auth.x500.X500Principal;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,6 +24,37 @@ class X509CertificateWeaverTest extends TypeWeaverTest {
         String result = weaver.weave(cert, ctx);
 
         assertEquals("X509Certificate[subject=Dummy (Dummy, DE), issuer=Dummy (Dummy, DE), validity=2026-04-02T19:46:18Z-2027-04-02T19:46:18Z]", result);
+    }
+
+    @Test
+    void weave_subject_with_mail_and_serialnumber_but_no_org_or_country() {
+        X509Certificate cert = Mockito.mock(X509Certificate.class);
+        X500Principal principal = Mockito.mock(X500Principal.class);
+        Mockito.when(principal.getName()).thenReturn("CN=Test,MAIL=foo@bar.com,SERIALNUMBER=42");
+        Mockito.when(cert.getSubjectX500Principal()).thenReturn(principal);
+        Mockito.when(cert.getIssuerX500Principal()).thenReturn(principal);
+        Mockito.when(cert.getNotBefore()).thenReturn(new Date(0));
+        Mockito.when(cert.getNotAfter()).thenReturn(new Date(0));
+
+        String result = weaver.weave(cert, ctx);
+
+        assertTrue(result.contains("subject=Test (foo@bar.com, 42)"));
+    }
+
+    @Test
+    void weave_subject_falls_back_to_empty_string_for_unparseable_dn() {
+        X509Certificate cert = Mockito.mock(X509Certificate.class);
+        X500Principal malformed = Mockito.mock(X500Principal.class);
+        Mockito.when(malformed.getName()).thenReturn("this is not a valid dn###");
+        Mockito.when(cert.getSubjectX500Principal()).thenReturn(malformed);
+        Mockito.when(cert.getIssuerX500Principal()).thenReturn(malformed);
+        Mockito.when(cert.getNotBefore()).thenReturn(new Date(0));
+        Mockito.when(cert.getNotAfter()).thenReturn(new Date(0));
+
+        String result = weaver.weave(cert, ctx);
+
+        assertTrue(result.contains("subject=, issuer="),
+                "An unparseable DN must degrade to an empty rendered subject instead of throwing");
     }
 
     private X509Certificate testCert() throws Exception {

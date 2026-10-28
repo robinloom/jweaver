@@ -101,4 +101,26 @@ class SensitivityDetectionTest {
         Assertions.assertTrue(SensitivityDetection.isSensitive(WithArrays.class.getDeclaredField("payload")));
         Assertions.assertTrue(SensitivityDetection.isSensitive(WithArrays.class.getDeclaredField("buffer")));
     }
+
+    @Test
+    void fieldAnnotatedWeaveRedactIsAlwaysSensitiveRegardlessOfName() throws NoSuchFieldException {
+        @SuppressWarnings("unused")
+        class WithRedactedField {
+            @com.robinloom.jweaver.annotation.WeaveRedact
+            String comment;
+        }
+
+        Assertions.assertTrue(SensitivityDetection.isSensitive(WithRedactedField.class.getDeclaredField("comment")));
+    }
+
+    @Test
+    void leadingSeparatorInFieldNameDoesNotProduceAFalseNegative() throws NoSuchFieldException {
+        @SuppressWarnings("unused")
+        class WithLeadingSeparator {
+            String _secret;
+        }
+
+        Assertions.assertTrue(SensitivityDetection.isSensitive(WithLeadingSeparator.class.getDeclaredField("_secret")),
+                "A leading separator must not prevent the empty leading token from being filtered out");
+    }
 }

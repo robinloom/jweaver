@@ -40,6 +40,15 @@ class TemporalWeaverTest extends TypeWeaverTest {
     }
 
     @Test
+    void weave_local_time_uses_default_tostring() {
+        LocalTime time = LocalTime.of(14, 23, 10);
+
+        String result = weaver.weave(time, ctx);
+
+        assertEquals(time.toString(), result);
+    }
+
+    @Test
     void weave_zoned_date_time() {
         ZonedDateTime zdt = ZonedDateTime.of(
                 2026, 4, 2, 14, 23, 10, 0,

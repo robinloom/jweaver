@@ -3,14 +3,56 @@ package com.robinloom.jweaver.lang;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.io.InputStream;
+import java.io.Reader;
+import java.lang.reflect.Proxy;
 import java.util.BitSet;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.OptionalInt;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 class ExpansionPolicyTest {
+
+    @Test
+    void testNullTypeShouldNotExpand() {
+        Assertions.assertTrue(ExpansionPolicy.shouldNotExpand(null));
+    }
+
+    @Test
+    void testValueTypeShouldNotExpand() {
+        Assertions.assertTrue(ExpansionPolicy.shouldNotExpand(Integer.class));
+    }
+
+    @Test
+    void testConsumableTypesShouldNotExpand() {
+        Assertions.assertTrue(ExpansionPolicy.shouldNotExpand(InputStream.class));
+        Assertions.assertTrue(ExpansionPolicy.shouldNotExpand(Reader.class));
+        Assertions.assertTrue(ExpansionPolicy.shouldNotExpand(Stream.class));
+    }
+
+    @Test
+    void testDynamicProxyShouldNotExpand() {
+        Object proxy = Proxy.newProxyInstance(
+                getClass().getClassLoader(),
+                new Class<?>[]{Runnable.class},
+                (p, method, args) -> null);
+
+        Assertions.assertTrue(ExpansionPolicy.shouldNotExpand(proxy.getClass()));
+    }
+
+    @Test
+    void testLikelyInfrastructureTypesShouldNotExpand() {
+        class HttpClient {}
+        class ThreadPool {}
+
+        Assertions.assertTrue(ExpansionPolicy.shouldNotExpand(HttpClient.class),
+                "Class name containing a known infrastructure keyword must be excluded from expansion");
+        Assertions.assertTrue(ExpansionPolicy.shouldNotExpand(ThreadPool.class),
+                "Class name containing a known infrastructure keyword must be excluded from expansion");
+    }
 
     @Test
     void testPlainJdkTypesAreNotExpanded() {

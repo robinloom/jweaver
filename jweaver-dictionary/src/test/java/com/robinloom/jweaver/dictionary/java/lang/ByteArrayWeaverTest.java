@@ -13,4 +13,14 @@ public class ByteArrayWeaverTest extends TypeWeaverTest {
         Assertions.assertEquals("byte[13]: 48 65 6C 6C 6F 2C 20 77 ..",
                                 weaver.weave("Hello, world!".getBytes(), ctx));
     }
+
+    @Test
+    public void testEmptyArray() {
+        Assertions.assertEquals("byte[0]", weaver.weave(new byte[0], ctx));
+    }
+
+    @Test
+    public void testShortArrayIsNotTruncated() {
+        Assertions.assertEquals("byte[3]: 01 02 03", weaver.weave(new byte[]{1, 2, 3}, ctx));
+    }
 }
