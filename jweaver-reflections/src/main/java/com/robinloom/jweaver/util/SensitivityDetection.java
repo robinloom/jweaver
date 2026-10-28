@@ -68,12 +68,18 @@ public final class SensitivityDetection {
             "iban", "pin", "pincode"
     );
 
-    private static final Map<Field, Boolean> CACHE = new ConcurrentHashMap<>();
+    private static final ClassValue<Map<String, Boolean>> CACHE = new ClassValue<>() {
+        @Override
+        protected Map<String, Boolean> computeValue(Class<?> type) {
+            return new ConcurrentHashMap<>();
+        }
+    };
 
     private SensitivityDetection() {}
 
     public static boolean isSensitive(Field field) {
-        return CACHE.computeIfAbsent(field, SensitivityDetection::computeIsSensitive);
+        return CACHE.get(field.getDeclaringClass())
+                .computeIfAbsent(field.getName(), _ -> computeIsSensitive(field));
     }
 
     private static boolean computeIsSensitive(Field field) {
