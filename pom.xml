@@ -45,6 +45,7 @@
         <source.plugin.version>2.2.1</source.plugin.version>
         <javadoc.plugin.version>3.11.2</javadoc.plugin.version>
         <gpg.plugin.version>3.2.8</gpg.plugin.version>
+        <jacoco.plugin.version>0.8.16</jacoco.plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -157,6 +158,26 @@
                 <configuration>
                     <skip>true</skip>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

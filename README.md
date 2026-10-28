@@ -2,6 +2,7 @@
 
 ![Build And Test](https://github.com/robinloom/jweaver/actions/workflows/build.yml/badge.svg)
 ![Maven Central Version](https://img.shields.io/maven-central/v/com.robinloom/jweaver)
+[![codecov](https://codecov.io/gh/robinloom/jweaver/graph/badge.svg)](https://codecov.io/gh/robinloom/jweaver)
 ---
 
 Stop writing Java `toString()` methods.
