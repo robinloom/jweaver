@@ -43,10 +43,10 @@ import com.robinloom.jweaver.dictionary.java.util.UUIDWeaver;
 import com.robinloom.jweaver.dictionary.java.util.concurrent.CyclicBarrierWeaver;
 import com.robinloom.jweaver.lang.ExpansionPolicy;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Default implementation of {@link TypeWeaverResolver} based on a registry of known type weavers.
@@ -81,7 +81,7 @@ public class Dictionary implements TypeWeaverResolver {
         return Holder.INSTANCE;
     }
 
-    private static final List<TypeWeaver> RENDERERS = new ArrayList<>();
+    private static final List<TypeWeaver> RENDERERS = new CopyOnWriteArrayList<>();
     private static final Map<Class<?>, TypeWeaver> CACHE = new ConcurrentHashMap<>();
     private static final ToStringWeaver FALLBACK = new ToStringWeaver();
 

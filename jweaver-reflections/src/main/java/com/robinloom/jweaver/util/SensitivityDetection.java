@@ -22,7 +22,9 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 /**
@@ -66,9 +68,15 @@ public final class SensitivityDetection {
             "iban", "pin", "pincode"
     );
 
+    private static final Map<Field, Boolean> CACHE = new ConcurrentHashMap<>();
+
     private SensitivityDetection() {}
 
     public static boolean isSensitive(Field field) {
+        return CACHE.computeIfAbsent(field, SensitivityDetection::computeIsSensitive);
+    }
+
+    private static boolean computeIsSensitive(Field field) {
         return isSensitiveByAnnotation(field) || isSensitiveByType(field) || isSensitiveByName(field);
     }
 

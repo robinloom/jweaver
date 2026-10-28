@@ -25,8 +25,11 @@ import java.security.interfaces.DSAKey;
 import java.security.interfaces.ECKey;
 import java.security.interfaces.RSAKey;
 import java.security.spec.ECGenParameterSpec;
+import java.util.HexFormat;
 
 public class KeyWeaver extends TypeWeaver {
+
+    private static final HexFormat HEX = HexFormat.of().withUpperCase();
 
     @Override
     public Class<?> targetType() {
@@ -110,7 +113,7 @@ public class KeyWeaver extends TypeWeaver {
         StringBuilder sb = new StringBuilder();
 
         for (byte aByte : bytes) {
-            sb.append(String.format("%02X", aByte));
+            sb.append(HEX.toHexDigits(aByte));
             sb.append(":");
         }
 

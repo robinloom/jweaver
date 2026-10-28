@@ -223,8 +223,9 @@ public class ReflectiveAST {
             return new PropertyNode(key, "null");
         }
 
-        if (ExpansionPolicy.shouldNotExpand(value.getClass()) ) {
-            return new PropertyNode(key, ctx.weave(value));
+        if (ExpansionPolicy.shouldNotExpand(value.getClass())) {
+            String knownValue = ctx.weaveIfKnownType(value);
+            return new PropertyNode(key, knownValue != null ? knownValue : value.toString());
         }
 
         ReflectiveNode node = new MapEntryNode(key);

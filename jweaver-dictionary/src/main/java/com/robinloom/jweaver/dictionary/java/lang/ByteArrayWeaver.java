@@ -20,7 +20,11 @@ import com.robinloom.jweaver.TypeWeaver;
 import com.robinloom.jweaver.WeavingContext;
 import org.jspecify.annotations.NonNull;
 
+import java.util.HexFormat;
+
 public class ByteArrayWeaver extends TypeWeaver {
+
+    private static final HexFormat HEX = HexFormat.of().withUpperCase();
 
     @Override
     public Class<?> targetType() {
@@ -42,7 +46,7 @@ public class ByteArrayWeaver extends TypeWeaver {
         int limit = Math.min(bytes.length, 8);
 
         for (int i = 0; i < limit; i++) {
-            sb.append(String.format("%02X", bytes[i]));
+            sb.append(HEX.toHexDigits(bytes[i]));
             if (i < limit - 1) {
                 sb.append(" ");
             }

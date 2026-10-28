@@ -23,6 +23,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   rendering for nested values too, not just at the root
 - Plain JDK types now fall back to `toString()` instead of `[?]` noise –
   `java.base` doesn't open its packages for reflection by default
+- Hardened internals: `JWeaverLogger` no longer pays the cost of rendering
+  arguments when the log level is disabled, `Dictionary`'s `TypeWeaver`
+  registry is now safe under concurrent registration, and blacklisted map
+  values no longer spin up a full reflective weaver just to call
+  `toString()`
 
 ## [4.1] - 2026-05-01
 

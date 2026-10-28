@@ -304,6 +304,38 @@ public class ReflectiveASTTest {
     }
 
     @Test
+    void testMapValueWithRegisteredTypeWeaverStillUsesIt() {
+        TypeWeaver moneyWeaver = new TypeWeaver() {
+            @Override
+            public Class<?> targetType() {
+                return Integer.class;
+            }
+
+            @Override
+            public String weave(Object object, WeavingContext ctx) {
+                return "MONEY:" + object;
+            }
+        };
+
+        WeavingContext ctx = new WeavingContext(
+                Mode.TREE,
+                clazz -> Integer.class.equals(clazz) ? moneyWeaver : null,
+                _ -> (value, _) -> value.toString(),
+                true
+        );
+
+        Map<String, Integer> map = Map.of("amount", 42);
+
+        ReflectiveAST ast = new ReflectiveAST();
+        ReflectiveNode root = ast.build(map, ctx);
+
+        ReflectiveNode entry = root.getChildren().getFirst();
+        Assertions.assertEquals("amount=MONEY:42", entry.toString(),
+                "A blacklisted map value with a registered TypeWeaver must still use it, "
+                        + "not degrade to raw toString()");
+    }
+
+    @Test
     void testSensitiveFieldIsMasked() {
         class User {
             @SuppressWarnings("unused")
