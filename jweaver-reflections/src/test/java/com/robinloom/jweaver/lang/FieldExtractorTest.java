@@ -119,6 +119,16 @@ class FieldExtractorTest {
     }
 
     @Test
+    void testCacheIsSharedAcrossInstances() {
+        List<Field> first = new FieldExtractor().extract(Base.class);
+        List<Field> second = new FieldExtractor().extract(Base.class);
+
+        Assertions.assertSame(first, second,
+                "Field extraction results must be cached globally, not per FieldExtractor instance, "
+                        + "since a fresh instance is created on every object encountered during traversal");
+    }
+
+    @Test
     void testInterfaceTypeHasNoSuperclassAndYieldsNoFields() {
         List<Field> fields = extractor.extract(Marker.class);
 

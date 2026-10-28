@@ -50,7 +50,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class FieldExtractor {
 
-    private final Map<Class<?>, List<Field>> CACHE = new ConcurrentHashMap<>();
+    private static final Map<Class<?>, List<Field>> CACHE = new ConcurrentHashMap<>();
 
     /**
      * Returns the filtered list of relevant fields for the given class.
