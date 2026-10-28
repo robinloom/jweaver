@@ -5,10 +5,12 @@ import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;
 import java.util.BitSet;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
 import java.util.OptionalInt;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
@@ -91,5 +93,23 @@ class ExpansionPolicyTest {
         }
 
         Assertions.assertFalse(ExpansionPolicy.shouldNotExpand(Person.class));
+    }
+
+    @Test
+    void testResultIsCachedPerClass() throws Exception {
+        class Probe {
+            @SuppressWarnings("unused")
+            String name;
+        }
+
+        ExpansionPolicy.shouldNotExpand(Probe.class);
+
+        Field cacheField = ExpansionPolicy.class.getDeclaredField("CACHE");
+        cacheField.setAccessible(true);
+        Map<?, ?> cache = (Map<?, ?>) cacheField.get(null);
+
+        Assertions.assertTrue(cache.containsKey(Probe.class),
+                "shouldNotExpand() must memoize its result per Class, since the same class is evaluated "
+                        + "repeatedly for every instance encountered during traversal");
     }
 }

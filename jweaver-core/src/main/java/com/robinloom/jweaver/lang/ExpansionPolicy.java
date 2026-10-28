@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Spliterator;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
@@ -42,6 +43,8 @@ import java.util.stream.Stream;
  */
 public final class ExpansionPolicy {
 
+    private static final Map<Class<?>, Boolean> CACHE = new ConcurrentHashMap<>();
+
     private ExpansionPolicy() {}
 
     /**
@@ -54,9 +57,12 @@ public final class ExpansionPolicy {
      * @return {@code true} if the type should not be expanded, {@code false} otherwise
      */
     public static boolean shouldNotExpand(@Nullable Class<?> type) {
-
         if (type == null) return true;
 
+        return CACHE.computeIfAbsent(type, ExpansionPolicy::computeShouldNotExpand);
+    }
+
+    private static boolean computeShouldNotExpand(Class<?> type) {
         if (ValueTypes.isValueType(type)) {
             return true;
         }
