@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Builds a reflective, acyclic object tree from arbitrary Java objects.
@@ -56,6 +57,12 @@ import java.util.Map;
  *     <li>Fields annotated with {@link WeaveIgnore} are skipped.</li>
  *     <li>Sensitive fields are masked via {@link SensitivityDetection}.</li>
  * </ul>
+ * <p>
+ * The output is deterministic: sets and maps without a defined iteration order
+ * (e.g. {@code HashSet}, {@code Set.of}, {@code HashMap}, {@code Map.of}) are
+ * rendered in a stable, sorted order instead of the JVM-dependent one. Ordered
+ * containers (lists, arrays, {@code LinkedHashMap}, {@code TreeMap},
+ * {@code EnumSet}, ...) keep their own order.
  * <p>
  * The traversal is stateful but scoped to a single {@link #build(Object, WeavingContext)}
  * invocation. A new traversal always resets the internal {@link TraversalContext}.
@@ -190,7 +197,13 @@ public class ReflectiveAST {
     }
 
     private ReflectiveNode collection(String fieldName, Collection<?> collection, WeavingContext ctx) {
-        return sequence(fieldName, collection, collection.size(), TypeNormalizer.normalize(collection.getClass()), ctx);
+        Class<?> displayType = TypeNormalizer.normalize(collection.getClass());
+
+        if (DeterministicOrder.isUnordered(collection)) {
+            return unorderedSequence(fieldName, collection, Function.identity(), displayType, ctx);
+        }
+
+        return sequence(fieldName, collection, collection.size(), displayType, ctx);
     }
 
     private ReflectiveNode array(String fieldName, Object array, WeavingContext ctx) {
@@ -205,7 +218,14 @@ public class ReflectiveAST {
     }
 
     private ReflectiveNode map(String fieldName, Map<?, ?> map, WeavingContext ctx) {
-        return sequence(fieldName, map.entrySet(), map.size(), TypeNormalizer.normalize(map.getClass()), ctx);
+        Class<?> displayType = TypeNormalizer.normalize(map.getClass());
+
+        if (DeterministicOrder.isUnordered(map)) {
+            return unorderedSequence(fieldName, map.entrySet(),
+                    entry -> ((Map.Entry<?, ?>) entry).getKey(), displayType, ctx);
+        }
+
+        return sequence(fieldName, map.entrySet(), map.size(), displayType, ctx);
     }
 
     private ReflectiveNode mapEntry(Map.Entry<?, ?> entry, WeavingContext ctx) {
@@ -245,25 +265,52 @@ public class ReflectiveAST {
         }
 
         try {
-            int i = 0;
-            for (Object item : iterable) {
-
-                if (i >= options.getMaxSequenceLength()) {
-                    ReflectiveNode child = new PropertyNode((size - i) + " more");
-                    child.setIndex(i);
-
-                    root.addChild(child);
-                    break;
-                }
-
-                sequenceItem(root, item, i, ctx);
-                i++;
-            }
+            addItems(root, iterable, size, ctx);
         } finally {
             traversalContext.exit(iterable);
         }
 
         return root;
+    }
+
+    private ReflectiveNode unorderedSequence(String fieldName, Iterable<?> iterable,
+                                             Function<Object, Object> sortKey,
+                                             Class<?> displayType, WeavingContext ctx) {
+        List<Object> items = new ArrayList<>();
+        iterable.forEach(items::add);
+
+        ReflectiveNode root = new SequenceNode(fieldName, displayType, items.size());
+
+        if (!traversalContext.enter(iterable)) {
+            return root;
+        }
+
+        try {
+            DeterministicOrder.sort(items, sortKey, item -> toNode(null, item, ctx));
+
+            addItems(root, items, items.size(), ctx);
+        } finally {
+            traversalContext.exit(iterable);
+        }
+
+        return root;
+    }
+
+    private void addItems(ReflectiveNode root, Iterable<?> items, int size, WeavingContext ctx) {
+        int i = 0;
+        for (Object item : items) {
+
+            if (i >= options.getMaxSequenceLength()) {
+                ReflectiveNode child = new PropertyNode((size - i) + " more");
+                child.setIndex(i);
+
+                root.addChild(child);
+                break;
+            }
+
+            sequenceItem(root, item, i, ctx);
+            i++;
+        }
     }
 
     private void sequenceItem(ReflectiveNode root, Object item, Integer index, WeavingContext ctx) {

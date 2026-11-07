@@ -23,6 +23,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `secretary` or `authorId` are not. Fields of type `byte[]`/`char[]` are
   masked as well. More fields are redacted than before; annotate with
   `@WeaveRedact` for guaranteed masking
+- Output is now deterministic: sets and maps without a defined iteration order
+  (`HashSet`, `HashMap`, `Set.of`, `Map.of`, ...) are rendered sorted – by
+  natural order where possible (strings, numbers, enums), otherwise by their
+  rendered form. Previously the order differed between JVM runs. Ordered
+  containers (`List`, arrays, `LinkedHashMap`, `TreeMap`, `EnumSet`, ...)
+  are unchanged. Unordered containers with more than 1000 non-comparable
+  elements are not sorted
 
 ### Fixed
 - `StringBuilder`/`StringBuffer` are now quoted like `String`
