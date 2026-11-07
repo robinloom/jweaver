@@ -12,6 +12,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Added weavers for `Throwable`, `Thread`, `TimeZone`, `Calendar`, `Provider`,
   `KeyPair`, and `CyclicBarrier`
 - `SQLException` rendering now also includes `sqlState`/`errorCode`
+- Custom `TypeWeaver`s can be registered globally via
+  `JWeaver.registerTypeWeaver(...)`, so they are used instead of reflective
+  expansion for your own types
+
+### Changed
+- Sensitive-field detection is now word-based instead of an exact name match:
+  names are split at camelCase/snake_case/kebab-case boundaries, so e.g.
+  `userPassword`, `access_token`, or `creditCardNumber` are masked, while
+  `secretary` or `authorId` are not. Fields of type `byte[]`/`char[]` are
+  masked as well. More fields are redacted than before; annotate with
+  `@WeaveRedact` for guaranteed masking
 
 ### Fixed
 - `StringBuilder`/`StringBuffer` are now quoted like `String`
