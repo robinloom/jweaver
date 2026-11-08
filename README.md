@@ -95,7 +95,7 @@ Maven:
 <dependency>
     <groupId>com.robinloom</groupId>
     <artifactId>jweaver-api</artifactId>
-    <version>4.1</version>
+    <version>4.2</version>
 </dependency>
 ```
 
@@ -105,7 +105,7 @@ For the [SLF4J logging integration](#logging), add:
 <dependency>
     <groupId>com.robinloom</groupId>
     <artifactId>jweaver-logging</artifactId>
-    <version>4.1</version>
+    <version>4.2</version>
 </dependency>
 ```
 

@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [4.2] - 2026-11-08
+
 ### Added
 - Added weavers for `Throwable`, `Thread`, `TimeZone`, `Calendar`, `Provider`,
   `KeyPair`, and `CyclicBarrier`
