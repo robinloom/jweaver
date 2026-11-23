@@ -42,7 +42,7 @@ import com.robinloom.jweaver.dictionary.Dictionary;
  */
 public final class JWeaver {
 
-    private static Mode DEFAULT_MODE = Mode.INLINE;
+    private static volatile Mode DEFAULT_MODE = Mode.INLINE;
 
     private JWeaver() {}
 
