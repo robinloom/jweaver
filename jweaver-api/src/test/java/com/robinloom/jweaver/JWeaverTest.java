@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 import java.security.PrivateKey;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -22,6 +23,57 @@ class JWeaverTest {
         assertEquals(expected, JWeaver.weave(new Person("John")));
 
         JWeaver.switchMode(Mode.INLINE);
+    }
+
+    @Test
+    void cycleThroughOptionalIsDetected() {
+        class Node {
+            Optional<Node> next = Optional.empty();
+        }
+        Node node = new Node();
+        node.next = Optional.of(node);
+
+        String output = assertDoesNotThrow(() -> JWeaver.weave(node));
+
+        assertTrue(output.length() < 500,
+                "A cycle through Optional must stop at the first repeat, but the output has "
+                        + output.length() + " characters");
+        assertEquals("Node[next=Optional(Node)]", output);
+    }
+
+    @Test
+    void cycleThroughOptionalIsDetectedInTreeMode() {
+        class Node {
+            Optional<Node> next = Optional.empty();
+        }
+        Node node = new Node();
+        node.next = Optional.of(node);
+
+        String output = assertDoesNotThrow(() -> JWeaver.weave(node, Mode.TREE));
+
+        assertTrue(output.length() < 500,
+                "A cycle through Optional must stop at the first repeat, but the output has "
+                        + output.length() + " characters");
+    }
+
+    @Test
+    void cycleOverTwoObjectsThroughOptionalIsDetected() {
+        class Node {
+            String name;
+            Optional<Node> next = Optional.empty();
+
+            Node(String name) {
+                this.name = name;
+            }
+        }
+        Node a = new Node("a");
+        Node b = new Node("b");
+        a.next = Optional.of(b);
+        b.next = Optional.of(a);
+
+        String output = assertDoesNotThrow(() -> JWeaver.weave(a));
+
+        assertEquals("Node[name=\"a\", next=Optional(Node[name=\"b\", next=Optional(Node)])]", output);
     }
 
     @Test

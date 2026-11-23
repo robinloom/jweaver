@@ -16,6 +16,8 @@
  */
 package com.robinloom.jweaver;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 /**
  * Context object coordinating the weaving process.
  * <p>
@@ -34,8 +36,11 @@ package com.robinloom.jweaver;
  *     <li>Otherwise, a mode-specific {@link Weaver} is used for reflective processing.</li>
  * </ul>
  * <p>
- * Instances of this class are immutable and lightweight. A new child context
- * is created for each nested weaving step.
+ * Instances of this class are lightweight. A new child context is created for
+ * each nested weaving step. All contexts derived from the same root share one
+ * {@link TraversalContext}, so cycle detection and depth tracking span the whole
+ * weaving operation, even when a {@link TypeWeaver} calls back into
+ * {@link #weave(Object)} for nested values.
  */
 public final class WeavingContext {
 
@@ -43,15 +48,44 @@ public final class WeavingContext {
     private final TypeWeaverResolver typeWeaverResolver;
     private final ReflectionWeaverResolver reflectionWeaverResolver;
     private final boolean isRoot;
+    private final AtomicReference<TraversalContext> traversal;
 
     public WeavingContext(Mode mode,
                           TypeWeaverResolver typeWeaverResolver,
                           ReflectionWeaverResolver reflectionWeaverResolver,
                           boolean isRoot) {
+        this(mode, typeWeaverResolver, reflectionWeaverResolver, isRoot, new AtomicReference<>());
+    }
+
+    private WeavingContext(Mode mode,
+                           TypeWeaverResolver typeWeaverResolver,
+                           ReflectionWeaverResolver reflectionWeaverResolver,
+                           boolean isRoot,
+                           AtomicReference<TraversalContext> traversal) {
         this.mode = mode;
         this.typeWeaverResolver = typeWeaverResolver;
         this.reflectionWeaverResolver = reflectionWeaverResolver;
         this.isRoot = isRoot;
+        this.traversal = traversal;
+    }
+
+    /**
+     * Returns the {@link TraversalContext} shared by this context and all contexts
+     * derived from the same root, creating it on first use.
+     * <p>
+     * The depth limit of the first caller applies to the whole weaving operation.
+     *
+     * @param maxDepth the maximum traversal depth, used only if the shared
+     *                 context does not exist yet
+     * @return the shared traversal state
+     */
+    public TraversalContext traversal(int maxDepth) {
+        TraversalContext context = traversal.get();
+        if (context == null) {
+            context = new TraversalContext(maxDepth);
+            traversal.set(context);
+        }
+        return context;
     }
 
     /**
@@ -103,6 +137,6 @@ public final class WeavingContext {
     }
 
     private WeavingContext childContext() {
-        return new WeavingContext(mode, typeWeaverResolver, reflectionWeaverResolver, false);
+        return new WeavingContext(mode, typeWeaverResolver, reflectionWeaverResolver, false, traversal);
     }
 }

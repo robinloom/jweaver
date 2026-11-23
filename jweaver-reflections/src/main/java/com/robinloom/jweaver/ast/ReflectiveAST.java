@@ -64,8 +64,9 @@ import java.util.function.Function;
  * containers (lists, arrays, {@code LinkedHashMap}, {@code TreeMap},
  * {@code EnumSet}, ...) keep their own order.
  * <p>
- * The traversal is stateful but scoped to a single {@link #build(Object, WeavingContext)}
- * invocation. A new traversal always resets the internal {@link TraversalContext}.
+ * The traversal state lives in the {@link WeavingContext}, so it is shared with every
+ * nested weaving step of the same operation, such as a {@code TypeWeaver} that
+ * weaves the contents of an {@code Optional}.
  * <p>
  * This class is intentionally not thread-safe and is expected to be used per
  * weaving operation.
@@ -73,16 +74,14 @@ import java.util.function.Function;
 public class ReflectiveAST {
 
     private final ASTOptions options;
-    private final TraversalContext traversalContext;
+    private TraversalContext traversalContext;
 
     public ReflectiveAST() {
         this.options = ASTOptions.defaultOptions();
-        this.traversalContext = new TraversalContext(options.getMaxDepth());
     }
 
     ReflectiveAST(ASTOptions options) {
         this.options = options;
-        this.traversalContext = new TraversalContext(options.getMaxDepth());
     }
 
     /**
@@ -98,7 +97,7 @@ public class ReflectiveAST {
                 return new PropertyNode("root", "null");
             }
 
-            traversalContext.reset();
+            traversalContext = ctx.traversal(options.getMaxDepth());
             return toNode(object.getClass().getSimpleName(), object, ctx);
 
         } catch (Throwable t) {
@@ -159,9 +158,9 @@ public class ReflectiveAST {
             return root;
         }
 
-        List<Field> fields = new FieldExtractor().extract(object.getClass());
-
         try {
+            List<Field> fields = new FieldExtractor().extract(object.getClass());
+
             for (Field field : fields) {
                 try {
                     Object value = readField(field, object);
