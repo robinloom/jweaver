@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Changed
+- Weaving stops expanding after 1000 objects and collections, so shared
+  sub-graphs can no longer produce huge output; cut-off objects show `Type[...]`
 - Objects cut off by the depth limit are now marked, e.g. `next=Node[...]`,
   instead of looking like objects without fields
 - `CharSequence`s longer than 1000 characters are now cut off

@@ -44,12 +44,38 @@ class TraversalContextTest {
     }
 
     @Test
-    void testIsMaxDepthReached() {
+    void testIsLimitReachedForDepth() {
         TraversalContext ctx = new TraversalContext(1);
 
-        Assertions.assertFalse(ctx.isMaxDepthReached());
+        Assertions.assertFalse(ctx.isLimitReached());
         ctx.enter(new Object());
-        Assertions.assertTrue(ctx.isMaxDepthReached());
+        Assertions.assertTrue(ctx.isLimitReached());
+    }
+
+    @Test
+    void testMaxNodesCountsEveryEnterEvenAfterExit() {
+        TraversalContext ctx = new TraversalContext(10, 3);
+
+        for (int i = 0; i < 3; i++) {
+            Object o = new Object();
+            Assertions.assertTrue(ctx.enter(o));
+            ctx.exit(o);
+        }
+
+        Assertions.assertTrue(ctx.isLimitReached());
+        Assertions.assertFalse(ctx.enter(new Object()), "Node limit must hold although the depth is back at 0");
+    }
+
+    @Test
+    void testResetClearsNodeCount() {
+        TraversalContext ctx = new TraversalContext(10, 1);
+        Object o = new Object();
+        ctx.enter(o);
+        ctx.exit(o);
+
+        ctx.reset();
+
+        Assertions.assertTrue(ctx.enter(o));
     }
 
     @Test

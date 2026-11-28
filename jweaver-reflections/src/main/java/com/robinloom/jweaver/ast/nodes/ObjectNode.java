@@ -47,7 +47,7 @@ public final class ObjectNode extends ReflectiveNode {
     }
 
     /**
-     * Marks this node as not expanded because the depth limit was reached.
+     * Marks this node as not expanded because a traversal limit was reached.
      */
     public void markTruncated() {
         this.truncated = true;

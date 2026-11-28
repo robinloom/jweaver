@@ -156,7 +156,7 @@ public class ReflectiveAST {
 
     private ReflectiveNode object(ReflectiveNode root, Object object, WeavingContext ctx) {
         if (!traversalContext.enter(object)) {
-            markIfDepthLimited(root, object);
+            markIfLimited(root, object);
             return root;
         }
 
@@ -329,8 +329,8 @@ public class ReflectiveAST {
         root.addChild(node);
     }
 
-    private void markIfDepthLimited(ReflectiveNode root, Object object) {
-        if (!traversalContext.isMaxDepthReached() || !(root instanceof ObjectNode node)) {
+    private void markIfLimited(ReflectiveNode root, Object object) {
+        if (!traversalContext.isLimitReached() || !(root instanceof ObjectNode node)) {
             return;
         }
         if (fieldExtractor.hasFields(object.getClass())) {

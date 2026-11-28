@@ -27,9 +27,11 @@ import java.util.Set;
  * produces an acyclic tree structure. It prevents both excessive recursion
  * depth and repeated processing of the same object instance.
  * <p>
- * Two constraints are enforced:
+ * Three constraints are enforced:
  * <ul>
  *     <li><b>Maximum depth</b> – traversal stops once the configured depth is reached</li>
+ *     <li><b>Maximum nodes</b> – traversal stops after {@value #DEFAULT_MAX_NODES} entered
+ *     objects, which bounds shared sub-graphs that are expanded once per reference</li>
  *     <li><b>Visited tracking</b> – object identity is tracked to avoid revisiting
  *     the same instance and creating cycles</li>
  * </ul>
@@ -54,11 +56,20 @@ public final class TraversalContext {
 
     private final Set<Object> visited = Collections.newSetFromMap(new IdentityHashMap<>());
 
+    static final int DEFAULT_MAX_NODES = 1000;
+
     private final int maxDepth;
+    private final int maxNodes;
     private int depth = 0;
+    private int nodes = 0;
 
     public TraversalContext(int maxDepth) {
+        this(maxDepth, DEFAULT_MAX_NODES);
+    }
+
+    TraversalContext(int maxDepth, int maxNodes) {
         this.maxDepth = maxDepth;
+        this.maxNodes = maxNodes;
     }
 
     /**
@@ -66,10 +77,10 @@ public final class TraversalContext {
      *
      * @param o the object to enter
      * @return {@code true} if traversal may proceed, {@code false} if the object
-     *         was already visited or the maximum depth has been reached
+     *         was already visited or a depth or node limit has been reached
      */
     public boolean enter(Object o) {
-        if (depth >= maxDepth) {
+        if (isLimitReached()) {
             return false;
         }
 
@@ -78,14 +89,15 @@ public final class TraversalContext {
         }
 
         depth++;
+        nodes++;
         return true;
     }
 
     /**
-     * Returns whether the maximum depth has been reached.
+     * Returns whether the depth or node limit has been reached.
      */
-    public boolean isMaxDepthReached() {
-        return depth >= maxDepth;
+    public boolean isLimitReached() {
+        return depth >= maxDepth || nodes >= maxNodes;
     }
 
     /**
@@ -101,11 +113,12 @@ public final class TraversalContext {
     /**
      * Resets the traversal state.
      * <p>
-     * Clears all visited objects and resets the current depth, allowing the
+     * Clears all visited objects and resets depth and node count, allowing the
      * context to be reused for a new traversal.
      */
     public void reset() {
         visited.clear();
         depth = 0;
+        nodes = 0;
     }
 }

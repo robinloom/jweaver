@@ -144,4 +144,31 @@ class JWeaverTest {
         assertFalse(output.contains("cents"),
                 "Once a TypeWeaver is registered, the type must no longer be reflectively expanded");
     }
+
+    @Test
+    void testSharedSubGraphDoesNotBlowUpOutput() {
+        class Node {
+            Node a, b, c;
+        }
+
+        // every node of a layer references the same three nodes of the next layer
+        Node[] next = null;
+        for (int layer = 0; layer < 10; layer++) {
+            Node[] current = {new Node(), new Node(), new Node()};
+            if (next != null) {
+                for (Node n : current) {
+                    n.a = next[0];
+                    n.b = next[1];
+                    n.c = next[2];
+                }
+            }
+            next = current;
+        }
+
+        String output = JWeaver.weave(next[0]);
+
+        assertTrue(output.length() < 100_000,
+                "Node limit must bound shared sub-graphs, was " + output.length() + " chars");
+        assertTrue(output.contains("[...]"), "Cut-off objects must be marked");
+    }
 }
