@@ -3,6 +3,7 @@
 ![Build And Test](https://github.com/robinloom/jweaver/actions/workflows/build.yml/badge.svg)
 ![Maven Central Version](https://img.shields.io/maven-central/v/com.robinloom/jweaver)
 [![codecov](https://codecov.io/gh/robinloom/jweaver/graph/badge.svg)](https://codecov.io/gh/robinloom/jweaver)
+![Java 21+](https://img.shields.io/badge/Java-21%2B-orange)
 ![License](https://img.shields.io/badge/License-Apache%202.0-blue)
 
 ---
@@ -88,6 +89,9 @@ No handwritten `toString()`.
 ✓ Replace boilerplate `toString()` methods
 
 ## Installation
+
+JWeaver requires **Java 21 or newer**. It is built with `--release 21` and tested
+against Java 21 and 25 in CI.
 
 Maven:
 

@@ -11,7 +11,7 @@ public class StringWeaverTest extends TypeWeaverTest {
 
     private final StringWeaver weaver = new StringWeaver();
     private final WeavingContext nested =
-            new WeavingContext(Mode.INLINE, Dictionary.getInstance(), _ -> (object, _) -> object.toString(), false);
+            new WeavingContext(Mode.INLINE, Dictionary.getInstance(), unused -> (object, unusedCtx) -> object.toString(), false);
 
     @Test
     public void testWeaver() {

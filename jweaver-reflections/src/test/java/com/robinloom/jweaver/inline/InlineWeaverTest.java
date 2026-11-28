@@ -12,8 +12,8 @@ class InlineWeaverTest {
     private WeavingContext dummyContext() {
         return new WeavingContext(
                 Mode.INLINE,
-                _ -> null,
-                _ -> (value, _) -> value.toString(),
+                unused -> null,
+                unused -> (value, unusedCtx) -> value.toString(),
                 true
         );
     }

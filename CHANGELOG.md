@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+- Lowered the minimum supported Java version from 25 to **21**. The code is
+  compiled with `--release 21` and CI now tests against Java 21 and 25
+
 ## [4.2] - 2026-11-08
 
 ### Added

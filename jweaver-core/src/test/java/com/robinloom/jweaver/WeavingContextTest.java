@@ -7,7 +7,7 @@ class WeavingContextTest {
 
     @Test
     void testNullValueIsRenderedAsNullLiteral() {
-        WeavingContext ctx = new WeavingContext(Mode.INLINE, _ -> null, _ -> (value, _) -> value.toString(), true);
+        WeavingContext ctx = new WeavingContext(Mode.INLINE, ignored -> null, ignored -> (value, c) -> value.toString(), true);
 
         Assertions.assertEquals("null", ctx.weave(null));
     }
@@ -29,7 +29,7 @@ class WeavingContextTest {
         WeavingContext ctx = new WeavingContext(
                 Mode.INLINE,
                 clazz -> Integer.class.equals(clazz) ? moneyWeaver : null,
-                _ -> (value, _) -> "FALLBACK",
+                unused -> (value, unusedCtx) -> "FALLBACK",
                 true
         );
 
@@ -40,8 +40,8 @@ class WeavingContextTest {
     void testFallsBackToReflectiveWeaverWhenNoTypeWeaverIsRegistered() {
         WeavingContext ctx = new WeavingContext(
                 Mode.INLINE,
-                _ -> null,
-                _ -> (value, _) -> "FALLBACK:" + value,
+                unused -> null,
+                unused -> (value, unusedCtx) -> "FALLBACK:" + value,
                 true
         );
 
@@ -52,8 +52,8 @@ class WeavingContextTest {
     void testNestedWeaveReceivesNonRootChildContext() {
         WeavingContext ctx = new WeavingContext(
                 Mode.INLINE,
-                _ -> null,
-                _ -> (value, nestedCtx) -> "root=" + nestedCtx.isRoot(),
+                unused -> null,
+                unused -> (value, nestedCtx) -> "root=" + nestedCtx.isRoot(),
                 true
         );
 
@@ -64,7 +64,7 @@ class WeavingContextTest {
 
     @Test
     void testWeaveIfKnownTypeReturnsNullWhenNoTypeWeaverRegistered() {
-        WeavingContext ctx = new WeavingContext(Mode.INLINE, _ -> null, _ -> (value, _) -> value.toString(), true);
+        WeavingContext ctx = new WeavingContext(Mode.INLINE, unused -> null, unused -> (value, unusedCtx) -> value.toString(), true);
 
         Assertions.assertNull(ctx.weaveIfKnownType(42));
     }
@@ -86,7 +86,7 @@ class WeavingContextTest {
         WeavingContext ctx = new WeavingContext(
                 Mode.INLINE,
                 clazz -> Integer.class.equals(clazz) ? weaver : null,
-                _ -> (value, _) -> value.toString(),
+                unused -> (value, unusedCtx) -> value.toString(),
                 true
         );
 

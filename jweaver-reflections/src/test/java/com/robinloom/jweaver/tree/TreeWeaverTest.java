@@ -12,8 +12,8 @@ class TreeWeaverTest {
     private WeavingContext dummyContext() {
         return new WeavingContext(
                 Mode.TREE,
-                _ -> null,
-                _ -> (value, _) -> value.toString(),
+                unused -> null,
+                unused -> (value, unusedCtx) -> value.toString(),
                 true
         );
     }

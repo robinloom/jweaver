@@ -39,7 +39,8 @@ public class JWeaverLogger implements Logger {
     private Object transform(Object arg) {
         return switch (arg) {
             case null -> null;
-            case String _, Throwable _ -> arg;
+            case String s -> s;
+            case Throwable t -> t;
             default -> JWeaver.weave(arg, mode);
         };
     }

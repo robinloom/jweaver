@@ -85,7 +85,7 @@ public final class SensitivityDetection {
 
     public static boolean isSensitive(Field field) {
         return CACHE.get(field.getDeclaringClass())
-                .computeIfAbsent(field.getName(), _ -> computeIsSensitive(field));
+                .computeIfAbsent(field.getName(), ignored -> computeIsSensitive(field));
     }
 
     private static boolean computeIsSensitive(Field field) {

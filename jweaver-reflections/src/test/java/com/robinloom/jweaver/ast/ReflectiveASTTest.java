@@ -15,8 +15,8 @@ public class ReflectiveASTTest {
     private WeavingContext dummyContext() {
         return new WeavingContext(
                 Mode.TREE,
-                _ -> null,
-                _ -> (value, _) -> value.toString(),
+                unused -> null,
+                unused -> (value, unusedCtx) -> value.toString(),
                 true
         );
     }
@@ -250,7 +250,7 @@ public class ReflectiveASTTest {
         WeavingContext ctx = new WeavingContext(
                 Mode.TREE,
                 clazz -> Money.class.equals(clazz) ? moneyWeaver : null,
-                _ -> (value, _) -> value.toString(),
+                unused -> (value, unusedCtx) -> value.toString(),
                 true
         );
 
@@ -285,7 +285,7 @@ public class ReflectiveASTTest {
         WeavingContext ctx = new WeavingContext(
                 Mode.TREE,
                 clazz -> UserId.class.equals(clazz) ? userIdWeaver : null,
-                _ -> (value, _) -> value.toString(),
+                unused -> (value, unusedCtx) -> value.toString(),
                 true
         );
 
@@ -320,7 +320,7 @@ public class ReflectiveASTTest {
         WeavingContext ctx = new WeavingContext(
                 Mode.TREE,
                 clazz -> Integer.class.equals(clazz) ? moneyWeaver : null,
-                _ -> (value, _) -> value.toString(),
+                unused -> (value, unusedCtx) -> value.toString(),
                 true
         );
 
@@ -390,8 +390,8 @@ public class ReflectiveASTTest {
     void testBuildDegradesToErrorNodeWhenTraversalThrows() {
         WeavingContext throwingCtx = new WeavingContext(
                 Mode.TREE,
-                _ -> { throw new RuntimeException("boom"); },
-                _ -> (value, _) -> value.toString(),
+                unused -> { throw new RuntimeException("boom"); },
+                unused -> (value, unusedCtx) -> value.toString(),
                 true
         );
 
@@ -514,7 +514,7 @@ public class ReflectiveASTTest {
         WeavingContext ctx = new WeavingContext(
                 Mode.TREE,
                 clazz -> SpecialMap.class.equals(clazz) ? specialMapWeaver : null,
-                _ -> (value, _) -> value.toString(),
+                unused -> (value, unusedCtx) -> value.toString(),
                 true
         );
 
