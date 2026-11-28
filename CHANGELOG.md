@@ -9,6 +9,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Changed
+- `CharSequence`s longer than 1000 characters are now cut off
+  when rendered, e.g. `"abc..." (5000 chars)`, so a single huge value can no
+  longer flood logs
 - Lowered the minimum supported Java version from 25 to **21**. The code is
   compiled with `--release 21` and CI now tests against Java 21 and 25
 

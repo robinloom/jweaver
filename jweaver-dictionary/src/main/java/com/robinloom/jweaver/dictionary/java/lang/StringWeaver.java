@@ -27,8 +27,13 @@ import org.jspecify.annotations.NonNull;
  * such as {@link StringBuilder} and {@link StringBuffer} are quoted consistently
  * with {@code String} values, instead of falling back to their raw, unquoted
  * {@code toString()}.
+ * <p>
+ * Nested values longer than {@value #MAX_LENGTH} characters are cut off and
+ * annotated with their length, e.g. {@code "abc..." (5000 chars)}.
  */
 public class StringWeaver extends TypeWeaver {
+
+    static final int MAX_LENGTH = 1000;
 
     @Override
     public Class<?> targetType() {
@@ -37,12 +42,19 @@ public class StringWeaver extends TypeWeaver {
 
     @Override
     public String weave(@NonNull Object value, WeavingContext ctx) {
-        String s = value.toString();
+        CharSequence s = value instanceof CharSequence cs ? cs : value.toString();
 
         if (ctx.isRoot()) {
-            return s;
+            return s.toString();
         }
 
-        return "\"" + s + "\"";
+        int length = s.length();
+        if (length <= MAX_LENGTH) {
+            return "\"" + s + "\"";
+        }
+
+        // keep surrogate pairs intact
+        int end = Character.isHighSurrogate(s.charAt(MAX_LENGTH - 1)) ? MAX_LENGTH - 1 : MAX_LENGTH;
+        return "\"" + s.subSequence(0, end) + "...\" (" + length + " chars)";
     }
 }

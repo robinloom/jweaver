@@ -147,6 +147,16 @@ LOGGER.info("Authenticated user: {}", user);
 - The default is `Mode.INLINE`. Pass a mode for other output: `LoggerFactory.getLogger(UserService.class, Mode.TREE)`.
 - It wraps whatever SLF4J backend you already use (Logback, Log4j 2, ...).
 
+## Limits
+
+To keep the output readable and bounded, JWeaver cuts off large values:
+
+| What | Limit | Output |
+|---|---|---|
+| Nested string | 1000 characters | `"abc..." (5000 chars)` |
+| Items per collection, array or map | 10 | `N more` |
+| Nesting depth | 10 | rest is omitted |
+
 ## Sensitive data
 
 Fields that look sensitive (such as `password` or `token`) are masked automatically. For guaranteed masking, annotate a field with `@WeaveRedact`:
