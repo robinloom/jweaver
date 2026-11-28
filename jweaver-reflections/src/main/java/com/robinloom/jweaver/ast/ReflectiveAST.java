@@ -74,6 +74,7 @@ import java.util.function.Function;
 public class ReflectiveAST {
 
     private final ASTOptions options;
+    private final FieldExtractor fieldExtractor = new FieldExtractor();
     private TraversalContext traversalContext;
 
     public ReflectiveAST() {
@@ -155,11 +156,12 @@ public class ReflectiveAST {
 
     private ReflectiveNode object(ReflectiveNode root, Object object, WeavingContext ctx) {
         if (!traversalContext.enter(object)) {
+            markIfDepthLimited(root, object);
             return root;
         }
 
         try {
-            List<Field> fields = new FieldExtractor().extract(object.getClass());
+            List<Field> fields = fieldExtractor.extract(object.getClass());
 
             for (Field field : fields) {
                 try {
@@ -325,6 +327,15 @@ public class ReflectiveAST {
             node.setIndex(index);
         }
         root.addChild(node);
+    }
+
+    private void markIfDepthLimited(ReflectiveNode root, Object object) {
+        if (!traversalContext.isMaxDepthReached() || !(root instanceof ObjectNode node)) {
+            return;
+        }
+        if (fieldExtractor.hasFields(object.getClass())) {
+            node.markTruncated();
+        }
     }
 
     Object readField(Field field, Object target) throws ReflectiveOperationException {

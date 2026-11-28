@@ -44,6 +44,15 @@ class TraversalContextTest {
     }
 
     @Test
+    void testIsMaxDepthReached() {
+        TraversalContext ctx = new TraversalContext(1);
+
+        Assertions.assertFalse(ctx.isMaxDepthReached());
+        ctx.enter(new Object());
+        Assertions.assertTrue(ctx.isMaxDepthReached());
+    }
+
+    @Test
     void testResetClearsVisitedAndDepth() {
         TraversalContext ctx = new TraversalContext(1);
         Object o = new Object();

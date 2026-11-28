@@ -65,6 +65,13 @@ public final class FieldExtractor {
         return CACHE.get(clazz);
     }
 
+    /**
+     * Returns whether the given class has any relevant fields.
+     */
+    public boolean hasFields(Class<?> clazz) {
+        return !extract(clazz).isEmpty();
+    }
+
     private static List<Field> compute(Class<?> clazz) {
         boolean isKotlin = KotlinSupport.isKotlinClass(clazz);
         return collectFields(clazz).stream()

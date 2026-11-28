@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Changed
+- Objects cut off by the depth limit are now marked, e.g. `next=Node[...]`,
+  instead of looking like objects without fields
 - `CharSequence`s longer than 1000 characters are now cut off
   when rendered, e.g. `"abc..." (5000 chars)`, so a single huge value can no
   longer flood logs

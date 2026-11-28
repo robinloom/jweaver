@@ -119,6 +119,15 @@ class FieldExtractorTest {
     }
 
     @Test
+    void testHasFields() {
+        class Empty {
+        }
+
+        Assertions.assertTrue(extractor.hasFields(Base.class));
+        Assertions.assertFalse(extractor.hasFields(Empty.class));
+    }
+
+    @Test
     void testCacheIsSharedAcrossInstances() {
         List<Field> first = new FieldExtractor().extract(Base.class);
         List<Field> second = new FieldExtractor().extract(Base.class);

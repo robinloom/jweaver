@@ -155,7 +155,7 @@ To keep the output readable and bounded, JWeaver cuts off large values:
 |---|---|---|
 | Nested string | 1000 characters | `"abc..." (5000 chars)` |
 | Items per collection, array or map | 10 | `N more` |
-| Nesting depth | 10 | rest is omitted |
+| Nesting depth | 10 | `Node[...]` |
 
 ## Sensitive data
 

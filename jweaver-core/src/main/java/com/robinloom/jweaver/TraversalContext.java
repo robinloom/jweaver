@@ -82,6 +82,13 @@ public final class TraversalContext {
     }
 
     /**
+     * Returns whether the maximum depth has been reached.
+     */
+    public boolean isMaxDepthReached() {
+        return depth >= maxDepth;
+    }
+
+    /**
      * Signals that traversal of the current object has completed.
      * <p>
      * Must be paired with a successful {@link #enter(Object)} call.

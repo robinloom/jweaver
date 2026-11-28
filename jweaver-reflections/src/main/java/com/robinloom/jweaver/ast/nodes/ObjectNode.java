@@ -34,6 +34,7 @@ public final class ObjectNode extends ReflectiveNode {
 
     @Nullable private final String fieldName;
     private final Class<?> clazz;
+    private boolean truncated;
 
     public ObjectNode(Class<?> clazz) {
         this.clazz = clazz;
@@ -45,12 +46,20 @@ public final class ObjectNode extends ReflectiveNode {
         this.clazz = clazz;
     }
 
+    /**
+     * Marks this node as not expanded because the depth limit was reached.
+     */
+    public void markTruncated() {
+        this.truncated = true;
+    }
+
     @Override
     public String toString() {
+        String type = truncated ? clazz.getSimpleName() + "[...]" : clazz.getSimpleName();
         if (fieldName == null || isRoot()) {
-            return clazz.getSimpleName();
+            return type;
         }  else {
-            return fieldName + "=" +  clazz.getSimpleName();
+            return fieldName + "=" + type;
         }
     }
 }

@@ -151,6 +151,50 @@ public class ReflectiveASTTest {
     }
 
     @Test
+    void testDepthLimitIsMarked() {
+        class Node {
+            Node next;
+        }
+
+        Node a = new Node();
+        a.next = new Node();
+        a.next.next = new Node();
+
+        ReflectiveNode root = new ReflectiveAST(new ASTOptions(2, 10)).build(a, dummyContext());
+
+        ReflectiveNode cut = root.getChildren().getFirst().getChildren().getFirst();
+
+        Assertions.assertEquals("next=Node[...]", cut.toString());
+    }
+
+    @Test
+    void testFieldlessObjectAtDepthLimitIsNotMarked() {
+        class Empty {
+        }
+        class Holder {
+            Empty empty = new Empty();
+        }
+
+        ReflectiveNode root = new ReflectiveAST(new ASTOptions(1, 10)).build(new Holder(), dummyContext());
+
+        Assertions.assertEquals("empty=Empty", root.getChildren().getFirst().toString());
+    }
+
+    @Test
+    void testCycleIsNotMarkedAsDepthLimit() {
+        class Node {
+            Node self;
+        }
+
+        Node a = new Node();
+        a.self = a;
+
+        ReflectiveNode root = new ReflectiveAST(new ASTOptions(10, 10)).build(a, dummyContext());
+
+        Assertions.assertEquals("self=Node", root.getChildren().getFirst().toString());
+    }
+
+    @Test
     void testMaxSequenceLength() {
         List<Integer> list = IntStream.range(0, 10).boxed().toList();
 
