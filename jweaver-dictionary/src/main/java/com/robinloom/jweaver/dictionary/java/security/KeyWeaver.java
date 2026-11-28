@@ -26,6 +26,7 @@ import java.security.interfaces.ECKey;
 import java.security.interfaces.RSAKey;
 import java.security.spec.ECGenParameterSpec;
 import java.util.HexFormat;
+import java.util.Map;
 
 public class KeyWeaver extends TypeWeaver {
 
@@ -75,11 +76,22 @@ public class KeyWeaver extends TypeWeaver {
         return key.getModulus().bitLength() + " bits";
     }
 
+    /**
+     * Some JDKs (e.g. 21) report well-known curves by OID instead of by name.
+     * Translate them so the output does not depend on the JDK version.
+     */
+    private static final Map<String, String> CURVE_NAMES = Map.of(
+            "1.2.840.10045.3.1.7", "secp256r1",
+            "1.3.132.0.34", "secp384r1",
+            "1.3.132.0.35", "secp521r1",
+            "1.3.132.0.10", "secp256k1");
+
     public String tryGetCurveName(ECKey key) {
         try {
             AlgorithmParameters params = AlgorithmParameters.getInstance("EC");
             params.init(key.getParams());
-            return params.getParameterSpec(ECGenParameterSpec.class).getName();
+            String name = params.getParameterSpec(ECGenParameterSpec.class).getName();
+            return CURVE_NAMES.getOrDefault(name, name);
         }  catch (Exception e) {
             return ecBits(key);
         }
